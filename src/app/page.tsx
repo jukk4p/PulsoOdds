@@ -1,10 +1,11 @@
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
+import { PickCard } from "@/components/ui/PickCard";
+import { calculateStats, cn } from "@/lib/utils";
+import { supabase } from "@/lib/supabase";
 import { TrendingUp, Target, Zap } from "lucide-react";
 import Link from "next/link";
-
-export const revalidate = 0; // Fuerza la carga de datos frescos en cada visita
 
 async function getData() {
   const { data: picks, error } = await supabase
