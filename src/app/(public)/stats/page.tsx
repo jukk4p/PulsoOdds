@@ -4,6 +4,9 @@ import { supabase } from "@/lib/supabase";
 import { calculateStats, cn } from "@/lib/utils";
 import { TrendingUp, BarChart3, PieChart, Activity, Zap } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 async function getStatsData() {
   const { data: picks } = await supabase
     .from('picks')

@@ -1,8 +1,6 @@
-import { PickCard } from "@/components/ui/PickCard";
-import { calculateStats, cn } from "@/lib/utils";
-import { supabase } from "@/lib/supabase";
-
+export const dynamic = "force-dynamic";
 export const revalidate = 0;
+
 import { TrendingUp, Target, Zap } from "lucide-react";
 import Link from "next/link";
 

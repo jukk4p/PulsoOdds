@@ -1,6 +1,7 @@
 import { PickCard } from "@/components/ui/PickCard";
 import { supabase } from "@/lib/supabase";
 
+export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 async function getPicks() {
