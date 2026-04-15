@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Circle, ChevronDown, ChevronUp, Trophy, Zap } from "lucide-react";
+import { Circle, ChevronDown, ChevronUp, Trophy, Zap, Activity } from "lucide-react";
 
 interface PickCardProps {
   pick: {
@@ -21,6 +21,26 @@ interface PickCardProps {
 
 export function PickCard({ pick }: PickCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+
+  const sportConfig: Record<string, { color: string, icon: any, label: string }> = {
+    football: { 
+      color: "text-neon-green border-neon-green/20 bg-neon-green/10", 
+      icon: Trophy,
+      label: "Fútbol"
+    },
+    basketball: { 
+      color: "text-orange-500 border-orange-500/20 bg-orange-500/10", 
+      icon: Activity, // Usamos Activity como fallback vibrante para Basket
+      label: "NBA / Basket"
+    },
+    default: { 
+      color: "text-neon-green border-neon-green/20 bg-neon-green/10", 
+      icon: Zap,
+      label: pick.sport 
+    }
+  };
+
+  const config = sportConfig[pick.sport.toLowerCase()] || sportConfig.default;
 
   const statusColors = {
     pending: "text-yellow-400 bg-yellow-400/10 border-yellow-400/20",
@@ -44,9 +64,10 @@ export function PickCard({ pick }: PickCardProps) {
         {/* Header: Sport & Status */}
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-black text-neon-green uppercase tracking-widest bg-neon-green/10 px-2 py-1 rounded">
-              {pick.sport}
-            </span>
+            <div className={cn("flex items-center gap-1.5 px-2 py-1 rounded border text-[10px] font-black uppercase tracking-widest", config.color)}>
+              <config.icon className="h-3 w-3" />
+              {config.label}
+            </div>
             <span className="text-[10px] font-medium text-white/40 uppercase tracking-widest">
               {pick.competition}
             </span>
@@ -72,7 +93,9 @@ export function PickCard({ pick }: PickCardProps) {
           <div className="bg-white/[0.03] border border-white/5 rounded-xl p-4 flex flex-col items-center justify-center relative overflow-hidden group/item">
              <div className="absolute inset-0 bg-neon-green/5 opacity-0 group-hover/item:opacity-100 transition-opacity" />
              <p className="text-[10px] text-white/30 uppercase font-black mb-1 relative z-10">Selección</p>
-             <p className="text-sm font-bold text-neon-green text-center line-clamp-1 relative z-10">{pick.pick}</p>
+             <p className={cn("text-sm font-bold text-center line-clamp-1 relative z-10", pick.sport.toLowerCase() === 'basketball' ? 'text-orange-500' : 'text-neon-green')}>
+               {pick.pick}
+             </p>
           </div>
         </div>
 
@@ -88,7 +111,10 @@ export function PickCard({ pick }: PickCardProps) {
                 <div className="flex items-center gap-1.5">
                    <div className="h-1.5 w-20 bg-white/5 rounded-full overflow-hidden">
                       <div 
-                        className="h-full bg-neon-green shadow-[0_0_10px_rgba(0,255,135,0.5)]" 
+                        className={cn(
+                          "h-full shadow-[0_0_10px_rgba(0,255,135,0.5)]", 
+                          pick.sport.toLowerCase() === 'basketball' ? 'bg-orange-500' : 'bg-neon-green'
+                        )}
                         style={{ width: `${(pick.stake / 10) * 100}%` }}
                       />
                    </div>
@@ -100,23 +126,28 @@ export function PickCard({ pick }: PickCardProps) {
 
         {/* Analysis Section */}
         {pick.analysis && (
-          <div className="mt-6 pt-5 border-t border-white/5">
+          <div className="mt-6 pt-5 border-t border-white/5 relative">
             <div 
               className={cn(
-                "text-sm text-white/60 leading-relaxed italic transition-all duration-500 overflow-hidden",
-                isExpanded ? "max-h-[1000px] opacity-100" : "max-h-12 opacity-40"
+                "text-sm text-white/80 leading-relaxed transition-all duration-500 overflow-hidden relative",
+                isExpanded ? "max-h-[1000px]" : "max-h-[72px]"
               )}
             >
-              "{pick.analysis}"
+              {pick.analysis}
+              
+              {!isExpanded && (
+                <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[#0a0a0b] to-transparent" />
+              )}
             </div>
+            
             <button 
               onClick={() => setIsExpanded(!isExpanded)}
-              className="mt-3 flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-neon-green hover:text-white transition-colors"
+              className="mt-2 flex items-center gap-1 text-[11px] font-black uppercase tracking-widest text-neon-green hover:text-white transition-colors py-1"
             >
               {isExpanded ? (
-                <>Ver menos <ChevronUp className="h-3 w-3" /></>
+                <>Ver menos <ChevronUp className="h-3.5 w-3.5" /></>
               ) : (
-                <>Leer análisis completo <ChevronDown className="h-3 w-3" /></>
+                <>Leer análisis completo <ChevronDown className="h-3.5 w-3.5" /></>
               )}
             </button>
           </div>

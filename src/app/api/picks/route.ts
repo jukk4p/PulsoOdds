@@ -25,6 +25,24 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // --- PREVENCIÓN DE DUPLICADOS ---
+    const { data: existingPick } = await supabaseAdmin
+      .from('picks')
+      .select('id')
+      .eq('match', body.match)
+      .eq('pick', body.pick)
+      .eq('match_date', body.match_date)
+      .maybeSingle();
+
+    if (existingPick) {
+      return NextResponse.json({ 
+        success: true, 
+        message: 'Pick ya publicado anteriormente', 
+        pick_id: existingPick.id 
+      });
+    }
+    // --------------------------------
+
     const { data, error } = await supabaseAdmin
       .from('picks')
       .insert([
