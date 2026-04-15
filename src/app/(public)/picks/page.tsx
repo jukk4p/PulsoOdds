@@ -1,6 +1,8 @@
 import { PickCard } from "@/components/ui/PickCard";
 import { supabase } from "@/lib/supabase";
 
+export const revalidate = 0;
+
 async function getPicks() {
   const { data, error } = await supabase
     .from('picks')
