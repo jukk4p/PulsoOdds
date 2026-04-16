@@ -4,7 +4,7 @@ export const revalidate = 0;
 import { PickCard } from "@/components/ui/PickCard";
 import { calculateStats, cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
-import { TrendingUp, Target, Zap } from "lucide-react";
+import { TrendingUp, Target, Zap, Trophy } from "lucide-react";
 import Link from "next/link";
 
 async function getData() {
@@ -76,10 +76,7 @@ export default async function Home() {
               <StatCard label="ROI MENSUAL" value={`${stats.roi.toFixed(1)}%`} icon={<TrendingUp className="h-5 w-5" />} color="neon" />
               <StatCard label="ACIERTO" value={`${stats.winRate.toFixed(1)}%`} icon={<Target className="h-5 w-5" />} color="white" />
               <StatCard label="RACHA ACTUAL" value={stats.currentStreak > 0 ? `+${stats.currentStreak}` : stats.currentStreak} icon={<Zap className="h-5 w-5" />} color="neon" />
-              <div className="glass-card rounded-2xl p-6 border border-white/5 flex flex-col justify-center">
-                <p className="text-xs text-white/40 uppercase tracking-widest font-bold mb-1">UNIDADES</p>
-                <p className="text-3xl font-black text-white">{stats.totalProfit > 0 ? '+' : ''}{stats.totalProfit.toFixed(1)}</p>
-              </div>
+              <StatCard label="UNIDADES" value={(stats.totalProfit > 0 ? '+' : '') + stats.totalProfit.toFixed(1)} icon={<Trophy className="h-5 w-5" />} color="white" />
             </div>
           </div>
         </div>
