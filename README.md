@@ -1,59 +1,85 @@
-# 🟢 PulsoOdds
+# ⚡️ PULSO<span style="color:#00ff87">ODDS</span>
 
-> **Autonomous AI-Driven Sports Betting Hub**  
-> Una plataforma de alto rendimiento que combina inteligencia artificial, automatización con n8n y una interfaz premium para el análisis de apuestas deportivas.
+> **"Tu Ventaja Eléctrica en el Análisis Deportivo"**  
+> Plataforma autónoma de alto rendimiento que fusiona Inteligencia Artificial, automatizaciones n8n y una interfaz de usuario de última generación.
 
-![PulsoOdds Hero](https://images.unsplash.com/photo-1508919893251-17389adce3d7?q=80&w=1200&auto=format&fit=crop)
-
-## 🚀 Vision
-PulsoOdds no es solo una web de picks; es un ecosistema autónomo. Utiliza modelos de lenguaje avanzados (Claude/GPT) para analizar datos estadísticos en tiempo real, calcular el valor esperado (EV) y publicar pronósticos verificados automáticamente.
-
-## ✨ Características Principales
-- **🤖 Bot de Análisis IA**: Flujo en n8n que escanea ligas europeas, filtra por valor (EV > 1.05) y genera análisis profesionales.
-- **📊 Dashboard de Estadísticas**: Seguimiento en tiempo real de ROI, Win Rate y evolución de beneficios mediante Chart.js.
-- **⚡ Arquitectura Moderna**: Construido con Next.js 16 (App Router), Tailwind CSS 4 y Supabase.
-- **🔒 Seguridad Robusta**: Endpoint de ingesta protegido mediante API Key y Row Level Security (RLS) en base de datos.
-- **📱 Notificaciones Multi-canal**: Alertas automáticas vía Telegram cada vez que se detecta una oportunidad de valor.
-
-## 🛠️ Stack Tecnológico
-- **Frontend**: [Next.js](https://nextjs.org/), [Tailwind CSS 4](https://tailwindcss.com/)
-- **Base de Datos**: [Supabase](https://supabase.com/) (PostgreSQL)
-- **Automatización**: [n8n](https://n8n.io/)
-- **Gráficos**: [Chart.js](https://www.chartjs.org/)
-- **IA**: Anthropic Claude / OpenAI GPT-4
-
-## ⚙️ Configuración del Proyecto
-
-### Variables de Entorno
-Crea un archivo `.env.local` con las siguientes claves:
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=https://tu-proyecto.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=tu-anon-key
-SUPABASE_SERVICE_ROLE_KEY=tu-service-role-key
-ADMIN_API_KEY=tu-clave-secreta-para-n8n
-```
-
-### Inicialización de Base de Datos
-Ejecuta el script `supabase_schema.sql` en el SQL Editor de Supabase para crear las tablas y tipos necesarios.
-
-### Automatización (n8n)
-El workflow de n8n requiere:
-1. Conexión con **API-Sports** (Football V3).
-2. Credenciales de Telegram (Bot Token).
-3. Configuración del nodo **Basic LLM Chain** con el prompt de analista experto suministrado.
-
-## 📂 Estructura
-```text
-src/
-├── app/        # Rutas y API Endpoints
-├── components/ # Componentes UI (Neon-Dark Design)
-├── lib/        # Utilidades y cliente Supabase
-└── types/      # Definiciones de TypeScript
-```
-
-## 🤝 Contribuciones
-Este es un proyecto diseñado para la excelencia en el trading deportivo. Si tienes ideas para mejorar los modelos de predicción o la visualización de datos, ¡eres bienvenido!
+[![Next.js](https://img.shields.io/badge/Next.js-15-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Supabase](https://img.shields.io/badge/Supabase-Database-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
 ---
-Desarrollado con ❤️ para la comunidad de apostadores inteligentes.
+
+## 🚀 La Visión
+**PulsoOdds** no es solo un feed de picks. Es un ecosistema diseñado para el apostador profesional y disciplinado. Eliminamos el ruido emocional mediante el uso de modelos de lenguaje avanzados (LLMs) que escanean datos estadísticos brutos para encontrar **Valor Real** en los mercados.
+
+---
+
+## ✨ Características Premium
+
+### 🧬 IA & Análisis de Valor
+- **Expected Value (EV) Engine**: Localización automática de discrepancias entre cuotas de mercado y probabilidades reales.
+- **Deep Analysis Expansion**: Desglose detallado de cada pick incluyendo "Factores Clave" y "Alertas de Riesgo".
+- **Bot de Inteligencia**: Flujos autónomos integrados con **n8n** que analizan ligas internacionales 24/7.
+
+### 📐 UI/UX "Electric Dark"
+- **High-Density PickRow**: Un sistema de visualización tipo lista diseñado para procesar grandes volúmenes de datos sin fatiga visual.
+- **Neon Aesthetics**: Interfaz moderna con animaciones tipo *pulse* y efectos de cristalería (glassmorphism).
+- **Responsive Symmetry**: Alineación perfecta y optimizada para dispositivos móviles y escritorio.
+
+### 🔐 Infraestructura & Seguridad
+- **JWT & Supabase Auth**: Protección de nivel bancario para el panel de administración.
+- **Telegram Gateway**: Notificaciones instantáneas de picks con el sello "VENTAJA ELÉCTRICA".
+
+---
+
+## 🛠️ Stack Tecnológico Pro
+- **Core**: Next.js 15 (App Router)
+- **Styling**: Tailwind CSS 4.0 + Custom Neon Design System
+- **Backend**: Supabase (PostgreSQL + RLS)
+- **Logic**: n8n Automation Engine + API-Sports Integration
+- **LLM**: Claude 3.5 Sonnet / GPT-4o para el razonamiento probabilístico
+
+---
+
+## ⚙️ Instalación Local
+
+1. **Clonar y Dependencias**
+   ```bash
+   git clone https://github.com/tu-usuario/PulsoOdds.git
+   npm install
+   ```
+
+2. **Entorno Eléctrico**
+   Crea un `.env.local` con tus credenciales:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=https://tu-proyecto.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=tu-anon-key
+   ADMIN_API_KEY=tu-clave-para-n8n
+   ```
+
+3. **Ignición**
+   ```bash
+   npm run dev
+   ```
+
+---
+
+## 📂 Arquitectura de Carpetas
+```text
+src/
+├── app/          # App Router & Routes
+│   ├── (public)/ # Vistas para el usuario final
+│   └── (admin)/  # Panel de gestión protegido
+├── components/   # UI System (Atomic Design)
+├── lib/          # Utilities, Translators & Supabase Clients
+└── types/        # Definiciones estrictas de TypeScript
+```
+
+---
+
+## 🤝 Comunidad & Contacto
+Diseñado para la excelencia. Si eres desarrollador o tipster y quieres potenciar estos modelos, ¡escríbeme!
+
+---
+Desarrollado con la precisión de un algoritmo y el corazón de un hincha. **Bienvenido a PulsoOdds.** ⚡️🦾
