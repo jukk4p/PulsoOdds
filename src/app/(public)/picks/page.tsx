@@ -1,4 +1,5 @@
 import { PickCard } from "@/components/ui/PickCard";
+import { PickRow } from "@/components/ui/PickRow";
 import { supabase } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
@@ -45,9 +46,9 @@ export default async function PicksPage() {
         </div>
 
         {picks.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="glass-card neon-border rounded-2xl overflow-hidden divide-y divide-white/5">
             {picks.map((pick) => (
-              <PickCard key={pick.id} pick={pick} />
+              <PickRow key={pick.id} pick={pick} />
             ))}
           </div>
         ) : (
