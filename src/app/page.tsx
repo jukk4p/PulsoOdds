@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 import { PickCard } from "@/components/ui/PickCard";
+import { PickRow } from "@/components/ui/PickRow";
 import { calculateStats, cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
 import { TrendingUp, Target, Zap, Trophy } from "lucide-react";
@@ -95,9 +96,9 @@ export default async function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="glass-card neon-border rounded-2xl overflow-hidden divide-y divide-white/5">
             {recentPicks.map((pick) => (
-              <PickCard key={pick.id} pick={pick} />
+              <PickRow key={pick.id} pick={pick} />
             ))}
           </div>
         </div>
