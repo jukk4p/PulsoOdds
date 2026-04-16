@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { cn } from "@/lib/utils";
+import { cn, translateBettingTerm } from "@/lib/utils";
 import { Circle, ChevronDown, ChevronUp, Trophy, Zap, Activity } from "lucide-react";
 
 interface PickCardProps {
@@ -94,7 +94,7 @@ export function PickCard({ pick }: PickCardProps) {
              <div className="absolute inset-0 bg-neon-green/5 opacity-0 group-hover/item:opacity-100 transition-opacity" />
              <p className="text-[10px] text-white/30 uppercase font-black mb-1 relative z-10">Selección</p>
              <p className={cn("text-sm font-bold text-center line-clamp-1 relative z-10", pick.sport.toLowerCase() === 'basketball' ? 'text-orange-500' : 'text-neon-green')}>
-               {pick.pick}
+               {translateBettingTerm(pick.pick)}
              </p>
           </div>
         </div>
@@ -104,7 +104,7 @@ export function PickCard({ pick }: PickCardProps) {
           <div className="flex justify-between items-end">
              <div>
                 <p className="text-[10px] text-white/30 uppercase font-bold mb-1">Mercado</p>
-                <p className="text-sm text-white/80 font-medium">{pick.market}</p>
+                <p className="text-sm text-white/80 font-medium">{translateBettingTerm(pick.market)}</p>
              </div>
              <div className="text-right">
                 <p className="text-[10px] text-white/30 uppercase font-bold mb-1">Confianza</p>

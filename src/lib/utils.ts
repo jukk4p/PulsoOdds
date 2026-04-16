@@ -5,6 +5,57 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+/**
+ * Traduce términos de apuestas del inglés al español
+ */
+export function translateBettingTerm(term: string): string {
+  if (!term) return term;
+
+  const dictionary: Record<string, string> = {
+    // Mercados
+    "BTTS": "Ambos marcan",
+    "Both Teams To Score": "Ambos equipos marcan",
+    "1X2": "Resultado Final",
+    "Full Time": "Tiempo Completo",
+    "Over": "Más de",
+    "Under": "Menos de",
+    "Double Chance": "Doble Oportunidad",
+    "Draw No Bet": "Empate No Válido",
+    "Handicap": "Hándicap",
+    "Correct Score": "Resultado Exacto",
+    "Half Time": "Descanso",
+    "Corners": "Córners",
+    
+    // Selecciones
+    "Yes": "Sí",
+    "No": "No",
+    "Draw": "Empate",
+    "Home": "Local",
+    "Away": "Visitante",
+    "Over 0.5": "Más de 0.5",
+    "Over 1.5": "Más de 1.5",
+    "Over 2.5": "Más de 2.5",
+    "Over 3.5": "Más de 3.5",
+    "Under 0.5": "Menos de 0.5",
+    "Under 1.5": "Menos de 1.5",
+    "Under 2.5": "Menos de 2.5",
+    "Under 3.5": "Menos de 3.5",
+  };
+
+  // 1. Intento de traducción exacta
+  if (dictionary[term]) return dictionary[term];
+
+  // 2. Intento de traducción parcial (ej: "Over 2.5 goals" -> "Más de 2.5 goals")
+  let translated = term;
+  Object.entries(dictionary).forEach(([eng, esp]) => {
+     // Usamos regex con word boundaries para evitar traducir partes de palabras
+     const regex = new RegExp(`\\b${eng}\\b`, 'gi');
+     translated = translated.replace(regex, esp);
+  });
+
+  return translated;
+}
+
 export interface PickStats {
   totalStake: number;
   totalProfit: number;

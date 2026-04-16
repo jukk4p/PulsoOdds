@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { translateBettingTerm } from '@/lib/utils';
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || '',
@@ -48,6 +49,8 @@ export async function POST(req: NextRequest) {
       .insert([
         {
           ...body,
+          market: translateBettingTerm(body.market),
+          pick: translateBettingTerm(body.pick),
           source: 'n8n-bot',
           status: 'pending',
           published_at: new Date().toISOString(),
