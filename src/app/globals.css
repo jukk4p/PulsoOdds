@@ -38,4 +38,19 @@ body {
     color: #00FF87;
     text-shadow: 0 0 8px rgba(0, 255, 135, 0.5);
   }
+
+  .animate-pulse-neon {
+    animation: pulse-neon 2s infinite ease-in-out;
+  }
+
+  .border-glow {
+    box-shadow: 0 0 15px rgba(0, 255, 135, 0.1);
+    border: 1px solid rgba(0, 255, 135, 0.3);
+  }
+}
+
+@keyframes pulse-neon {
+  0% { text-shadow: 0 0 10px rgba(0, 255, 135, 0.4); opacity: 0.9; }
+  50% { text-shadow: 0 0 25px rgba(0, 255, 135, 0.7), 0 0 40px rgba(0, 255, 135, 0.3); opacity: 1; }
+  100% { text-shadow: 0 0 10px rgba(0, 255, 135, 0.4); opacity: 0.9; }
 }

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { cn, translateBettingTerm } from "@/lib/utils";
-import { Circle, ChevronDown, ChevronUp, Trophy, Zap, Activity } from "lucide-react";
+import { Circle, ChevronDown, ChevronUp, Trophy, Zap, Activity, Clock } from "lucide-react";
 
 interface PickCardProps {
   pick: {
@@ -58,6 +58,10 @@ export function PickCard({ pick }: PickCardProps) {
     }
   };
 
+  const matchDate = new Date(pick.match_date);
+  const formattedDate = matchDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' });
+  const formattedTime = matchDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false });
+
   return (
     <div className="glass-card neon-border rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,255,135,0.15)] group">
       <div className="p-6">
@@ -68,9 +72,14 @@ export function PickCard({ pick }: PickCardProps) {
               <config.icon className="h-3 w-3" />
               {config.label}
             </div>
-            <span className="text-[10px] font-medium text-white/40 uppercase tracking-widest">
-              {pick.competition}
-            </span>
+            <div className="flex items-center gap-2 text-[10px] font-medium text-white/40 uppercase tracking-widest">
+              <span>{pick.competition}</span>
+              <span className="h-1 w-1 rounded-full bg-white/20" />
+              <div className="flex items-center gap-1 text-white/60">
+                <Clock className="h-3 w-3" />
+                <span>{formattedDate} - {formattedTime}</span>
+              </div>
+            </div>
           </div>
           <div className={cn("flex items-center gap-1.5 px-2 py-1 rounded-full border text-[10px] font-bold uppercase tracking-wider", statusColors[pick.status as keyof typeof statusColors])}>
             <Circle className="h-1.5 w-1.5 fill-current" />

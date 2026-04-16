@@ -49,9 +49,9 @@ export default async function Home() {
                 <Zap className="h-3 w-3 fill-current" />
                 Plataforma Premium de Tipsters
               </div>
-              <h1 className="text-6xl md:text-8xl font-black leading-[0.9] tracking-tighter mb-8">
+              <h1 className="text-6xl md:text-8xl font-black leading-[0.9] tracking-tighter mb-8 italic">
                 TU VENTAJA <br />
-                <span className="text-neon-green">ELÉCTRICA</span>
+                <span className="text-neon-green animate-pulse-neon drop-shadow-[0_0_15px_rgba(0,255,135,0.4)]">ELÉCTRICA</span>
               </h1>
               <p className="text-xl text-white/50 max-w-lg mb-10 leading-relaxed">
                 Análisis deportivo de alto impacto con datos precisos y rentabilidad verificada. 
@@ -111,13 +111,18 @@ export default async function Home() {
 
 function StatCard({ label, value, icon, color }: { label: string, value: any, icon: any, color: 'neon' | 'white' }) {
   return (
-    <div className="glass-card rounded-2xl p-6 border border-white/5">
+    <div className={cn(
+      "glass-card rounded-2xl p-6 border transition-all duration-300 hover:scale-[1.02]",
+      color === 'neon' ? "border-neon-green/30 hover:shadow-[0_0_20px_rgba(0,255,135,0.1)]" : "border-white/10"
+    )}>
       <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center mb-4 transition-colors", 
         color === 'neon' ? "bg-neon-green/20 text-neon-green" : "bg-white/10 text-white")}>
         {icon}
       </div>
       <p className="text-xs text-white/40 uppercase tracking-widest font-bold mb-1">{label}</p>
-      <p className="text-4xl font-black text-white">{value}</p>
+      <p className={cn("text-4xl font-black transition-all", color === 'neon' ? "text-neon-green text-neon" : "text-white")}>
+        {value}
+      </p>
     </div>
   );
 }
