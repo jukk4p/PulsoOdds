@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -34,23 +36,11 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-deep-black text-white">
+        <Navbar />
         <main className="flex-1">
           {children}
         </main>
-        <footer className="border-t border-white/5 py-12 px-6">
-          <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-            <div className="text-xl font-black italic tracking-tighter">
-              PULSO<span className="text-neon-green">ODDS</span>
-            </div>
-            <p className="text-white/40 text-sm">
-              © 2026 PulsoOdds. Juega con responsabilidad. +18
-            </p>
-            <div className="flex gap-6 text-white/40 text-sm">
-              <a href="#" className="hover:text-white">Términos</a>
-              <a href="#" className="hover:text-white">Privacidad</a>
-            </div>
-          </div>
-        </footer>
+        <Footer />
       </body>
     </html>
   );

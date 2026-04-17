@@ -11,7 +11,7 @@
 }
 
 :root {
-  --background: #0A0A0F;
+  --background: #0d1b2a;
   --foreground: #FFFFFF;
 }
 
@@ -46,6 +46,17 @@ body {
   .border-glow {
     box-shadow: 0 0 15px rgba(0, 255, 135, 0.1);
     border: 1px solid rgba(0, 255, 135, 0.3);
+  }
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
   }
 }
 

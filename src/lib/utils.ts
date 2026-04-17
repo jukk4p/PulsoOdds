@@ -25,6 +25,15 @@ export function translateBettingTerm(term: string): string {
     "Correct Score": "Resultado Exacto",
     "Half Time": "Descanso",
     "Corners": "Córners",
+
+    // Frases largas que ensucian la UI
+    "AMBOS EQUIPOS MARCARÁN AL MENOS UN GOL": "Ambos marcan",
+    "AMBOS EQUIPOS MARCARAN": "Ambos marcan",
+    "MÁS DE 2.5 GOLES EN EL PARTIDO": "Más de 2.5 goles",
+    "MENOS DE 2.5 GOLES EN EL PARTIDO": "Menos de 2.5 goles",
+    "VICTORIA LOCAL": "Gana Local",
+    "VICTORIA VISITANTE": "Gana Visitante",
+    "INTER GANARÁ EN LA PRIMERA PARTE": "Inter gana 1ª Mitad",
     
     // Selecciones
     "Yes": "Sí",
@@ -102,4 +111,54 @@ export function calculateStats(picks: any[]): PickStats {
   }
 
   return { totalStake, totalProfit, roi, winRate, currentStreak };
+}
+
+/**
+ * Limpia y normaliza el nombre de un equipo (p.ej. "FC Bayern Munich" -> "Bayern Múnich")
+ */
+export function formatTeamName(name: string): string {
+  if (!name) return name;
+
+  let formatted = name;
+
+  // 1. Diccionario de nombres específicos (Traducciones y simplificaciones pro)
+  const translations: Record<string, string> = {
+    "Munich": "Múnich",
+    "Milan": "Milán",
+    "Cologne": "Colonia",
+    "Köln": "Colonia",
+    "Sporting CP": "Sporting Portugal",
+    "Inter Milan": "Inter",
+    "Inter Milano": "Inter",
+    "Athletic Club": "Athletic Bilbao",
+  };
+
+  // 2. Quitar prefijos y sufijos comunes de clubes que ensucian la UI
+  const noise = [
+    /\bFC\b/gi, /\bCF\b/gi, /\bSSC\b/gi, /\bAC\b/gi, /\bAS\b/gi, /\bUD\b/gi, 
+    /\bCD\b/gi, /\bRC\b/gi, /\b1\.\s/g, /\bSC\b/gi, /\bAFC\b/gi
+  ];
+  
+  noise.forEach(pattern => {
+    formatted = formatted.replace(pattern, '');
+  });
+
+  // 3. Aplicar traducciones
+  Object.entries(translations).forEach(([eng, esp]) => {
+    const regex = new RegExp(`\\b${eng}\\b`, 'gi');
+    formatted = formatted.replace(regex, esp);
+  });
+
+  return formatted.trim();
+}
+
+/**
+ * Formatea un encuentro completo (p.ej. "FC St. Pauli vs 1. FC Köln" -> "St. Pauli vs Colonia")
+ */
+export function formatMatchName(match: string): string {
+  if (!match) return match;
+  if (!match.toLowerCase().includes(' vs ')) return formatTeamName(match);
+
+  const [home, away] = match.split(/\s+vs\s+/i);
+  return `${formatTeamName(home)} vs ${formatTeamName(away)}`;
 }

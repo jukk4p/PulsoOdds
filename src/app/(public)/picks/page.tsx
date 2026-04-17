@@ -1,5 +1,4 @@
-import { PickCard } from "@/components/ui/PickCard";
-import { PickRow } from "@/components/ui/PickRow";
+import { PicksExplorer } from "@/components/picks/PicksExplorer";
 import { supabase } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
@@ -36,26 +35,7 @@ export default async function PicksPage() {
       </header>
 
       <div className="max-w-7xl mx-auto px-6">
-        {/* Filters Placeholder */}
-        <div className="flex gap-4 mb-10 overflow-x-auto pb-4 no-scrollbar">
-          {['Todos', 'Fútbol', 'Tenis', 'Baloncesto', 'E-Sports'].map((filter) => (
-            <button key={filter} className="px-5 py-2 rounded-full border border-white/10 text-white/70 text-sm hover:border-neon-green hover:text-white transition-all whitespace-nowrap">
-              {filter}
-            </button>
-          ))}
-        </div>
-
-        {picks.length > 0 ? (
-          <div className="glass-card neon-border rounded-2xl overflow-hidden divide-y divide-white/5">
-            {picks.map((pick) => (
-              <PickRow key={pick.id} pick={pick} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-20 glass-card rounded-2xl border border-white/5">
-            <p className="text-white/40 italic">No hay picks disponibles en este momento. ¡Vuelve pronto!</p>
-          </div>
-        )}
+        <PicksExplorer initialPicks={picks} />
       </div>
     </div>
   );
