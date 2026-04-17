@@ -51,10 +51,9 @@ export function PicksExplorer({ initialPicks }: PicksExplorerProps) {
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       result = result.filter(p => 
-        (p.home_team?.toLowerCase().includes(q) || "") ||
-        (p.away_team?.toLowerCase().includes(q) || "") ||
-        (p.competition?.toLowerCase().includes(q) || "") ||
-        (p.pick?.toLowerCase().includes(q) || "")
+        (p.match?.toLowerCase().includes(q) || false) ||
+        (p.competition?.toLowerCase().includes(q) || false) ||
+        (p.pick?.toLowerCase().includes(q) || false)
       );
     }
     
