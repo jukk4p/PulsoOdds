@@ -81,33 +81,43 @@ export default async function StatsPage() {
             <h2 className="text-xl font-bold text-white">Rendimiento por Deporte</h2>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-left">
+            <table className="w-full">
               <thead>
-                <tr className="text-xs uppercase text-white/40 tracking-widest border-b border-white/5">
-                  <th className="pb-4 font-bold">Deporte</th>
-                  <th className="pb-4 font-bold">Picks</th>
-                  <th className="pb-4 font-bold">Inversión</th>
-                  <th className="pb-4 font-bold">Beneficio</th>
-                  <th className="pb-4 font-bold text-right">ROI</th>
+                <tr className="text-[10px] uppercase text-white/20 tracking-[0.2em] border-b border-white/5">
+                  <th className="pb-4 font-black text-left">Deporte</th>
+                  <th className="pb-4 font-black text-center">Picks</th>
+                  <th className="pb-4 font-black text-center">Inversión</th>
+                  <th className="pb-4 font-black text-center">Beneficio</th>
+                  <th className="pb-4 font-black text-right">ROI</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
-                {sportsData.map(([sport, d]: [string, any]) => (
-                  <tr key={sport} className="group">
-                    <td className="py-4 font-bold text-white uppercase text-sm">{sport}</td>
-                    <td className="py-4 text-white/60 text-sm">{d.count}</td>
-                    <td className="py-4 text-white/60 text-sm">{d.stake.toFixed(1)}u</td>
-                    <td className={cn("py-4 text-sm font-bold", d.profit >= 0 ? "text-neon-green" : "text-red-500")}>
-                      {d.profit > 0 ? '+' : ''}{d.profit.toFixed(1)}u
-                    </td>
-                    <td className="py-4 text-right">
-                      <span className={cn("px-3 py-1 rounded-full text-[10px] font-black", 
-                        (d.profit / d.stake * 100) >= 0 ? "bg-neon-green/10 text-neon-green" : "bg-red-500/10 text-red-500")}>
-                        {(d.profit / d.stake * 100).toFixed(1)}%
-                      </span>
-                    </td>
-                  </tr>
-                ))}
+                {sportsData.map(([sport, d]: [string, any]) => {
+                  const roiValue = (d.profit / d.stake * 100);
+                  return (
+                    <tr key={sport} className="group hover:bg-white/[0.02] transition-colors">
+                      <td className="py-5 font-black text-white uppercase text-sm tracking-tight">{sport}</td>
+                      <td className="py-5 text-center text-white/60 text-sm font-medium">{d.count}</td>
+                      <td className="py-5 text-center text-white/60 text-sm font-medium">{d.stake.toFixed(1)}u</td>
+                      <td className={cn(
+                        "py-5 text-center text-sm font-black italic", 
+                        d.profit >= 0 ? "text-neon-green" : "text-red-500"
+                      )}>
+                        {d.profit > 0 ? '+' : ''}{d.profit.toFixed(1)}u
+                      </td>
+                      <td className="py-5 text-right">
+                        <span className={cn(
+                          "inline-flex items-center justify-center px-3 py-1.5 rounded-lg text-[10px] font-black min-w-[60px] border",
+                          roiValue >= 0 
+                            ? "bg-neon-green/10 text-neon-green border-neon-green/20 shadow-[0_0_10px_rgba(0,230,118,0.1)]" 
+                            : "bg-red-500/10 text-red-500 border-red-500/20"
+                        )}>
+                          {roiValue > 0 ? '+' : ''}{roiValue.toFixed(1)}%
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

@@ -84,6 +84,12 @@ export default function AdminPicksPage() {
                   </div>
                 </div>
 
+                {/* Detalle del Mercado y Pronóstico */}
+                <div className="bg-white/5 rounded-xl p-3 border border-white/5">
+                  <p className="text-[10px] text-white/30 uppercase font-black mb-0.5">{pick.market}</p>
+                  <p className="text-neon-green font-black uppercase text-sm">{pick.pick}</p>
+                </div>
+
                 <div className="flex items-center justify-between gap-4">
                   <span className={cn(
                     "px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest",

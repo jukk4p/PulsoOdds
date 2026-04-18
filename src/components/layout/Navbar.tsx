@@ -76,7 +76,7 @@ export function Navbar() {
         {/* Mobile Toggle */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden h-10 w-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-white"
+          className="relative z-50 md:hidden h-10 w-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-white transition-transform active:scale-95"
         >
           {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
@@ -85,35 +85,59 @@ export function Navbar() {
       {/* Mobile Menu Overlay */}
       <div
         className={cn(
-          "fixed inset-0 top-[72px] bg-deep-black/95 backdrop-blur-2xl z-40 md:hidden transition-all duration-500 ease-in-out px-6 pt-12",
-          isOpen ? "opacity-100 translate-x-0" : "opacity-0 translate-x-full"
+          "fixed inset-0 bg-black/98 backdrop-blur-2xl z-40 md:hidden transition-all duration-300 ease-in-out px-8 pt-24 pb-12 flex flex-col justify-between",
+          isOpen ? "opacity-100 translate-x-0" : "opacity-0 translate-x-full pointer-events-none"
         )}
       >
-        <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-6">
+          <div className="mb-4">
+            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20">Navegación</span>
+            <div className="h-[1px] w-12 bg-neon-green mt-2" />
+          </div>
+          
           {navLinks.map((link, i) => (
             <Link
               key={link.name}
               href={link.href}
               className={cn(
-                "text-3xl font-black uppercase tracking-tighter flex items-center justify-between group",
-                pathname === link.href ? "text-neon-green" : "text-white"
+                "text-4xl font-black uppercase tracking-tighter flex items-center justify-between group transition-all duration-300",
+                pathname === link.href ? "text-neon-green" : "text-white hover:text-neon-green"
               )}
-              style={{ transitionDelay: `${i * 100}ms` }}
+              style={{ 
+                transitionDelay: isOpen ? `${i * 100}ms` : "0ms",
+                transform: isOpen ? "translateX(0)" : "translateX(20px)"
+              }}
             >
-              <span>{link.name}</span>
-              <link.icon className={cn("h-8 w-8", pathname === link.href ? "text-neon-green" : "text-white/10")} />
+              <div className="flex items-center gap-4">
+                <span className="text-sm font-bold text-white/10 group-hover:text-neon-green/40 duration-300">0{i + 1}</span>
+                <span>{link.name}</span>
+              </div>
+              <link.icon className={cn("h-6 w-6 transition-transform duration-300 group-hover:scale-125", pathname === link.href ? "text-neon-green" : "text-white/20")} />
             </Link>
           ))}
           
           <div className="mt-8 pt-8 border-t border-white/5">
             <Link
               href="/admin"
-              className="flex items-center justify-between text-white/40 font-bold uppercase tracking-widest text-sm"
+              className="flex items-center justify-between px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-white/60 font-black uppercase tracking-widest text-xs hover:bg-neon-green hover:text-black hover:border-neon-green transition-all"
             >
-              Zona Privada
-              <Lock className="h-5 w-5" />
+              <div className="flex items-center gap-3">
+                <Lock className="h-4 w-4" />
+                Admin / Zona Privada
+              </div>
             </Link>
           </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex items-center gap-4">
+             <div className="h-[1px] flex-1 bg-white/5" />
+             <span className="text-[10px] text-white/20 uppercase font-bold tracking-[0.2em]">Siguenos</span>
+             <div className="h-[1px] flex-1 bg-white/5" />
+          </div>
+          <p className="text-[10px] text-white/30 text-center uppercase tracking-widest font-bold">
+            © 2026 PULSOODDS — PREDICTIVE ANALYTICS
+          </p>
         </div>
 
         {/* Decorative Grid for Mobile Menu */}

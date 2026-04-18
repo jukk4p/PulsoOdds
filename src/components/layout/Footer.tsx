@@ -7,7 +7,7 @@ export function Footer() {
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           {/* Brand Col */}
-          <div className="md:col-span-2 space-y-6">
+          <div className="md:col-span-2 space-y-6 flex flex-col items-center md:items-start text-center md:text-left">
             <Link href="/" className="inline-flex items-center gap-2 group">
               <div className="bg-neon-green p-1.5 rounded-lg rotate-12 group-hover:rotate-0 transition-all">
                 <Zap className="h-5 w-5 text-black fill-black" />
@@ -39,9 +39,9 @@ export function Footer() {
           </div>
 
           {/* Nav Col */}
-          <div>
+          <div className="flex flex-col items-center md:items-start">
             <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-6">Navegación</h4>
-            <ul className="space-y-4">
+            <ul className="space-y-4 text-center md:text-left">
               <FooterLink href="/">Página de Inicio</FooterLink>
               <FooterLink href="/picks">Pronósticos</FooterLink>
               <FooterLink href="/admin/picks">Área de Admin</FooterLink>
@@ -49,9 +49,9 @@ export function Footer() {
           </div>
 
           {/* Legal Col */}
-          <div>
+          <div className="flex flex-col items-center md:items-start">
             <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-6">Legal</h4>
-            <ul className="space-y-4">
+            <ul className="space-y-4 text-center md:text-left">
               <FooterLink href="/terminos-y-condiciones">Términos y Condiciones</FooterLink>
               <FooterLink href="/politica-de-privacidad">Política de Privacidad</FooterLink>
               <FooterLink href="/politica-de-cookies">Política de Cookies</FooterLink>

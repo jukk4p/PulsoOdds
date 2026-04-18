@@ -13,7 +13,7 @@ export function translateBettingTerm(term: string): string {
 
   const dictionary: Record<string, string> = {
     // Mercados
-    "BTTS": "Ambos marcan",
+    "BTTS": "Ambos equipos marcan",
     "Both Teams To Score": "Ambos equipos marcan",
     "1X2": "Resultado Final",
     "Full Time": "Tiempo Completo",
@@ -27,12 +27,16 @@ export function translateBettingTerm(term: string): string {
     "Corners": "Córners",
 
     // Frases largas que ensucian la UI
-    "AMBOS EQUIPOS MARCARÁN AL MENOS UN GOL": "Ambos marcan",
-    "AMBOS EQUIPOS MARCARAN": "Ambos marcan",
+    "AMBOS EQUIPOS MARCARÁN AL MENOS UN GOL": "Ambos equipos marcan",
+    "AMBOS EQUIPOS MARCARAN": "Ambos equipos marcan",
+    "AMBOS EQUIPOS ANOTAN AL MENOS UN GOL": "Ambos equipos marcan",
+    "AMBOS EQUIPOS ANOTARÁN EN EL PARTIDO": "Ambos equipos marcan",
+    "AMBOS EQUIPOS ANOTAN EN EL PARTIDO": "Ambos equipos marcan",
     "MÁS DE 2.5 GOLES EN EL PARTIDO": "Más de 2.5 goles",
     "MENOS DE 2.5 GOLES EN EL PARTIDO": "Menos de 2.5 goles",
     "VICTORIA LOCAL": "Gana Local",
     "VICTORIA VISITANTE": "Gana Visitante",
+    "AMBOS EQUIPOS HAN MOSTRADO PARIDAD EN ENCUENTROS ANTERIORES.": "Empate",
     "INTER GANARÁ EN LA PRIMERA PARTE": "Inter gana 1ª Mitad",
     
     // Selecciones

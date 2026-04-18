@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { cn, translateBettingTerm, formatTeamName } from "@/lib/utils";
-import { ChevronDown, ChevronUp, Zap, List, AlertTriangle, TrendingUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Zap, List, AlertTriangle, TrendingUp, CheckCircle2, XCircle, Clock, MinusCircle } from "lucide-react";
 
 interface PickRowProps {
   pick: {
@@ -58,6 +58,20 @@ export function PickRow({ pick }: PickRowProps) {
     void: "text-gray-400 bg-gray-400/10 border-gray-400/20",
   };
 
+  const statusIcons: Record<string, React.ReactNode> = {
+    pending: <Clock size={16} className="shrink-0" />,
+    won: <CheckCircle2 size={16} className="shrink-0" />,
+    lost: <XCircle size={16} className="shrink-0" />,
+    void: <MinusCircle size={16} className="shrink-0" />,
+  };
+
+  const statusLabels: Record<string, string> = {
+    pending: "PENDIENTE",
+    won: "GANADA",
+    lost: "PERDIDA",
+    void: "NULA",
+  };
+
   return (
     <div className="mb-3">
       {/* Main Card */}
@@ -67,113 +81,148 @@ export function PickRow({ pick }: PickRowProps) {
           "hover:border-[#00e676]/30 hover:shadow-[0_0_20px_rgba(0,230,118,0.05)]"
         )}
       >
-        <div className="flex flex-col md:flex-row md:items-center py-4 px-5 md:px-6 gap-4 md:gap-0">
-          
-          {/* Column 1: Date/Time (Desktop: Fixed Width) */}
-          <div className="flex flex-row md:flex-col items-center justify-between md:justify-center md:w-[135px] shrink-0 border-b md:border-b-0 md:border-r border-white/5 pb-2 md:pb-0 md:pr-4">
-            <span className="text-[10px] uppercase font-bold text-white/40 tracking-wider">
-              {formattedDay}
-            </span>
-            <span className="text-sm font-black text-[#00e676]">
-              {formattedTime.replace(/\s*CET\s*/gi, '')} <span className="text-[10px] text-white/20 ml-0.5">CET</span>
-            </span>
-            {/* League Logo (Badge) - Standardized Size */}
-            {pick.league_logo && (
-              <div className="mt-2 flex items-center gap-2" title={pick.competition}>
-                <div className="shrink-0 h-9 w-9 flex items-center justify-center bg-white/5 rounded-lg border border-white/5 overflow-hidden">
-                  <img 
-                    src={pick.league_logo} 
-                    alt={pick.competition} 
-                    className="h-6 w-6 object-contain drop-shadow-[0_0_5px_rgba(255,255,255,0.2)] transition-transform hover:scale-110" 
-                  />
+          <div className="flex flex-col md:flex-row md:items-center pt-9 pb-4 md:pt-11 md:pb-5 px-5 md:px-6 gap-4 md:gap-0 relative">
+            {/* Column 1: League (Fixed width) */}
+            <div className="hidden md:flex flex-col items-center justify-center w-[70px] shrink-0 md:border-r border-white/5 pr-4">
+               {pick.league_logo && (
+                 <div className="h-10 w-10 flex items-center justify-center bg-white/5 rounded-xl border border-white/10 overflow-hidden shadow-inner" title={pick.competition}>
+                   <img src={pick.league_logo} alt={pick.competition} className="h-7 w-7 object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.15)]" />
+                 </div>
+               )}
+            </div>
+
+            {/* Column 2: Date & Teams Area */}
+            <div className="hidden md:flex flex-[4] flex-col items-center justify-center px-6 border-r border-white/5">
+              {/* Floating Header: Date & Time (Doesn't push the center) */}
+              <div className="absolute top-3 left-0 right-0 md:left-auto md:right-auto md:w-full flex items-center justify-center gap-3 opacity-60 pointer-events-none">
+                 <span className="text-[10px] uppercase font-bold text-white/30 tracking-[0.2em]">{formattedDay}</span>
+                 <div className="h-[1px] w-4 bg-white/10" />
+                 <span className="text-xs font-black text-[#00e676] tracking-wider">{formattedTime.replace(/\s*CET\s*/gi, '')}</span>
+                 <div className="h-[1px] w-4 bg-white/10" />
+                 <span className="text-[9px] text-white/30 font-black uppercase tracking-[0.1em]">{pick.competition}</span>
+              </div>
+
+              <div className="flex items-center justify-center gap-4 w-full">
+                {/* Home */}
+                <div className="flex flex-1 items-center justify-end gap-3 min-w-0">
+                   <span className="text-sm font-bold text-white truncate text-right uppercase tracking-tight">{homeName}</span>
+                   {pick.home_logo && (
+                     <div className="shrink-0 h-8 w-8 flex items-center justify-center bg-white/5 rounded-lg border border-white/10 overflow-hidden">
+                       <img src={pick.home_logo} alt="" className="h-5 w-5 object-contain drop-shadow-[0_0_5px_rgba(255,255,255,0.2)]" />
+                     </div>
+                   )}
                 </div>
-                <div className="md:hidden flex flex-col">
-                  <span className="text-[10px] text-white/50 font-black leading-none">{pick.competition}</span>
+
+                {/* VS Badge */}
+                <div className="flex flex-col items-center shrink-0">
+                   <span className="text-[9px] font-black italic text-[#00e676] bg-[#00e676]/10 px-2 py-0.5 rounded-md border border-[#00e676]/20">VS</span>
+                </div>
+
+                {/* Away */}
+                <div className="flex flex-1 items-center justify-start gap-3 min-w-0">
+                   {pick.away_logo && (
+                     <div className="shrink-0 h-8 w-8 flex items-center justify-center bg-white/5 rounded-lg border border-white/10 overflow-hidden">
+                       <img src={pick.away_logo} alt="" className="h-5 w-5 object-contain drop-shadow-[0_0_5px_rgba(255,255,255,0.2)]" />
+                     </div>
+                   )}
+                   <span className="text-sm font-bold text-white truncate text-left uppercase tracking-tight">{awayName}</span>
                 </div>
               </div>
-            )}
-          </div>
+            </div>
 
-          {/* Column 2: Home Team (Desktop: Flex-1, Right Aligned) */}
-          <div className="hidden md:flex flex-1 items-center justify-end gap-3 px-4 min-w-0 md:pt-10">
-             <span className="text-base font-bold text-white truncate text-right">
-               {homeName}
-             </span>
-             {pick.home_logo && (
-               <div className="shrink-0 h-9 w-9 flex items-center justify-center bg-white/5 rounded-lg border border-white/5 overflow-hidden">
-                 <img src={pick.home_logo} alt="" className="h-6 w-6 object-contain drop-shadow-[0_0_5px_rgba(255,255,255,0.2)]" />
+            {/* MOBILE ONLY: Match Row */}
+            <div className="md:hidden flex flex-col items-center py-6 bg-white/[0.02] rounded-xl my-2 relative">
+               {/* Mobile Header: League & Time */}
+               <div className="flex flex-col items-center gap-2 mb-6">
+                  {pick.league_logo && (
+                    <div className="h-10 w-10 flex items-center justify-center bg-white/5 rounded-xl border border-white/10 overflow-hidden shadow-inner">
+                      <img src={pick.league_logo} alt={pick.competition} className="h-7 w-7 object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.15)]" />
+                    </div>
+                  )}
+                  <div className="flex flex-col items-center">
+                    <span className="text-[9px] text-white/30 uppercase font-bold tracking-[0.2em]">{pick.competition}</span>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-[10px] font-bold text-[#00e676]">{formattedDay}</span>
+                      <div className="w-1 h-1 rounded-full bg-white/10" />
+                      <span className="text-[10px] font-bold text-[#00e676]">{formattedTime.replace(/\s*CET\s*/gi, '')}</span>
+                    </div>
+                  </div>
                </div>
-             )}
-          </div>
 
-          {/* Column 3: VS Center (Desktop: Fixed Width) */}
-          <div className="hidden md:flex flex-col items-center justify-center w-[80px] shrink-0 md:pt-10">
-            <span className="text-[11px] font-black italic text-white/20">VS</span>
-            <span className="text-[9px] text-white/30 uppercase font-black truncate max-w-full text-center mt-0.5 whitespace-nowrap">
-              {pick.competition}
-            </span>
-          </div>
-
-          {/* Column 4: Away Team (Desktop: Flex-1, Left Aligned) */}
-          <div className="hidden md:flex flex-1 items-center justify-start gap-3 px-4 min-w-0 md:pt-10">
-             {pick.away_logo && (
-               <div className="shrink-0 h-9 w-9 flex items-center justify-center bg-white/5 rounded-lg border border-white/5 overflow-hidden">
-                 <img src={pick.away_logo} alt="" className="h-6 w-6 object-contain drop-shadow-[0_0_5px_rgba(255,255,255,0.2)]" />
+               <div className="flex items-center gap-8 mb-4">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-[#00e676]/15 blur-2xl rounded-full scale-150 opacity-50" />
+                    {pick.home_logo && <img src={pick.home_logo} alt="" className="h-12 w-12 object-contain relative z-10 drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]" />}
+                  </div>
+                  <div className="flex flex-col items-center justify-center">
+                    <span className="text-[10px] text-[#00e676] font-black italic uppercase tracking-[0.2em] bg-[#00e676]/10 px-3 py-1 rounded-full border border-[#00e676]/20 shadow-[0_0_15px_rgba(0,230,118,0.1)]">VS</span>
+                  </div>
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-[#00e676]/15 blur-2xl rounded-full scale-150 opacity-50" />
+                    {pick.away_logo && <img src={pick.away_logo} alt="" className="h-12 w-12 object-contain relative z-10 drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]" />}
+                  </div>
                </div>
-             )}
-             <span className="text-base font-bold text-white truncate text-left">
-               {awayName}
-             </span>
-          </div>
+               
+               <div className="flex flex-col items-center px-4 w-full">
+                 <h4 className="text-xl font-black text-white text-center leading-none uppercase italic tracking-tighter">
+                   {homeName}
+                 </h4>
+                 <div className="flex items-center gap-3 my-3 w-full justify-center">
+                   <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-white/10" />
+                   <div className="w-1.5 h-1.5 rounded-full border border-white/20" />
+                   <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-white/10" />
+                 </div>
+                 <h4 className="text-xl font-black text-white text-center leading-none uppercase italic tracking-tighter">
+                   {awayName}
+                 </h4>
+               </div>
+            </div>
 
-          {/* MOBILE ONLY: Match Row */}
-          <div className="md:hidden flex flex-col items-center py-1">
-             <div className="flex items-center gap-3 mb-2">
-                {pick.home_logo && <img src={pick.home_logo} alt="" className="h-5 w-5 object-contain" />}
-                <span className="text-[10px] text-white/20 font-black italic uppercase">vs</span>
-                {pick.away_logo && <img src={pick.away_logo} alt="" className="h-5 w-5 object-contain" />}
-             </div>
-             <h4 className="text-sm font-bold text-white text-center">
-               {homeName} <span className="text-white/20 mx-1">vs</span> {awayName}
-             </h4>
-             <span className="text-[9px] text-white/30 uppercase font-bold mt-1 tracking-widest">{pick.competition}</span>
-          </div>
+            {/* Column 5: Betting Description */}
+            <div className="flex flex-[2] flex-col items-center justify-center px-4 py-4 md:py-0 border-y md:border-y-0 md:border-r border-white/5 text-center">
+               <span className="text-xs font-bold uppercase text-[#00e676] leading-tight drop-shadow-[0_0_8px_rgba(0,230,118,0.15)]">
+                 {translateBettingTerm(pick.pick)}
+               </span>
+            </div>
 
-          {/* Column 5: Betting Description (Center Column) */}
-          <div className="flex-1 flex flex-col items-center justify-center px-4 py-2 md:py-0 border-y md:border-y-0 border-white/5 md:pt-11">
-             <span className="text-[10px] text-white/30 uppercase font-bold mb-0.5">
-               {translateBettingTerm(pick.market)}
-             </span>
-             <span className="text-xs md:text-sm font-black uppercase text-[#00e676] text-center leading-tight">
-               {translateBettingTerm(pick.pick)}
-             </span>
-          </div>
+            {/* Column 6: Odds */}
+            <div className="flex items-center justify-center md:w-[110px] shrink-0 md:border-r border-white/5 py-4 md:py-0">
+               <div className="bg-[#00e676]/10 border border-[#00e676]/20 px-3 py-1.5 rounded-lg flex flex-col items-center">
+                  <span className="text-[8px] text-[#00e676]/60 font-black tracking-widest uppercase">Cuota</span>
+                  <span className="text-base font-black text-[#00e676] italic">@{pick.odds.toFixed(2)}</span>
+               </div>
+            </div>
 
-          {/* Column 6: Odds (Desktop: Fixed width) */}
-          <div className="flex items-center justify-center md:w-[100px] shrink-0 md:pt-12">
-             <div className="bg-[#00e676]/10 border border-[#00e676]/20 px-3 py-1.5 rounded-lg flex flex-col items-center">
-                <span className="text-[8px] text-[#00e676]/60 font-black tracking-tighter uppercase">Cuota</span>
-                <span className="text-sm font-black text-[#00e676] italic">@{pick.odds.toFixed(2)}</span>
-             </div>
+            {/* Column 7: Actions & Badge */}
+            <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-[200px] shrink-0 pt-4 md:pt-0 px-2 md:pl-6">
+               {/* Interactive Badge */}
+               <div className="group relative flex items-center justify-center">
+                 <div className={cn(
+                   "flex items-center justify-center h-10 w-10 md:group-hover:w-32 rounded-full md:rounded-xl border transition-all duration-300 ease-out overflow-hidden cursor-help",
+                   pick.status === 'pending' ? "text-slate-900 bg-[#c9a84c] border-[#c9a84c] shadow-[0_0_15px_rgba(201,168,76,0.2)]" : statusStyles[pick.status as keyof typeof statusStyles]
+                 )}>
+                    <div className="flex items-center gap-2 px-3">
+                      {statusIcons[pick.status as keyof typeof statusIcons] || statusIcons.pending}
+                      <span className="hidden md:group-hover:block text-[10px] font-black uppercase tracking-widest whitespace-nowrap animate-in fade-in slide-in-from-left-2 duration-300">
+                        {statusLabels[pick.status as keyof typeof statusLabels]}
+                      </span>
+                    </div>
+                 </div>
+                 
+                 {/* Mobile Tooltip indicator or just simpler for mobile */}
+                 <span className="md:hidden absolute -top-8 left-1/2 -translate-x-1/2 bg-black/90 text-[8px] font-bold px-2 py-1 rounded border border-white/10 opacity-0 group-active:opacity-100 transition-opacity">
+                   {statusLabels[pick.status as keyof typeof statusLabels]}
+                 </span>
+               </div>
+               
+               <button 
+                 onClick={() => setIsExpanded(!isExpanded)}
+                 className="h-10 w-10 flex items-center justify-center rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-all active:scale-90 text-white/40"
+               >
+                  {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+               </button>
+            </div>
           </div>
-
-          {/* Column 7: Actions (Desktop: Status + Chevron) */}
-          <div className="flex items-center justify-center md:justify-end gap-3 md:w-[160px] shrink-0 pt-2 md:pt-12">
-             <div className={cn(
-               "flex items-center justify-center px-4 py-2 rounded-lg border text-[10px] font-black uppercase tracking-wider min-w-[100px]",
-               pick.status === 'pending' ? "text-black bg-[#c9a84c] border-[#c9a84c]" : statusStyles[pick.status as keyof typeof statusStyles]
-             )}>
-                {pick.status === 'pending' ? 'PENDIENTE' : pick.status === 'won' ? 'GANADA' : 'PERDIDA'}
-             </div>
-             
-             <button 
-               onClick={() => setIsExpanded(!isExpanded)}
-               className="h-9 w-9 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 transition-colors text-white/50"
-             >
-                {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-             </button>
-          </div>
-        </div>
 
         {/* Expanded Analysis */}
         {isExpanded && (

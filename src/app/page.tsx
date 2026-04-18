@@ -12,6 +12,7 @@ async function getData() {
   const { data: picks, error } = await supabase
     .from('picks')
     .select('*')
+    .eq('status', 'pending')
     .order('created_at', { ascending: false })
     .limit(3);
 
