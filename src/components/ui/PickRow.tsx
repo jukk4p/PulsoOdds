@@ -97,49 +97,51 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
           isSelected && "border-[#00e676]/50 shadow-[0_0_25px_rgba(0,255,135,0.15)] bg-slate-900/80"
         )}
       >
-        {/* Top Header Bar: Arquitectura de 3 columnas para centrado absoluto de la hora */}
-        <div className="hidden md:flex items-center px-6 md:px-8 pt-3.5 pb-1 gap-4 md:gap-6 relative z-10 overflow-hidden">
-          <div className="w-[50px] shrink-0" /> {/* League spacer */}
+        {/* Header Grid: Calco exacto de la fila de abajo */}
+        <div className="hidden md:flex items-center px-6 md:px-8 pt-3 pb-0 gap-4 md:gap-6 relative z-10">
+          {/* C1: League Space */}
+          <div className="w-[50px] shrink-0 h-8" />
           
-          <div className="flex-[5.5] flex items-center justify-center opacity-50">
-             {/* Left side: Date (Takes half of the remaining space) */}
-             <div className="flex-1 flex items-center justify-end gap-3 min-w-0">
-                <span className="text-[10px] uppercase font-bold text-white tracking-[0.2em] whitespace-nowrap truncate">{formattedDay}</span>
-                <div className="h-[1px] w-4 bg-white/10 shrink-0" />
-             </div>
-
-             {/* Center: Time (Exactly over the VS) */}
-             <div className="shrink-0 px-1">
-                <span className="text-[10px] font-black text-neon-green tracking-wider">{formattedTime}</span>
-             </div>
-
-             {/* Right side: Competition (Takes the other half) */}
-             <div className="flex-1 flex items-center justify-start gap-3 min-w-0">
-                <div className="h-[1px] w-4 bg-white/10 shrink-0" />
-                <span className="text-[9px] text-white font-black uppercase tracking-[0.1em] truncate">{pick.competition}</span>
+          {/* C2: Time Center (flex-5.5) */}
+          <div className="flex-[5.5] relative h-8 flex items-center justify-center">
+             <div className="flex w-full items-center justify-center opacity-50">
+                <div className="flex-1 flex items-center justify-end gap-3 min-w-0">
+                  <span className="text-[10px] uppercase font-bold text-white tracking-[0.2em] truncate">{formattedDay}</span>
+                  <div className="h-[1px] w-4 bg-white/10 shrink-0" />
+                </div>
+                <div className="shrink-0 px-2 font-black text-neon-green text-[10px] tracking-wider">
+                  {formattedTime}
+                </div>
+                <div className="flex-1 flex items-center justify-start gap-3 min-w-0">
+                  <div className="h-[1px] w-4 bg-white/10 shrink-0" />
+                  <span className="text-[10px] text-white font-bold uppercase tracking-[0.1em] truncate">{pick.competition}</span>
+                </div>
              </div>
           </div>
 
-          <div className="flex-[4.5] flex items-center justify-end gap-5">
+          {/* C3: Market Area Space (flex-2) */}
+          <div className="flex-[2] shrink-0 h-8" />
+
+          {/* C4: Odds Area Space (80px) */}
+          <div className="w-[80px] shrink-0 h-8" />
+
+          {/* C5: Actions Area - Confidence & Status (60px++) */}
+          <div className="w-[60px] md:flex-1 flex items-center justify-end gap-5 h-8">
              <div className="flex items-center gap-2">
                 <div className="flex gap-0.5">
                   {[...Array(10)].map((_, i) => (
-                    <div key={i} className={cn("w-0.5 h-2.5 rounded-full transition-all duration-500", i < (pick.confianza || pick.stake || 5) ? (pick.confianza || pick.stake || 5) >= 8 ? "bg-neon-green shadow-[0_0_8px_rgba(0,255,135,0.5)]" : "bg-white/40" : "bg-white/5")} />
+                    <div key={i} className={cn("w-0.5 h-2.5 rounded-full transition-all", i < (pick.confianza || pick.stake || 5) ? (pick.confianza || pick.stake || 5) >= 8 ? "bg-neon-green shadow-sm" : "bg-white/40" : "bg-white/5")} />
                   ))}
                 </div>
-                <span className="text-[7px] font-black uppercase tracking-wider text-white/20 whitespace-nowrap">Confianza</span>
+                <span className="text-[7px] font-black uppercase text-white/20">Confianza</span>
              </div>
-
-             <div className={cn("flex items-center justify-center h-6 md:w-24 rounded-lg border transition-all duration-300", pick.status === 'pending' ? "text-slate-900 bg-[#c9a84c] border-[#c9a84c]" : statusStyles[pick.status as keyof typeof statusStyles])}>
-                <div className="flex items-center gap-1.5 px-2">
-                  <span className="scale-75 origin-center">{statusIcons[pick.status as keyof typeof statusIcons]}</span>
-                  <span className="text-[8px] font-black uppercase tracking-tight">{statusLabels[pick.status as keyof typeof statusLabels]}</span>
-                </div>
+             <div className={cn("flex items-center justify-center h-6 md:w-24 rounded-lg border", pick.status === 'pending' ? "text-slate-900 bg-[#c9a84c] border-[#c9a84c]" : statusStyles[pick.status as keyof typeof statusStyles])}>
+                <span className="text-[8px] font-black uppercase tracking-tight px-2">{statusLabels[pick.status as keyof typeof statusLabels]}</span>
              </div>
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row md:items-center pt-2 md:pt-4 pb-4 md:pb-6 px-6 md:px-8 gap-4 md:gap-6 relative">
+        <div className="flex flex-col md:flex-row md:items-center pt-1 md:pt-2 pb-4 md:pb-6 px-6 md:px-8 gap-4 md:gap-6 relative">
           {/* Column 1: League */}
           <div className="hidden md:flex flex-col items-center justify-center w-[50px] shrink-0 border-r border-white/5 pr-4 h-full">
               <div className="h-9 w-9 flex items-center justify-center bg-white rounded-lg border border-white/20 overflow-hidden shadow-sm">
@@ -178,7 +180,7 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
              </div>
           </div>
 
-          {/* Column 5: Market Info */}
+          {/* Column 3: Market Info (flex-2) */}
           <div className="flex flex-[2] flex-col items-center justify-center px-4 border-r border-white/5 text-center h-full min-w-0">
             <div className="flex flex-col gap-0.5 items-center bg-slate-900/40 p-2 rounded-xl border border-white/5 w-full max-w-[140px] shadow-inner min-h-[70px] justify-center">
               <span className="text-[8px] text-[#00e676] font-black tracking-[0.2em] mb-0.5 opacity-60 uppercase">Mercado</span>
@@ -189,7 +191,7 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
             </div>
           </div>
 
-          {/* Column 6: Odds */}
+          {/* Column 4: Odds (80px) */}
           <div className="flex items-center justify-center md:w-[80px] shrink-0 md:border-r border-white/5 py-4 md:py-0 h-full">
              <button 
                 onClick={(e) => { e.stopPropagation(); onToggle?.(); }}
@@ -205,7 +207,7 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
              </button>
           </div>
 
-          {/* Column 7: Actions */}
+          {/* Column 5: Actions (60px) */}
           <div className="flex items-center justify-center w-full md:w-[60px] shrink-0 pt-4 md:pt-0 h-full self-center">
              <button onClick={() => setIsExpanded(!isExpanded)} className="h-8 w-8 flex items-center justify-center rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 text-white/40 transition-all">
                {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
