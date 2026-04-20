@@ -228,7 +228,7 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
                   </button>
                 </div>
              </div>
-          </div> </div>
+          </div>
         </div>
 
         {/* Análisis Expandido (Común) */}
