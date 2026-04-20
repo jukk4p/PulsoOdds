@@ -99,12 +99,12 @@ export default async function StatsPage() {
                     <tr key={sport} className="group hover:bg-white/[0.02] transition-colors">
                       <td className="py-6 font-black text-white uppercase text-sm md:text-base tracking-tight">{sport}</td>
                       <td className="py-6 text-center text-white/60 text-sm md:text-base font-medium">{d.count}</td>
-                      <td className="py-6 text-center text-white/60 text-sm md:text-base font-medium">{d.stake.toFixed(1)} unidades</td>
+                      <td className="py-6 text-center text-white/60 text-sm md:text-base font-medium">{Number(d.stake.toFixed(1))} unidades</td>
                       <td className={cn(
                         "py-6 text-center text-sm md:text-base font-black italic", 
                         d.profit >= 0 ? "text-neon-green" : "text-red-500"
                       )}>
-                        {d.profit > 0 ? '+' : ''}{d.profit.toFixed(1)} unidades
+                        {d.profit > 0 ? '+' : ''}{Number(d.profit.toFixed(1))} unidades
                       </td>
                       <td className="py-6 text-center">
                         <span className={cn(
