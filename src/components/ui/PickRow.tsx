@@ -89,7 +89,8 @@ export function PickRow({ pick }: PickRowProps) {
       <div 
         className={cn(
           "bg-[#111f2e] border border-white/5 rounded-[10px] overflow-hidden transition-all duration-300",
-          "hover:border-[#00e676]/30 hover:shadow-[0_0_20px_rgba(0,230,118,0.05)]"
+          "hover:border-[#00e676]/30 hover:shadow-[0_0_20px_rgba(0,230,118,0.05)]",
+          (pick.confianza || pick.stake || 5) >= 8 && "border-[#00e676]/20 shadow-[0_0_15px_rgba(0,230,118,0.1)]"
         )}
       >
           <div className="flex flex-col md:flex-row md:items-center pt-9 pb-4 md:pt-11 md:pb-5 px-5 md:px-6 gap-4 md:gap-0 relative">
@@ -295,13 +296,35 @@ export function PickRow({ pick }: PickRowProps) {
             </div>
 
             {/* Column 7: Actions & Badge */}
-            <div className="flex items-center justify-between md:justify-end gap-3 w-full md:w-[200px] shrink-0 pt-4 md:pt-0 px-2 md:pl-6 h-full self-center">
-               <div className="flex items-center gap-3 h-[85px]">
+            <div className="flex items-center justify-between md:justify-end gap-3 w-full md:w-[220px] shrink-0 pt-4 md:pt-0 px-2 md:pl-6 h-full self-center">
+               <div className="flex flex-col items-center md:items-end gap-2 h-[85px] justify-center mr-2">
+                 {/* Confidence Meter */}
+                 <div className="flex flex-col items-center md:items-end gap-1">
+                   <div className="flex gap-0.5">
+                     {[...Array(10)].map((_, i) => (
+                       <div 
+                         key={i} 
+                         className={cn(
+                           "w-1 h-3 rounded-full transition-all duration-500",
+                           i < (pick.confianza || pick.stake || 5) 
+                             ? (pick.confianza || pick.stake || 5) >= 8 
+                               ? "bg-neon-green shadow-[0_0_8px_rgba(0,255,135,0.5)]" 
+                               : "bg-white/40"
+                             : "bg-white/5"
+                         )}
+                       />
+                     ))}
+                   </div>
+                   <span className="text-[8px] font-black uppercase tracking-[0.25em] text-white/20">Confianza</span>
+                 </div>
+               </div>
+              <div className="flex items-center gap-3 h-[85px]">
                  {/* Interactive Badge */}
                  <div className="group relative flex items-center justify-center">
                    <div className={cn(
                      "flex items-center justify-center h-10 w-10 md:group-hover:w-32 rounded-full md:rounded-xl border transition-all duration-300 ease-out overflow-hidden cursor-help",
-                     pick.status === 'pending' ? "text-slate-900 bg-[#c9a84c] border-[#c9a84c] shadow-[0_0_15px_rgba(201,168,76,0.2)]" : statusStyles[pick.status as keyof typeof statusStyles]
+                     pick.status === 'pending' ? "text-slate-900 bg-[#c9a84c] border-[#c9a84c] shadow-[0_0_15px_rgba(201,168,76,0.2)]" : statusStyles[pick.status as keyof typeof statusStyles],
+                     (pick.confianza || pick.stake || 5) >= 8 && "animate-pulse shadow-[0_0_15px_rgba(0,230,118,0.3)]"
                    )}>
                       <div className="flex items-center gap-2 px-3">
                         {statusIcons[pick.status as keyof typeof statusIcons] || statusIcons.pending}
@@ -334,9 +357,9 @@ export function PickRow({ pick }: PickRowProps) {
                   <div className="flex items-center gap-6">
                      <div className="flex items-center gap-2">
                         <div className="h-1.5 w-24 bg-white/5 rounded-full overflow-hidden">
-                           <div className="h-full bg-[#00e676] shadow-[0_0_10px_#00e676]" style={{ width: `${pick.confianza || 0}%` }} />
+                           <div className="h-full bg-[#00e676] shadow-[0_0_10px_#00e676]" style={{ width: `${(pick.confianza || 0) * 10}%` }} />
                         </div>
-                        <span className="text-[10px] text-white/40 uppercase font-bold">Confianza: {pick.confianza || 0}%</span>
+                        <span className="text-[10px] text-white/40 uppercase font-bold">Confianza: {pick.confianza || 0}/10</span>
                      </div>
                      <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-white/5 border border-white/10">
                         <Zap size={12} className="text-[#00e676]" />
