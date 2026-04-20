@@ -210,23 +210,26 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
             </div>
           </div>
 
-          {/* Col 3: Métricas y Cuota (w-160) - STRIPPED MINIMALISM */}
+          {/* Col 3: Métricas y Cuota (w-160) - COUPLED ALIGNMENT */}
           <div className="w-[160px] flex flex-col justify-center items-end h-full shrink-0">
-             <div className="flex flex-col items-center gap-2">
-                <div className={cn("h-5 min-w-[75px] flex items-center justify-center rounded-md border px-2 shadow-sm mb-0.5", pick.status === 'pending' ? "text-slate-900 bg-[#c9a84c] border-[#c9a84c]" : statusStyles[pick.status as keyof typeof statusStyles])}>
-                   <span className="text-[7px] font-black uppercase tracking-[0.3em]">{statusLabels[pick.status as keyof typeof statusLabels]}</span>
-                </div>
-                <div className="flex items-center justify-center gap-6 -translate-y-1">
-                  <button onClick={(e) => { e.stopPropagation(); onToggle?.(); }} className={cn("flex flex-col items-center justify-center py-2 px-6 rounded-[18px] border transition-all duration-300 relative group", isSelected ? "bg-neon-green border-neon-green text-[#0a0f16] shadow-[0_0_20px_rgba(0,230,118,0.3)] scale-105" : "bg-white/[0.03] border-white/10 text-white/40 hover:border-neon-green/30 hover:bg-white/[0.06]")}>
+             <div className="flex items-center gap-4">
+                {/* Eje de Cuota + Estado */}
+                <div className="flex flex-col items-center gap-2">
+                   <div className={cn("h-5 min-w-[75px] flex items-center justify-center rounded-md border px-2 shadow-sm mb-0.5", pick.status === 'pending' ? "text-slate-900 bg-[#c9a84c] border-[#c9a84c]" : statusStyles[pick.status as keyof typeof statusStyles])}>
+                      <span className="text-[7px] font-black uppercase tracking-[0.3em]">{statusLabels[pick.status as keyof typeof statusLabels]}</span>
+                   </div>
+                   <button onClick={(e) => { e.stopPropagation(); onToggle?.(); }} className={cn("flex flex-col items-center justify-center py-2 px-6 rounded-[18px] border transition-all duration-300 relative group", isSelected ? "bg-neon-green border-neon-green text-[#0a0f16] shadow-[0_0_20px_rgba(0,230,118,0.3)] scale-105" : "bg-white/[0.03] border-white/10 text-white/40 hover:border-neon-green/30 hover:bg-white/[0.06]")}>
                       <div className="flex flex-col items-center relative z-10">
                          <span className={cn("text-[7px] font-bold uppercase tracking-[0.2em] mb-0.5", isSelected ? "text-[#0a0f16]/60" : "text-white/20")}>Cuota</span>
                          <span className={cn("text-xl font-black tracking-tighter leading-none", isSelected ? "text-[#0a0f16]" : "text-white/90 group-hover:text-neon-green")}>{normalizeOdds(pick.odds).toFixed(2)}</span>
                       </div>
-                  </button>
-                  <button onClick={() => setIsExpanded(!isExpanded)} className="flex items-center justify-center text-white/20 hover:text-neon-green transition-all translate-y-[6px]">
-                     {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                  </button>
+                   </button>
                 </div>
+
+                {/* Chevron Satélite */}
+                <button onClick={() => setIsExpanded(!isExpanded)} className="flex items-center justify-center text-white/20 hover:text-neon-green transition-all translate-y-[21px]">
+                   {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                </button>
              </div>
           </div>
         </div>
