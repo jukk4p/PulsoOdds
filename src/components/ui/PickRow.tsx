@@ -197,7 +197,6 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
               >
                 {!isSelected && <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent opacity-50" />}
                 <div className="flex items-baseline gap-0.5 relative z-10">
-                   <span className={cn("text-[10px] font-bold opacity-60", isSelected ? "text-[#0a0f16]" : "text-[#00e676]")}>@</span>
                    <span className="text-base font-black tracking-tight">{normalizeOdds(pick.odds).toFixed(2)}</span>
                 </div>
              </button>
