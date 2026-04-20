@@ -172,8 +172,8 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
             </div>
           </div>
 
-          {/* Column 3: Market Info */}
-          <div className="flex flex-[2.7] flex-col items-center justify-center text-center h-full min-w-0">
+          {/* Column 3: Market Info - AJUSTE MANUAL DE ALINEACIÓN */}
+          <div className="flex flex-[2.7] flex-col items-center justify-center text-center h-full min-w-0 pr-12">
             <div className="flex flex-col gap-0.5 items-center bg-slate-900/40 p-2 rounded-xl border border-white/5 w-full max-w-[140px] shadow-inner min-h-[70px] justify-center">
               <div className="flex flex-col gap-0.5 w-full">
                 <span className="text-[9px] text-white/50 uppercase font-bold italic tracking-wide truncate">{translateBettingTerm(pick.market || "Hándicap")}</span>
