@@ -225,7 +225,7 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
 
             <div className="flex-[3.2] flex items-center justify-center h-full min-w-0 pr-12">
               <div className="flex flex-col gap-0.5 items-center bg-slate-900/40 p-2 rounded-xl border border-white/5 w-full max-w-[185px] shadow-inner h-[50px] justify-center">
-                <div className="flex flex-col gap-0.5 w-full">
+                <div className="flex flex-col gap-0.5 w-full items-center text-center">
                   <span className="text-[8px] text-white/50 uppercase font-bold italic tracking-wide truncate">{translateBettingTerm(pick.market || "Hándicap")}</span>
                   <span className="text-[11px] font-black uppercase text-[#00e676] leading-tight italic">{translateBettingTerm(pick.pick)}</span>
                 </div>
