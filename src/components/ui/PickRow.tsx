@@ -93,11 +93,11 @@ export function PickRow({ pick }: PickRowProps) {
           <div className="flex flex-col md:flex-row md:items-center pt-9 pb-4 md:pt-11 md:pb-5 px-5 md:px-6 gap-4 md:gap-0 relative">
             {/* Column 1: League (Fixed width) */}
             <div className="hidden md:flex flex-col items-center justify-center w-[70px] shrink-0 md:border-r border-white/5 pr-4">
-                <div className="h-10 w-10 flex items-center justify-center bg-white/5 rounded-xl border border-white/10 overflow-hidden shadow-inner" title={pick.competition}>
+                <div className="h-10 w-10 flex items-center justify-center bg-white rounded-xl border border-white/20 overflow-hidden shadow-lg" title={pick.competition}>
                   <img 
                     src={getLocalLogoPath(pick.league_logo, 'leagues') || pick.league_logo || GENERIC_LEAGUE} 
                     alt={pick.competition} 
-                    className="h-7 w-7 object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.15)] opacity-80"
+                    className="h-7 w-7 object-contain drop-shadow-[0_2px_4px_rgba(0,0,0,0.1)]"
                     onError={(e) => {
                       const target = e.currentTarget;
                       if (target.src.includes('/logos/')) {
@@ -125,11 +125,11 @@ export function PickRow({ pick }: PickRowProps) {
                 {/* Home */}
                 <div className="flex flex-1 items-center justify-end gap-3 min-w-0">
                    <span className="text-sm font-bold text-white truncate text-right uppercase tracking-tight">{homeName}</span>
-                    <div className="shrink-0 h-8 w-8 flex items-center justify-center bg-white/5 rounded-lg border border-white/10 overflow-hidden">
+                    <div className="shrink-0 h-8 w-8 flex items-center justify-center bg-white rounded-lg border border-white/20 overflow-hidden p-1 shadow-sm">
                       <img 
                         src={getLocalLogoPath(pick.home_logo, 'teams') || pick.home_logo || GENERIC_SHIELD} 
                         alt="" 
-                        className={cn("h-5 w-5 object-contain drop-shadow-[0_0_5px_rgba(255,255,255,0.2)]", !pick.home_logo && "opacity-30 grayscale")} 
+                        className={cn("h-6 w-6 object-contain drop-shadow-[0_1px_2px_rgba(0,0,0,0.05)]", !pick.home_logo && "opacity-30 grayscale")} 
                         onError={(e) => {
                           const target = e.currentTarget;
                           if (target.src.includes('/logos/')) {
@@ -149,8 +149,20 @@ export function PickRow({ pick }: PickRowProps) {
 
                 {/* Away */}
                 <div className="flex flex-1 items-center justify-start gap-3 min-w-0">
-                    <div className="shrink-0 h-8 w-8 flex items-center justify-center bg-white/5 rounded-lg border border-white/10 overflow-hidden">
-                      <img src={pick.away_logo || GENERIC_SHIELD} alt="" className={cn("h-5 w-5 object-contain drop-shadow-[0_0_5px_rgba(255,255,255,0.2)]", !pick.away_logo && "opacity-30 grayscale")} />
+                    <div className="shrink-0 h-8 w-8 flex items-center justify-center bg-white rounded-lg border border-white/20 overflow-hidden p-1 shadow-sm">
+                      <img 
+                        src={getLocalLogoPath(pick.away_logo, 'teams') || pick.away_logo || GENERIC_SHIELD} 
+                        alt="" 
+                        className={cn("h-6 w-6 object-contain drop-shadow-[0_1px_2px_rgba(0,0,0,0.05)]", !pick.away_logo && "opacity-30 grayscale")} 
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          if (target.src.includes('/logos/')) {
+                            target.src = pick.away_logo || GENERIC_SHIELD;
+                          } else {
+                            target.src = GENERIC_SHIELD;
+                          }
+                        }}
+                      />
                     </div>
                    <span className="text-sm font-bold text-white truncate text-left uppercase tracking-tight">{awayName}</span>
                 </div>
@@ -161,8 +173,20 @@ export function PickRow({ pick }: PickRowProps) {
             <div className="md:hidden flex flex-col items-center py-6 bg-white/[0.02] rounded-xl my-2 relative">
                {/* Mobile Header: League & Time */}
                <div className="flex flex-col items-center gap-2 mb-6">
-                  <div className="h-10 w-10 flex items-center justify-center bg-white/5 rounded-xl border border-white/10 overflow-hidden shadow-inner">
-                    <img src={pick.league_logo || GENERIC_LEAGUE} alt={pick.competition} className="h-7 w-7 object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.15)] opacity-80" />
+                  <div className="h-10 w-10 flex items-center justify-center bg-white rounded-xl border border-white/20 overflow-hidden shadow-lg">
+                    <img 
+                      src={getLocalLogoPath(pick.league_logo, 'leagues') || pick.league_logo || GENERIC_LEAGUE} 
+                      alt={pick.competition} 
+                      className="h-7 w-7 object-contain drop-shadow-[0_2px_4px_rgba(0,0,0,0.1)]"
+                      onError={(e) => {
+                        const target = e.currentTarget;
+                        if (target.src.includes('/logos/')) {
+                          target.src = pick.league_logo || GENERIC_LEAGUE;
+                        } else {
+                          target.src = GENERIC_LEAGUE;
+                        }
+                      }}
+                    />
                   </div>
                   <div className="flex flex-col items-center">
                     <span className="text-[9px] text-white/30 uppercase font-bold tracking-[0.2em]">{pick.competition}</span>
@@ -176,15 +200,43 @@ export function PickRow({ pick }: PickRowProps) {
 
                <div className="flex items-center gap-8 mb-4">
                   <div className="relative">
-                    <div className="absolute inset-0 bg-[#00e676]/15 blur-2xl rounded-full scale-150 opacity-50" />
-                    <img src={pick.home_logo || GENERIC_SHIELD} alt="" className={cn("h-12 w-12 object-contain relative z-10 drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]", !pick.home_logo && "opacity-30 grayscale")} />
+                    <div className="absolute inset-0 bg-white/20 blur-xl rounded-full scale-110" />
+                    <div className="h-12 w-12 flex items-center justify-center bg-white rounded-full border border-white/20 overflow-hidden shadow-lg relative z-10">
+                      <img 
+                        src={getLocalLogoPath(pick.home_logo, 'teams') || pick.home_logo || GENERIC_SHIELD} 
+                        alt="" 
+                        className={cn("h-9 w-9 object-contain drop-shadow-[0_2px_4px_rgba(0,0,0,0.1)]", !pick.home_logo && "opacity-30 grayscale")} 
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          if (target.src.includes('/logos/')) {
+                            target.src = pick.home_logo || GENERIC_SHIELD;
+                          } else {
+                            target.src = GENERIC_SHIELD;
+                          }
+                        }}
+                      />
+                    </div>
                   </div>
                   <div className="flex flex-col items-center justify-center">
                     <span className="text-[10px] text-[#00e676] font-black italic uppercase tracking-[0.2em] bg-[#00e676]/10 px-3 py-1 rounded-full border border-[#00e676]/20 shadow-[0_0_15px_rgba(0,230,118,0.1)]">VS</span>
                   </div>
                   <div className="relative">
                     <div className="absolute inset-0 bg-[#00e676]/15 blur-2xl rounded-full scale-150 opacity-50" />
-                    <img src={pick.away_logo || GENERIC_SHIELD} alt="" className={cn("h-12 w-12 object-contain relative z-10 drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]", !pick.away_logo && "opacity-30 grayscale")} />
+                    <div className="h-12 w-12 flex items-center justify-center bg-white rounded-full border border-white/20 overflow-hidden shadow-lg relative z-10">
+                      <img 
+                        src={getLocalLogoPath(pick.away_logo, 'teams') || pick.away_logo || GENERIC_SHIELD} 
+                        alt="" 
+                        className={cn("h-9 w-9 object-contain drop-shadow-[0_2px_4px_rgba(0,0,0,0.1)]", !pick.away_logo && "opacity-30 grayscale")} 
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          if (target.src.includes('/logos/')) {
+                            target.src = pick.away_logo || GENERIC_SHIELD;
+                          } else {
+                            target.src = GENERIC_SHIELD;
+                          }
+                        }}
+                      />
+                    </div>
                   </div>
                </div>
                
