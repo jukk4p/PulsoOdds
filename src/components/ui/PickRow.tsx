@@ -97,12 +97,12 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
           isSelected && "border-[#00e676]/50 shadow-[0_0_25px_rgba(0,255,135,0.15)] bg-slate-900/80"
         )}
       >
-        {/* Header Grid: Sincronizada con el desplazamiento agresivo a la izquierda */}
+        {/* Header Grid: Etiqueta de Mercado extraída a la cabecera */}
         <div className="hidden md:flex items-center px-6 md:px-8 pt-3 pb-0 gap-4 md:gap-6 relative z-10 overflow-hidden">
           {/* C1: League Space */}
-          <div className="w-[50px] shrink-0 h-8 font-black" />
+          <div className="w-[50px] shrink-0 h-8" />
           
-          {/* C2: Time Center (flex-4.8 para mover más a la izquierda) */}
+          {/* C2: Time Center (flex-4.8) */}
           <div className="flex-[4.8] relative h-8 flex items-center justify-center">
              <div className="flex w-full items-center justify-center opacity-50 px-4">
                 <div className="flex-1 flex items-center justify-end gap-3 min-w-0">
@@ -119,10 +119,12 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
              </div>
           </div>
 
-          {/* C3: Market Area Space (flex-2.7 para empujar) */}
-          <div className="flex-[2.7] shrink-0 h-8" />
+          {/* C3: Mercado Header Label (flex-2.7) - ALINEACIÓN TOTAL */}
+          <div className="flex-[2.7] shrink-0 h-8 flex items-center justify-center">
+             <span className="text-[8px] text-neon-green font-black tracking-[0.3em] uppercase opacity-30">Mercado</span>
+          </div>
 
-          {/* C4: Odds Area Space (80px) */}
+          {/* C4: Odds Space (80px) */}
           <div className="w-[80px] shrink-0 h-8" />
 
           {/* C5: Actions Area (60px++) */}
@@ -149,7 +151,7 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
               </div>
           </div>
 
-          {/* Column 2: Teams Area (flex-4.8 + px-4 para mover más a la izquierda) */}
+          {/* Column 2: Teams Area */}
           <div className="hidden md:flex flex-[4.8] flex-col items-center justify-center px-4 border-r border-white/5 h-full min-w-0">
             <div className="flex items-center justify-center gap-4 w-full">
               <div className="flex flex-1 items-center justify-end gap-3 min-w-0">
@@ -170,20 +172,9 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
             </div>
           </div>
 
-          {/* MOBILE ONLY */}
-          <div className="md:hidden flex flex-col items-center py-4 bg-white/[0.02] rounded-xl my-2 w-full">
-             <span className="text-[10px] font-bold text-neon-green mb-2">{formattedDay} - {formattedTime}</span>
-             <div className="flex items-center justify-center gap-4">
-               <span className="text-sm font-bold text-white uppercase italic">{homeName}</span>
-               <span className="text-[9px] font-black text-neon-green italic opacity-50">VS</span>
-               <span className="text-sm font-bold text-white uppercase italic">{awayName}</span>
-             </div>
-          </div>
-
-          {/* Column 3: Market Info (flex-2.7) */}
+          {/* Column 3: Market Info (flex-2.7) - LIMPIADO */}
           <div className="flex flex-[2.7] flex-col items-center justify-center px-4 border-r border-white/5 text-center h-full min-w-0">
             <div className="flex flex-col gap-0.5 items-center bg-slate-900/40 p-2 rounded-xl border border-white/5 w-full max-w-[140px] shadow-inner min-h-[70px] justify-center">
-              <span className="text-[8px] text-[#00e676] font-black tracking-[0.2em] mb-0.5 opacity-60 uppercase">Mercado</span>
               <div className="flex flex-col gap-0.5 w-full">
                 <span className="text-[9px] text-white/50 uppercase font-bold italic tracking-wide truncate">{translateBettingTerm(pick.market || "Hándicap")}</span>
                 <span className="text-[12px] font-black uppercase text-[#00e676] leading-none italic truncate">{translateBettingTerm(pick.pick)}</span>
