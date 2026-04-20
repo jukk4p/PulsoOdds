@@ -213,8 +213,8 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
           {/* Col 3: Métricas y Cuota (w-160) - FIXED RIGHT ALIGNMENT */}
           <div className="w-[160px] flex flex-col justify-center items-end gap-3 h-full shrink-0">
             <div className="flex flex-col items-end gap-1.5">
-               <div className={cn("h-6 min-w-[90px] flex items-center justify-center rounded-lg border px-3 shadow-sm", pick.status === 'pending' ? "text-slate-900 bg-[#c9a84c] border-[#c9a84c]" : statusStyles[pick.status as keyof typeof statusStyles])}>
-                  <span className="text-[8px] font-black uppercase tracking-tighter">{statusLabels[pick.status as keyof typeof statusLabels]}</span>
+               <div className={cn("h-5 min-w-[75px] flex items-center justify-center rounded-md border px-2 shadow-sm", pick.status === 'pending' ? "text-slate-900 bg-[#c9a84c] border-[#c9a84c]" : statusStyles[pick.status as keyof typeof statusStyles])}>
+                  <span className="text-[7px] font-black uppercase tracking-tighter">{statusLabels[pick.status as keyof typeof statusLabels]}</span>
                </div>
                <div className="flex items-center gap-2 pr-1">
                   <span className="text-[7px] font-black uppercase text-white/20 tracking-tighter">Stake</span>
