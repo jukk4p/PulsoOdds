@@ -44,18 +44,31 @@ export async function POST(req: NextRequest) {
     }
     // --------------------------------
 
+    // 🏁 DB PAYLOAD CORREGIDO: Nombres exactos para la Web
+    const dbPayload = {
+      sport: body.sport || 'football',
+      competition: body.competition,
+      match: body.match,
+      market: translateBettingTerm(body.market),
+      pick: translateBettingTerm(body.pick),
+      odds: parseFloat(body.odds),
+      stake: parseInt(body.stake),
+      match_date: body.match_date,
+      razonamiento: body.razonamiento || '', 
+      confianza: parseInt(body.confianza) || 70,
+      home_stats: body.home_stats || {},
+      away_stats: body.away_stats || {},
+      home_logo: body.home_logo || '',
+      away_logo: body.away_logo || '',
+      league_logo: body.league_logo || '',
+      source: 'n8n-bot',
+      status: 'pending',
+      published_at: new Date().toISOString(),
+    };
+
     const { data, error } = await supabaseAdmin
       .from('picks')
-      .insert([
-        {
-          ...body,
-          market: translateBettingTerm(body.market),
-          pick: translateBettingTerm(body.pick),
-          source: 'n8n-bot',
-          status: 'pending',
-          published_at: new Date().toISOString(),
-        }
-      ])
+      .insert([dbPayload])
       .select()
       .single();
 

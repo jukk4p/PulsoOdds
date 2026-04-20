@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { cn, translateBettingTerm, formatTeamName } from "@/lib/utils";
+import { cn, translateBettingTerm, formatTeamName, normalizeOdds, normalizeBettingPick } from "@/lib/utils";
 import { ChevronDown, ChevronUp, Zap, List, AlertTriangle, TrendingUp, CheckCircle2, XCircle, Clock, MinusCircle } from "lucide-react";
 
 interface PickRowProps {
@@ -72,6 +72,9 @@ export function PickRow({ pick }: PickRowProps) {
     void: "NULA",
   };
 
+  const GENERIC_SHIELD = "https://img.icons8.com/ios-filled/100/ffffff/shield.png";
+  const GENERIC_LEAGUE = "https://img.icons8.com/ios-filled/100/ffffff/trophy.png";
+
   return (
     <div className="mb-3">
       {/* Main Card */}
@@ -84,11 +87,9 @@ export function PickRow({ pick }: PickRowProps) {
           <div className="flex flex-col md:flex-row md:items-center pt-9 pb-4 md:pt-11 md:pb-5 px-5 md:px-6 gap-4 md:gap-0 relative">
             {/* Column 1: League (Fixed width) */}
             <div className="hidden md:flex flex-col items-center justify-center w-[70px] shrink-0 md:border-r border-white/5 pr-4">
-               {pick.league_logo && (
-                 <div className="h-10 w-10 flex items-center justify-center bg-white/5 rounded-xl border border-white/10 overflow-hidden shadow-inner" title={pick.competition}>
-                   <img src={pick.league_logo} alt={pick.competition} className="h-7 w-7 object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.15)]" />
-                 </div>
-               )}
+                <div className="h-10 w-10 flex items-center justify-center bg-white/5 rounded-xl border border-white/10 overflow-hidden shadow-inner" title={pick.competition}>
+                  <img src={pick.league_logo || GENERIC_LEAGUE} alt={pick.competition} className="h-7 w-7 object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.15)] opacity-80" />
+                </div>
             </div>
 
             {/* Column 2: Date & Teams Area */}
@@ -106,11 +107,9 @@ export function PickRow({ pick }: PickRowProps) {
                 {/* Home */}
                 <div className="flex flex-1 items-center justify-end gap-3 min-w-0">
                    <span className="text-sm font-bold text-white truncate text-right uppercase tracking-tight">{homeName}</span>
-                   {pick.home_logo && (
-                     <div className="shrink-0 h-8 w-8 flex items-center justify-center bg-white/5 rounded-lg border border-white/10 overflow-hidden">
-                       <img src={pick.home_logo} alt="" className="h-5 w-5 object-contain drop-shadow-[0_0_5px_rgba(255,255,255,0.2)]" />
-                     </div>
-                   )}
+                    <div className="shrink-0 h-8 w-8 flex items-center justify-center bg-white/5 rounded-lg border border-white/10 overflow-hidden">
+                      <img src={pick.home_logo || GENERIC_SHIELD} alt="" className={cn("h-5 w-5 object-contain drop-shadow-[0_0_5px_rgba(255,255,255,0.2)]", !pick.home_logo && "opacity-30 grayscale")} />
+                    </div>
                 </div>
 
                 {/* VS Badge */}
@@ -120,11 +119,9 @@ export function PickRow({ pick }: PickRowProps) {
 
                 {/* Away */}
                 <div className="flex flex-1 items-center justify-start gap-3 min-w-0">
-                   {pick.away_logo && (
-                     <div className="shrink-0 h-8 w-8 flex items-center justify-center bg-white/5 rounded-lg border border-white/10 overflow-hidden">
-                       <img src={pick.away_logo} alt="" className="h-5 w-5 object-contain drop-shadow-[0_0_5px_rgba(255,255,255,0.2)]" />
-                     </div>
-                   )}
+                    <div className="shrink-0 h-8 w-8 flex items-center justify-center bg-white/5 rounded-lg border border-white/10 overflow-hidden">
+                      <img src={pick.away_logo || GENERIC_SHIELD} alt="" className={cn("h-5 w-5 object-contain drop-shadow-[0_0_5px_rgba(255,255,255,0.2)]", !pick.away_logo && "opacity-30 grayscale")} />
+                    </div>
                    <span className="text-sm font-bold text-white truncate text-left uppercase tracking-tight">{awayName}</span>
                 </div>
               </div>
@@ -134,11 +131,9 @@ export function PickRow({ pick }: PickRowProps) {
             <div className="md:hidden flex flex-col items-center py-6 bg-white/[0.02] rounded-xl my-2 relative">
                {/* Mobile Header: League & Time */}
                <div className="flex flex-col items-center gap-2 mb-6">
-                  {pick.league_logo && (
-                    <div className="h-10 w-10 flex items-center justify-center bg-white/5 rounded-xl border border-white/10 overflow-hidden shadow-inner">
-                      <img src={pick.league_logo} alt={pick.competition} className="h-7 w-7 object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.15)]" />
-                    </div>
-                  )}
+                  <div className="h-10 w-10 flex items-center justify-center bg-white/5 rounded-xl border border-white/10 overflow-hidden shadow-inner">
+                    <img src={pick.league_logo || GENERIC_LEAGUE} alt={pick.competition} className="h-7 w-7 object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.15)] opacity-80" />
+                  </div>
                   <div className="flex flex-col items-center">
                     <span className="text-[9px] text-white/30 uppercase font-bold tracking-[0.2em]">{pick.competition}</span>
                     <div className="flex items-center gap-2 mt-1">
@@ -152,14 +147,14 @@ export function PickRow({ pick }: PickRowProps) {
                <div className="flex items-center gap-8 mb-4">
                   <div className="relative">
                     <div className="absolute inset-0 bg-[#00e676]/15 blur-2xl rounded-full scale-150 opacity-50" />
-                    {pick.home_logo && <img src={pick.home_logo} alt="" className="h-12 w-12 object-contain relative z-10 drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]" />}
+                    <img src={pick.home_logo || GENERIC_SHIELD} alt="" className={cn("h-12 w-12 object-contain relative z-10 drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]", !pick.home_logo && "opacity-30 grayscale")} />
                   </div>
                   <div className="flex flex-col items-center justify-center">
                     <span className="text-[10px] text-[#00e676] font-black italic uppercase tracking-[0.2em] bg-[#00e676]/10 px-3 py-1 rounded-full border border-[#00e676]/20 shadow-[0_0_15px_rgba(0,230,118,0.1)]">VS</span>
                   </div>
                   <div className="relative">
                     <div className="absolute inset-0 bg-[#00e676]/15 blur-2xl rounded-full scale-150 opacity-50" />
-                    {pick.away_logo && <img src={pick.away_logo} alt="" className="h-12 w-12 object-contain relative z-10 drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]" />}
+                    <img src={pick.away_logo || GENERIC_SHIELD} alt="" className={cn("h-12 w-12 object-contain relative z-10 drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]", !pick.away_logo && "opacity-30 grayscale")} />
                   </div>
                </div>
                
@@ -178,18 +173,40 @@ export function PickRow({ pick }: PickRowProps) {
                </div>
             </div>
 
-            {/* Column 5: Betting Description */}
-            <div className="flex flex-[2] flex-col items-center justify-center px-4 py-4 md:py-0 border-y md:border-y-0 md:border-r border-white/5 text-center">
-               <span className="text-xs font-bold uppercase text-[#00e676] leading-tight drop-shadow-[0_0_8px_rgba(0,230,118,0.15)]">
-                 {translateBettingTerm(pick.pick)}
-               </span>
-            </div>
+             {/* Column 5: Betting Description */}
+             <div className="flex flex-[2.5] flex-col items-center justify-center px-4 py-4 md:py-0 border-y md:border-y-0 md:border-r border-white/5 text-center">
+                <div className="flex flex-col gap-1 items-center bg-slate-900/40 p-3 rounded-xl border border-white/5 backdrop-blur-sm group hover:bg-slate-800/60 transition-all duration-300 w-full max-w-[220px] shadow-inner">
+                  <span className="text-[9px] text-[#00e676] font-black tracking-[0.2em] mb-1.5 opacity-60">
+                    MERCADO SELECCIONADO
+                  </span>
+                  
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-[11px] text-white/50 uppercase font-bold italic tracking-wide">
+                      {translateBettingTerm(pick.market || "Hándicap")}
+                    </span>
+                    <span className="text-sm font-black uppercase text-[#00e676] leading-none drop-shadow-[0_0_12px_rgba(0,230,118,0.25)] italic">
+                      {translateBettingTerm(pick.pick)}
+                    </span>
+                  </div>
+                </div>
+             </div>
 
             {/* Column 6: Odds */}
             <div className="flex items-center justify-center md:w-[110px] shrink-0 md:border-r border-white/5 py-4 md:py-0">
-               <div className="bg-[#00e676]/10 border border-[#00e676]/20 px-3 py-1.5 rounded-lg flex flex-col items-center">
+               <div className="bg-[#00e676]/10 border border-[#00e676]/20 px-3 py-1.5 rounded-lg flex flex-col items-center relative group/tooltip">
                   <span className="text-[8px] text-[#00e676]/60 font-black tracking-widest uppercase">Cuota</span>
-                  <span className="text-base font-black text-[#00e676] italic">@{pick.odds.toFixed(2)}</span>
+                  <div className="flex items-center gap-1">
+                    <span className="text-base font-black text-[#00e676] italic">@{normalizeOdds(pick.odds).toFixed(2)}</span>
+                    {pick.is_verified && (
+                      <ShieldCheck className="h-3.5 w-3.5 text-blue-400 drop-shadow-[0_0_8px_rgba(96,165,250,0.5)]" />
+                    )}
+                  </div>
+                  
+                  {pick.is_verified && (
+                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-blue-500 text-white text-[8px] font-black py-1 px-2 rounded opacity-0 group-hover/tooltip:opacity-100 transition-opacity whitespace-nowrap pointer-events-none uppercase tracking-tighter">
+                      Cuota Verificada
+                    </div>
+                  )}
                </div>
             </div>
 
@@ -242,7 +259,7 @@ export function PickRow({ pick }: PickRowProps) {
                      </div>
                   </div>
                   <p className="text-sm text-white/70 leading-relaxed font-medium italic">
-                    {pick.analysis || "No hay análisis detallado disponible."}
+                    {pick.razonamiento || "No hay análisis detallado disponible."}
                   </p>
                </div>
 

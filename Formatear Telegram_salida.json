@@ -1,0 +1,274 @@
+[
+  {
+    "home": "Elche CF",
+    "away": "Atletico Madrid",
+    "match": "Elche CF vs Atletico Madrid",
+    "league": "Spain - LaLiga",
+    "competition": "Spain - LaLiga",
+    "date": "2026-04-22T17:00:00Z",
+    "kickoff": "17:00",
+    "main_odds": {
+      "home": 2.5,
+      "draw": 3.8,
+      "away": 2.5,
+      "btts_yes": 1.571
+    },
+    "full_market_dump": "[ML]: HOME:2.500 DRAW:3.800 AWAY:2.500\n[Draw No Bet]: HOME:1.833 AWAY:1.833\n[Double Chance]: Draw or Atletico Madrid: 1.500 | Elche or Draw: 1.500 | Elche or Atletico Madrid: 1.250\n[Spread]: HOME:1.925\n[Totals]: (Hdp 2.75) OVER:1.875 UNDER:1.975\n[Both Teams To Score]: YES:1.571 NO:2.250\n[Spread HT]: HOME:1.900 AWAY:1.900\n[Totals HT]: (Hdp 1.25) OVER:2.050 UNDER:1.750\n[Corners Spread]: (Hdp -0.5) HOME:1.975 AWAY:1.825\n[Corners Totals]: (Hdp 9) OVER:1.900 UNDER:1.900\n[Corners Totals HT]: (Hdp 4) OVER:1.800 UNDER:2.000\n[Half Time Result]: (Hdp 2) 2: 3.100 | Draw: 2.375 | (Hdp 1) 1: 3.100\n[Total Corners]: Under 6: 7.000 | 6 - 8: 2.750 | 9 - 11: 2.625 | 12 - 14: 5.000 | Over 14: 13.000\n[Both Teams To Score HT]: YES:3.750 NO:1.250\n[Corners Race]: (Hdp 3) HOME:1.800 AWAY:1.952 | (Hdp 5) HOME:2.250 AWAY:2.600 | (Hdp 7) HOME:4.000 AWAY:4.750 | (Hdp 9) HOME:9.000 AWAY:11.000\n[Both Teams To Score 2H]: YES:2.750 NO:1.400\n[Team Corners Away]: (Hdp 4.5) OVER:2.100 UNDER:1.666\n[Alternative Corners]: (Hdp 4) OVER:1.040 UNDER:21.000 | (Hdp 5) OVER:1.100 UNDER:13.000 | (Hdp 6) OVER:1.200 UNDER:7.000 | (Hdp 7) OVER:1.363 UNDER:4.333 | (Hdp 8) OVER:1.666 UNDER:3.000 | (Hdp 10) OVER:2.750 UNDER:1.666 | (Hdp 11) OVER:4.000 UNDER:1.400 | (Hdp 12) OVER:6.000 UNDER:1.222 | (Hdp 13) OVER:9.000 UNDER:1.125 | (Hdp 14) OVER:13.000 UNDER:1.071 | (Hdp 15) OVER:17.000 UNDER:1.040 | (Hdp 16) OVER:23.000 UNDER:1.020\n[Corners]: (Hdp 9) OVER:2.100 UNDER:2.100\n[Corners 2-Way]: (Hdp 9.5) OVER:2.100 UNDER:1.666\n[Team Corners Home]: (Hdp 4.5) OVER:1.833 UNDER:1.833",
+    "home_logo": "https://via.placeholder.com/64?text=Home",
+    "away_logo": "https://via.placeholder.com/64?text=Away",
+    "league_logo": "https://via.placeholder.com/64?text=League",
+    "mercado": "Money Line",
+    "seleccion": "Atletico Madrid",
+    "cuota_objetivo": 2.5,
+    "prob_estimada": 0.55,
+    "ev": 0.375,
+    "confianza": 88,
+    "razonamiento": "Atletico (2º) es muy superior a Elche (18º). La cuota 2.500 para la victoria visitante subestima enormemente al favorito y ofrece un EV+ muy alto.",
+    "casa_recomendada": "Bet365",
+    "recomendar": true,
+    "stats": {
+      "local": {
+        "posicion": "18º",
+        "puntos": 32,
+        "partidos_jugados": 31,
+        "partidos_ganados": 7,
+        "partidos_perdidos": 13,
+        "partidos_empatados": 11
+      },
+      "visitante": {
+        "posicion": "2º",
+        "puntos": 70,
+        "partidos_jugados": 31,
+        "partidos_ganados": 22,
+        "partidos_perdidos": 5,
+        "partidos_empatados": 4
+      }
+    },
+    "_valid": true,
+    "telegram_text": "🌍 *PARTIDO*\n🏆 *Spain - LaLiga*\n🤝 Elche CF vs Atletico Madrid\n📅 2026-04-22  ·  ⏰ 17:00\n\n🎯 *PICK RECOMENDADO:*\n🔹 *Mercado:* Victoria (1X2)\n✅ *Selección:* Atletico Madrid\n💰 *Cuota:* 2.50 _(Bet365)_\n\n📉 *ANÁLISIS CUANTITATIVO:*\n· Prob. estimada: *55.0%*\n· Valor Esperado (EV): *+37.5%*\n· Confianza: *88%*\n  [🟦🟦🟦🟦🟦🟦🟦🟦🟦⬜]\n· Stake sugerido: ⭐ *1/5*\n\n💡 *RAZONAMIENTO:*\nAtletico (2º) es muy superior a Elche (18º). La cuota 2.500 para la victoria visitante subestima enormemente al favorito y ofrece un EV+ muy alto.\n\n🔘 *ESTADÍSTICAS DE EQUIPOS:*\n🏠 *Local:* Pos 18º | 32 pts\n   Récord: 31pj (0V-0E-0D)\n\n🚀 *Visitante:* Pos 2º | 70 pts\n   Récord: 31pj (0V-0E-0D)\n\n🔥 *Score de Interés:* 0/100"
+  },
+  {
+    "home": "Paris Saint-Germain",
+    "away": "FC Nantes",
+    "match": "Paris Saint-Germain vs FC Nantes",
+    "league": "France - Ligue 1",
+    "competition": "France - Ligue 1",
+    "date": "2026-04-22T17:00:00Z",
+    "kickoff": "17:00",
+    "main_odds": {
+      "home": 1.181,
+      "draw": 6.5,
+      "away": 13,
+      "btts_yes": 1.8
+    },
+    "full_market_dump": "[ML]: HOME:1.181 DRAW:6.500 AWAY:13.000\n[Draw No Bet]: HOME:1.050 AWAY:11.000\n[Double Chance]: PSG or Draw: 1.040 | Draw or Nantes: 4.500 | PSG or Nantes: 1.111\n[Spread]: (Hdp -2) HOME:1.850 AWAY:2.000\n[Totals]: (Hdp 3.5) OVER:1.850 UNDER:2.000\n[Both Teams To Score]: YES:1.800 NO:1.950\n[Spread HT]: (Hdp -1) HOME:2.050 AWAY:1.750\n[Corners Spread]: (Hdp -2) HOME:1.850 AWAY:1.950\n[Corners Totals]: (Hdp 9.5) OVER:1.925 UNDER:1.875\n[Corners Totals HT]: (Hdp 4.5) OVER:1.950 UNDER:1.850\n[Bookings Spread]: (Hdp 0.5) HOME:2.100 AWAY:1.700\n[Bookings Totals]: (Hdp 3) OVER:1.950 UNDER:1.850\n[Both Teams To Score 2H]: YES:3.250 NO:1.333\n[Corners 2-Way]: (Hdp 9.5) OVER:1.833 UNDER:1.833\n[Team Corners Home]: (Hdp 5.5) OVER:1.800 UNDER:1.909\n[Total Corners]: 6 - 8: 3.100 | 12 - 14: 4.500 | Under 6: 9.000 | 9 - 11: 2.625 | Over 14: 11.000\n[Corners Race]: (Hdp 3) HOME:1.400 AWAY:2.750 | (Hdp 5) HOME:1.615 AWAY:3.750 | (Hdp 7) HOME:2.400 AWAY:7.000 | (Hdp 9) HOME:4.750 AWAY:21.000\n[Team Corners Away]: (Hdp 3.5) OVER:1.833 UNDER:1.833\n[Half Time Result]: (Hdp 1) 1: 1.533 | Draw: 3.200 | (Hdp 2) 2: 9.500\n[Corners]: (Hdp 9) OVER:1.833 UNDER:2.375\n[Both Teams To Score HT]: YES:4.000 NO:1.222\n[Alternative Corners]: (Hdp 4) OVER:1.025 UNDER:26.000 | (Hdp 5) OVER:1.071 UNDER:17.000 | (Hdp 6) OVER:1.142 UNDER:9.000 | (Hdp 7) OVER:1.300 UNDER:5.500 | (Hdp 8) OVER:1.533 UNDER:3.400 | (Hdp 10) OVER:2.500 UNDER:1.833 | (Hdp 11) OVER:3.400 UNDER:1.500 | (Hdp 12) OVER:4.500 UNDER:1.300 | (Hdp 13) OVER:7.000 UNDER:1.181 | (Hdp 15) OVER:13.000 UNDER:1.050 | (Hdp 16) OVER:19.000 UNDER:1.030 | (Hdp 14) OVER:11.000 UNDER:1.100",
+    "home_logo": "https://via.placeholder.com/64?text=Home",
+    "away_logo": "https://via.placeholder.com/64?text=Away",
+    "league_logo": "https://via.placeholder.com/64?text=League",
+    "mercado": "Spread",
+    "seleccion": "HOME (Hdp -2)",
+    "cuota_objetivo": 1.85,
+    "prob_estimada": 0.62,
+    "ev": 0.147,
+    "confianza": 75,
+    "razonamiento": "PSG, líder (1º), enfrenta a un Nantes (17º) en descenso. La superioridad local y mal momento visitante avalan victoria por hándicap -2.",
+    "casa_recomendada": "Bet365",
+    "recomendar": true,
+    "_valid": true,
+    "telegram_text": "🌍 *PARTIDO*\n🏆 *France - Ligue 1*\n🤝 Paris Saint-Germain vs FC Nantes\n📅 2026-04-22  ·  ⏰ 17:00\n\n🎯 *PICK RECOMENDADO:*\n🔹 *Mercado:* Hándicap\n✅ *Selección:* Local (Hdp -2)\n💰 *Cuota:* 1.85 _(Bet365)_\n\n📉 *ANÁLISIS CUANTITATIVO:*\n· Prob. estimada: *62.0%*\n· Valor Esperado (EV): *+14.7%*\n· Confianza: *75%*\n  [🟦🟦🟦🟦🟦🟦🟦🟦⬜⬜]\n· Stake sugerido: ⭐ *1/5*\n\n💡 *RAZONAMIENTO:*\nPSG, líder (1º), enfrenta a un Nantes (17º) en descenso. La superioridad local y mal momento visitante avalan victoria por hándicap -2.\n\n🔘 *ESTADÍSTICAS DE EQUIPOS:*\n🏠 *Local:* Pos - | 0 pts\n   Récord: 0pj (0V-0E-0D)\n\n🚀 *Visitante:* Pos - | 0 pts\n   Récord: 0pj (0V-0E-0D)\n\n🔥 *Score de Interés:* 0/100"
+  },
+  {
+    "home": "Real Madrid",
+    "away": "Deportivo Alaves",
+    "match": "Real Madrid vs Deportivo Alaves",
+    "league": "Spain - LaLiga",
+    "competition": "Spain - LaLiga",
+    "date": "2026-04-21T19:30:00Z",
+    "kickoff": "19:30",
+    "main_odds": {
+      "home": 1.3,
+      "draw": 5.25,
+      "away": 10,
+      "btts_yes": 1.8
+    },
+    "full_market_dump": "[ML]: HOME:1.300 DRAW:5.250 AWAY:10.000\n[Draw No Bet]: HOME:1.083 AWAY:8.000\n[Double Chance]: Draw or CD Alaves: 3.250 | Real Madrid or Draw: 1.071 | Real Madrid or CD Alaves: 1.166\n[Spread]: (Hdp -1.5) HOME:1.850 AWAY:2.000\n[Totals]: (Hdp 3.25) OVER:2.000 UNDER:1.850\n[Both Teams To Score]: YES:1.800 NO:1.950\n[Spread HT]: (Hdp -0.75) HOME:2.000 AWAY:1.800\n[Totals HT]: (Hdp 1.25) OVER:1.800 UNDER:2.000\n[Corners Spread]: (Hdp -3.5) HOME:1.825 AWAY:1.975\n[Corners Totals]: (Hdp 10) OVER:1.950 UNDER:1.850\n[Corners Totals HT]: (Hdp 4.5) OVER:1.775 UNDER:2.025\n[Corners 2-Way]: (Hdp 9.5) OVER:1.727 UNDER:2.000\n[Both Teams To Score 2H]: YES:3.250 NO:1.333\n[Corners]: (Hdp 10) OVER:2.100 UNDER:2.000\n[Half Time Result]: (Hdp 1) 1: 1.727 | Draw: 2.750 | (Hdp 2) 2: 7.500\n[Both Teams To Score HT]: YES:4.333 NO:1.200\n[Corners Race]: (Hdp 3) HOME:1.222 AWAY:4.000 | (Hdp 5) HOME:1.333 AWAY:5.500 | (Hdp 7) HOME:1.800 AWAY:12.000 | (Hdp 9) HOME:3.000 AWAY:34.000\n[Team Corners Away]: (Hdp 2.5) OVER:1.615 UNDER:2.200\n[Total Corners]: Under 6: 11.000 | 6 - 8: 3.400 | 9 - 11: 2.625 | 12 - 14: 4.000 | Over 14: 8.000\n[Alternative Corners]: (Hdp 12) OVER:3.750 UNDER:1.400 | (Hdp 13) OVER:5.500 UNDER:1.250 | (Hdp 14) OVER:8.000 UNDER:1.142 | (Hdp 15) OVER:12.000 UNDER:1.083 | (Hdp 16) OVER:15.000 UNDER:1.040 | (Hdp 17) OVER:21.000 UNDER:1.025 | (Hdp 5) OVER:1.050 UNDER:21.000 | (Hdp 6) OVER:1.111 UNDER:11.000 | (Hdp 7) OVER:1.222 UNDER:6.500 | (Hdp 8) OVER:1.400 UNDER:4.000 | (Hdp 9) OVER:1.727 UNDER:2.750 | (Hdp 11) OVER:2.750 UNDER:1.666\n[Team Corners Home]: (Hdp 6.5) OVER:1.800 UNDER:1.909",
+    "home_logo": "https://via.placeholder.com/64?text=Home",
+    "away_logo": "https://via.placeholder.com/64?text=Away",
+    "league_logo": "https://via.placeholder.com/64?text=League",
+    "stats": {
+      "local": {
+        "pos": "2º",
+        "pts": 70,
+        "pj": 31,
+        "pg": 22,
+        "pe": 4,
+        "pp": 5
+      },
+      "visitante": {
+        "pos": "17º",
+        "pts": 33,
+        "pj": 31,
+        "pg": 8,
+        "pe": 9,
+        "pp": 14
+      }
+    },
+    "mercado": "Both Teams To Score",
+    "seleccion": "NO",
+    "cuota_objetivo": 1.95,
+    "prob_estimada": 0.6,
+    "ev": 0.17,
+    "confianza": 78,
+    "razonamiento": "Real Madrid es líder defensivo en casa. Alaves tiene dificultades ofensivas ante equipos top. Alta probabilidad de portería a cero.",
+    "casa_recomendada": "Bet365",
+    "recomendar": true,
+    "_valid": true,
+    "telegram_text": "🌍 *PARTIDO*\n🏆 *Spain - LaLiga*\n🤝 Real Madrid vs Deportivo Alaves\n📅 2026-04-21  ·  ⏰ 19:30\n\n🎯 *PICK RECOMENDADO:*\n🔹 *Mercado:* Ambos Marcan\n✅ *Selección:* No\n💰 *Cuota:* 1.95 _(Bet365)_\n\n📉 *ANÁLISIS CUANTITATIVO:*\n· Prob. estimada: *60.0%*\n· Valor Esperado (EV): *+17.0%*\n· Confianza: *78%*\n  [🟦🟦🟦🟦🟦🟦🟦🟦⬜⬜]\n· Stake sugerido: ⭐ *1/5*\n\n💡 *RAZONAMIENTO:*\nReal Madrid es líder defensivo en casa. Alaves tiene dificultades ofensivas ante equipos top. Alta probabilidad de portería a cero.\n\n🔘 *ESTADÍSTICAS DE EQUIPOS:*\n🏠 *Local:* Pos 2º | 70 pts\n   Récord: 31pj (22V-4E-5D)\n\n🚀 *Visitante:* Pos 17º | 33 pts\n   Récord: 31pj (8V-9E-14D)\n\n🔥 *Score de Interés:* 0/100"
+  },
+  {
+    "home": "Burnley FC",
+    "away": "Manchester City",
+    "match": "Burnley FC vs Manchester City",
+    "league": "England - Premier League",
+    "competition": "England - Premier League",
+    "date": "2026-04-22T19:00:00Z",
+    "kickoff": "19:00",
+    "main_odds": {
+      "home": 17,
+      "draw": 7,
+      "away": 1.166,
+      "btts_yes": 2
+    },
+    "full_market_dump": "[ML]: HOME:17.000 DRAW:7.000 AWAY:1.166\n[Draw No Bet]: HOME:15.000 AWAY:1.030\n[Double Chance]: Burnley or Draw: 5.000 | Draw or Man City: 1.025 | Burnley or Man City: 1.100\n[Spread]: (Hdp 2.25) HOME:1.875 AWAY:1.975\n[Totals]: (Hdp 3.5) OVER:1.950 UNDER:1.900\n[Both Teams To Score]: YES:2.000 NO:1.750\n[Spread HT]: (Hdp 1) HOME:1.825 AWAY:1.975\n[Corners Spread]: (Hdp 4) HOME:2.000 AWAY:1.800\n[Corners Totals]: (Hdp 9.5) OVER:1.925 UNDER:1.875\n[Corners Totals HT]: (Hdp 4.5) OVER:1.900 UNDER:1.900\n[Bookings Spread]: (Hdp -0.5) HOME:1.850 AWAY:1.950\n[Bookings Totals]: (Hdp 3) OVER:2.075 UNDER:1.725\n[Corners]: (Hdp 9) OVER:1.833 UNDER:2.375\n[Team Corners Away]: (Hdp 6.5) OVER:1.800 UNDER:1.909\n[Half Time Result]: Draw: 3.200 | (Hdp 1) 1: 12.000 | (Hdp 2) 2: 1.444\n[Team Corners Home]: (Hdp 2.5) OVER:1.909 UNDER:1.800\n[Alternative Corners]: (Hdp 10) OVER:2.375 UNDER:1.833 | (Hdp 11) OVER:3.400 UNDER:1.533 | (Hdp 12) OVER:4.500 UNDER:1.300 | (Hdp 13) OVER:6.500 UNDER:1.181 | (Hdp 14) OVER:10.000 UNDER:1.111 | (Hdp 15) OVER:13.000 UNDER:1.062 | (Hdp 16) OVER:19.000 UNDER:1.030 | (Hdp 4) OVER:1.025 UNDER:26.000 | (Hdp 5) OVER:1.071 UNDER:17.000 | (Hdp 6) OVER:1.142 UNDER:9.000 | (Hdp 7) OVER:1.300 UNDER:5.500 | (Hdp 8) OVER:1.533 UNDER:3.400\n[Both Teams To Score 2H]: YES:3.500 NO:1.285\n[Corners 2-Way]: (Hdp 9.5) OVER:1.833 UNDER:1.833\n[Both Teams To Score HT]: YES:5.000 NO:1.166\n[Corners Race]: (Hdp 3) HOME:4.750 AWAY:1.166 | (Hdp 5) HOME:7.500 AWAY:1.285 | (Hdp 7) HOME:17.000 AWAY:1.727 | (Hdp 9) HOME:67.000 AWAY:3.000\n[Total Corners]: Under 6: 9.000 | 6 - 8: 3.100 | 9 - 11: 2.625 | 12 - 14: 4.500 | Over 14: 10.000",
+    "home_logo": "https://via.placeholder.com/64?text=Home",
+    "away_logo": "https://via.placeholder.com/64?text=Away",
+    "league_logo": "https://via.placeholder.com/64?text=League",
+    "stats": {
+      "local": {
+        "posicion": "19º (20 pts)",
+        "partidos_jugados": 32,
+        "partidos_ganados": 4,
+        "partidos_perdidos": 20,
+        "partidos_empatados": 8
+      },
+      "visitante": {
+        "posicion": "2º (64 pts)",
+        "partidos_jugados": 31,
+        "partidos_ganados": 19,
+        "partidos_perdidos": 5,
+        "partidos_empatados": 7
+      }
+    },
+    "mercado": "Spread",
+    "seleccion": "Man City -2.25",
+    "cuota_objetivo": 1.975,
+    "prob_estimada": 0.57,
+    "ev": 0.12575,
+    "confianza": 78,
+    "razonamiento": "Man City domina con ofensiva potente y Burnley muestra débil defensa, esperando victoria cómoda por al menos tres goles.",
+    "casa_recomendada": "Bet365",
+    "recomendar": true,
+    "_valid": true,
+    "telegram_text": "🌍 *PARTIDO*\n🏆 *England - Premier League*\n🤝 Burnley FC vs Manchester City\n📅 2026-04-22  ·  ⏰ 19:00\n\n🎯 *PICK RECOMENDADO:*\n🔹 *Mercado:* Hándicap\n✅ *Selección:* Man City -2.25\n💰 *Cuota:* 1.98 _(Bet365)_\n\n📉 *ANÁLISIS CUANTITATIVO:*\n· Prob. estimada: *57.0%*\n· Valor Esperado (EV): *+12.6%*\n· Confianza: *78%*\n  [🟦🟦🟦🟦🟦🟦🟦🟦⬜⬜]\n· Stake sugerido: ⭐ *1/5*\n\n💡 *RAZONAMIENTO:*\nMan City domina con ofensiva potente y Burnley muestra débil defensa, esperando victoria cómoda por al menos tres goles.\n\n🔘 *ESTADÍSTICAS DE EQUIPOS:*\n🏠 *Local:* Pos 19º (20 pts) | 0 pts\n   Récord: 32pj (0V-0E-0D)\n\n🚀 *Visitante:* Pos 2º (64 pts) | 0 pts\n   Récord: 31pj (0V-0E-0D)\n\n🔥 *Score de Interés:* 0/100"
+  },
+  {
+    "home": "Real Oviedo",
+    "away": "Villarreal CF",
+    "match": "Real Oviedo vs Villarreal CF",
+    "league": "Spain - LaLiga",
+    "competition": "Spain - LaLiga",
+    "date": "2026-04-23T19:30:00Z",
+    "kickoff": "19:30",
+    "main_odds": {
+      "home": 3.6,
+      "draw": 3.4,
+      "away": 2.05,
+      "btts_yes": 1.75
+    },
+    "full_market_dump": "[ML]: HOME:3.600 DRAW:3.400 AWAY:2.050\n[Draw No Bet]: HOME:2.625 AWAY:1.444\n[Double Chance]: Real Oviedo or Draw: 1.727 | Draw or Villarreal: 1.285 | Real Oviedo or Villarreal: 1.300\n[Spread]: (Hdp 0.5) HOME:1.800 AWAY:2.050\n[Totals]: (Hdp 2.5) OVER:1.925 UNDER:1.925\n[Both Teams To Score]: YES:1.750 NO:2.000\n[Spread HT]: (Hdp 0.25) HOME:1.700 AWAY:2.100\n[Totals HT]: (Hdp 1) OVER:1.825 UNDER:1.975\n[Corners Spread]: HOME:2.000 AWAY:1.800\n[Corners Totals]: (Hdp 9) OVER:1.825 UNDER:1.975\n[Corners Totals HT]: (Hdp 4) OVER:1.750 UNDER:2.050\n[Total Corners]: Under 6: 8.000 | 6 - 8: 2.875 | 9 - 11: 2.625 | 12 - 14: 5.000 | Over 14: 13.000\n[Both Teams To Score 2H]: YES:3.250 NO:1.333\n[Corners 2-Way]: (Hdp 9.5) OVER:2.000 UNDER:1.727\n[Both Teams To Score HT]: YES:4.500 NO:1.181\n[Team Corners Away]: (Hdp 4.5) OVER:1.833 UNDER:1.833\n[Alternative Corners]: (Hdp 4) OVER:1.030 UNDER:23.000 | (Hdp 5) OVER:1.083 UNDER:15.000 | (Hdp 6) OVER:1.181 UNDER:8.000 | (Hdp 7) OVER:1.363 UNDER:4.500 | (Hdp 8) OVER:1.615 UNDER:3.000 | (Hdp 10) OVER:2.625 UNDER:1.727 | (Hdp 11) OVER:3.750 UNDER:1.444 | (Hdp 12) OVER:5.500 UNDER:1.250 | (Hdp 13) OVER:8.000 UNDER:1.142 | (Hdp 14) OVER:13.000 UNDER:1.083 | (Hdp 15) OVER:17.000 UNDER:1.040 | (Hdp 16) OVER:23.000 UNDER:1.020\n[Corners]: (Hdp 9) OVER:2.000 UNDER:2.200\n[Corners Race]: (Hdp 3) HOME:1.909 AWAY:1.800 | (Hdp 5) HOME:2.500 AWAY:2.300 | (Hdp 7) HOME:4.333 AWAY:4.000 | (Hdp 9) HOME:10.000 AWAY:9.000\n[Team Corners Home]: (Hdp 4.5) OVER:2.000 UNDER:1.727\n[Half Time Result]: (Hdp 1) 1: 4.000 | Draw: 2.200 | (Hdp 2) 2: 2.625",
+    "home_logo": "https://via.placeholder.com/64?text=Home",
+    "away_logo": "https://via.placeholder.com/64?text=Away",
+    "league_logo": "https://via.placeholder.com/64?text=League",
+    "mercado": "Money Line",
+    "seleccion": "Villarreal CF (Visitante)",
+    "cuota_objetivo": 2.05,
+    "prob_estimada": 0.58,
+    "ev": 0.189,
+    "confianza": 80,
+    "razonamiento": "Villarreal, 3º clasificado, enfrenta al colista (20º). Su excelente forma vs la pobre del Oviedo hace su cuota de victoria muy atractiva.",
+    "casa_recomendada": "Bet365",
+    "recomendar": true,
+    "stats": {
+      "local": {
+        "equipo": "Real Oviedo",
+        "posicion": "20º",
+        "puntos": 27,
+        "partidos_jugados": 31,
+        "partidos_ganados": 6,
+        "partidos_perdidos": 16,
+        "partidos_empatados": 9
+      },
+      "visitante": {
+        "equipo": "Villarreal CF",
+        "posicion": "3º",
+        "puntos": 61,
+        "partidos_jugados": 31,
+        "partidos_ganados": 19,
+        "partidos_perdidos": 8,
+        "partidos_empatados": 4
+      }
+    },
+    "_valid": true,
+    "telegram_text": "🌍 *PARTIDO*\n🏆 *Spain - LaLiga*\n🤝 Real Oviedo vs Villarreal CF\n📅 2026-04-23  ·  ⏰ 19:30\n\n🎯 *PICK RECOMENDADO:*\n🔹 *Mercado:* Victoria (1X2)\n✅ *Selección:* Villarreal CF (Visitante)\n💰 *Cuota:* 2.05 _(Bet365)_\n\n📉 *ANÁLISIS CUANTITATIVO:*\n· Prob. estimada: *58.0%*\n· Valor Esperado (EV): *+18.9%*\n· Confianza: *80%*\n  [🟦🟦🟦🟦🟦🟦🟦🟦⬜⬜]\n· Stake sugerido: ⭐ *1/5*\n\n💡 *RAZONAMIENTO:*\nVillarreal, 3º clasificado, enfrenta al colista (20º). Su excelente forma vs la pobre del Oviedo hace su cuota de victoria muy atractiva.\n\n🔘 *ESTADÍSTICAS DE EQUIPOS:*\n🏠 *Local:* Pos 20º | 27 pts\n   Récord: 31pj (0V-0E-0D)\n\n🚀 *Visitante:* Pos 3º | 61 pts\n   Récord: 31pj (0V-0E-0D)\n\n🔥 *Score de Interés:* 0/100"
+  },
+  {
+    "home": "Stade Brest 29",
+    "away": "Racing Club De Lens",
+    "match": "Stade Brest 29 vs Racing Club De Lens",
+    "league": "France - Ligue 1",
+    "competition": "France - Ligue 1",
+    "date": "2026-04-24T18:45:00Z",
+    "kickoff": "18:45",
+    "main_odds": {
+      "home": 4.5,
+      "draw": 3.75,
+      "away": 1.727,
+      "btts_yes": 1.666
+    },
+    "full_market_dump": "[ML]: HOME:4.500 DRAW:3.750 AWAY:1.727\n[Draw No Bet]: HOME:3.400 AWAY:1.300\n[Double Chance]: Brest or Draw: 2.050 | Draw or Lens: 1.181 | Brest or Lens: 1.250\n[Spread]: (Hdp 0.75) HOME:1.850 AWAY:2.000\n[Totals]: (Hdp 2.75) OVER:1.875 UNDER:1.975\n[Both Teams To Score]: YES:1.666 NO:2.100\n[Spread HT]: (Hdp 0.25) HOME:1.925 AWAY:1.875\n[Totals HT]: (Hdp 1.25) OVER:2.050 UNDER:1.750\n[Corners Totals]: (Hdp 9) OVER:1.925 UNDER:1.875\n[Corners Totals HT]: (Hdp 4) OVER:1.800 UNDER:2.000\n[Corners]: (Hdp 9) OVER:2.100 UNDER:2.100\n[Half Time Result]: (Hdp 1) 1: 4.500 | Draw: 2.375 | (Hdp 2) 2: 2.250\n[Total Corners]: Under 6: 7.000 | 6 - 8: 2.750 | 9 - 11: 2.625 | 12 - 14: 5.000 | Over 14: 13.000\n[Alternative Corners]: (Hdp 4) OVER:1.040 UNDER:26.000 | (Hdp 5) OVER:1.100 UNDER:13.000 | (Hdp 6) OVER:1.200 UNDER:7.000 | (Hdp 7) OVER:1.400 UNDER:4.333 | (Hdp 8) OVER:1.666 UNDER:2.750 | (Hdp 10) OVER:2.750 UNDER:1.666 | (Hdp 11) OVER:4.000 UNDER:1.400 | (Hdp 12) OVER:6.000 UNDER:1.222 | (Hdp 13) OVER:9.000 UNDER:1.125 | (Hdp 14) OVER:13.000 UNDER:1.071 | (Hdp 15) OVER:17.000 UNDER:1.035 | (Hdp 16) OVER:23.000 UNDER:1.020\n[Both Teams To Score 2H]: YES:3.000 NO:1.363\n[Corners 2-Way]: (Hdp 8.5) OVER:1.666 UNDER:2.100\n[Both Teams To Score HT]: YES:4.000 NO:1.222",
+    "home_logo": "https://via.placeholder.com/64?text=Home",
+    "away_logo": "https://via.placeholder.com/64?text=Away",
+    "league_logo": "https://via.placeholder.com/64?text=League",
+    "mercado": "ML",
+    "seleccion": "Racing Club De Lens",
+    "cuota_objetivo": 1.727,
+    "prob_estimada": 0.6896,
+    "ev": 0.1925,
+    "confianza": 85,
+    "razonamiento": "Lens posee mejor forma y posición; su probabilidad real de victoria (68.9%) es superior a la implícita (57.9%) en la cuota de 1.727.",
+    "casa_recomendada": "Bet365",
+    "recomendar": true,
+    "stats": {
+      "home": {
+        "name": "Stade Brest 29",
+        "pos": 11,
+        "pts": 36,
+        "pj": 28,
+        "pg": 10,
+        "pe": 6,
+        "pp": 12
+      },
+      "away": {
+        "name": "Racing Club De Lens",
+        "pos": 2,
+        "pts": 62,
+        "pj": 29,
+        "pg": 20,
+        "pe": 2,
+        "pp": 7
+      }
+    },
+    "_valid": true,
+    "telegram_text": "🌍 *PARTIDO*\n🏆 *France - Ligue 1*\n🤝 Stade Brest 29 vs Racing Club De Lens\n📅 2026-04-24  ·  ⏰ 18:45\n\n🎯 *PICK RECOMENDADO:*\n🔹 *Mercado:* Victoria (1X2)\n✅ *Selección:* Racing Club De Lens\n💰 *Cuota:* 1.73 _(Bet365)_\n\n📉 *ANÁLISIS CUANTITATIVO:*\n· Prob. estimada: *69.0%*\n· Valor Esperado (EV): *+19.3%*\n· Confianza: *85%*\n  [🟦🟦🟦🟦🟦🟦🟦🟦🟦⬜]\n· Stake sugerido: ⭐ *1/5*\n\n💡 *RAZONAMIENTO:*\nLens posee mejor forma y posición; su probabilidad real de victoria (68.9%) es superior a la implícita (57.9%) en la cuota de 1.727.\n\n🔘 *ESTADÍSTICAS DE EQUIPOS:*\n🏠 *Local:* Pos - | 0 pts\n   Récord: 0pj (0V-0E-0D)\n\n🚀 *Visitante:* Pos - | 0 pts\n   Récord: 0pj (0V-0E-0D)\n\n🔥 *Score de Interés:* 0/100"
+  }
+]
