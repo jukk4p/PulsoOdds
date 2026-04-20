@@ -203,7 +203,7 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
 
           {/* Column 5: Actions */}
           <div className="flex items-center justify-center w-full md:w-[60px] shrink-0 h-[70px] pt-4 md:pt-0">
-             <button onClick={() => setIsExpanded(!isExpanded)} className="h-9 w-9 flex items-center justify-center rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 text-white/40 transition-all shadow-sm">
+             <button onClick={() => setIsExpanded(!isExpanded)} className="h-9 w-9 flex items-center justify-center rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 text-white/40 transition-all shadow-sm translate-y-[2px]">
                {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
              </button>
           </div>
