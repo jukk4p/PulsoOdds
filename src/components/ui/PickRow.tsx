@@ -210,22 +210,11 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
             </div>
           </div>
 
-          {/* Col 3: Métricas y Cuota (w-160) - FIXED RIGHT ALIGNMENT */}
-          <div className="w-[160px] flex flex-col justify-center items-end gap-3 h-full shrink-0">
-            <div className="flex flex-col items-end gap-1.5">
-               <div className={cn("h-5 min-w-[75px] flex items-center justify-center rounded-md border px-2 shadow-sm", pick.status === 'pending' ? "text-slate-900 bg-[#c9a84c] border-[#c9a84c]" : statusStyles[pick.status as keyof typeof statusStyles])}>
-                  <span className="text-[7px] font-black uppercase tracking-tighter">{statusLabels[pick.status as keyof typeof statusLabels]}</span>
-               </div>
-               <div className="flex items-center gap-2 pr-1">
-                  <span className="text-[7px] font-black uppercase text-white/20 tracking-tighter">Stake</span>
-                  <div className="flex gap-0.5">
-                    {[...Array(10)].map((_, i) => {
-                      const confidenceLevel = (pick.confianza || pick.stake * 10 || 50) / 10;
-                      return <div key={i} className={cn("w-1 h-2 rounded-full transition-all", i < confidenceLevel ? "bg-neon-green" : "bg-white/5")} />;
-                    })}
-                  </div>
-               </div>
-            </div>
+          {/* Col 3: Métricas y Cuota (w-160) - MINIMALIST ALIGNMENT */}
+          <div className="w-[160px] flex flex-col justify-center items-end gap-4 h-full shrink-0">
+             <div className={cn("h-5 min-w-[75px] flex items-center justify-center rounded-md border px-2 shadow-sm mb-1", pick.status === 'pending' ? "text-slate-900 bg-[#c9a84c] border-[#c9a84c]" : statusStyles[pick.status as keyof typeof statusStyles])}>
+                <span className="text-[7px] font-black uppercase tracking-tighter">{statusLabels[pick.status as keyof typeof statusLabels]}</span>
+             </div>
             <div className="flex items-center justify-end gap-3 -translate-y-1">
               <button onClick={(e) => { e.stopPropagation(); onToggle?.(); }} className={cn("flex flex-col items-center justify-center w-[90px] h-12 rounded-xl border transition-all duration-300 relative overflow-hidden group", isSelected ? "bg-neon-green border-neon-green text-[#0a0f16] shadow-[0_0_25px_rgba(0,230,118,0.4)] scale-105" : "bg-white/[0.05] border-white/10 text-neon-green hover:border-neon-green/50 hover:bg-white/[0.08]")}>
                   <div className="flex flex-col items-center relative z-10">
