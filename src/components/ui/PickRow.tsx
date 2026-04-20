@@ -204,8 +204,8 @@ export function PickRow({ pick }: PickRowProps) {
             </div>
 
              {/* Column 5: Betting Description */}
-             <div className="flex flex-[2.5] flex-col items-center justify-center px-4 py-4 md:py-0 border-y md:border-y-0 md:border-r border-white/5 text-center">
-                <div className="flex flex-col gap-1 items-center bg-slate-900/40 p-3 rounded-xl border border-white/5 backdrop-blur-sm group hover:bg-slate-800/60 transition-all duration-300 w-full max-w-[220px] shadow-inner">
+             <div className="flex flex-[2.5] flex-col items-center justify-center px-4 py-4 md:py-0 border-y md:border-y-0 md:border-r border-white/5 text-center h-full">
+                <div className="flex flex-col gap-1 items-center bg-slate-900/40 p-3 rounded-xl border border-white/5 backdrop-blur-sm group hover:bg-slate-800/60 transition-all duration-300 w-full max-w-[220px] shadow-inner min-h-[85px] justify-center">
                   <span className="text-[9px] text-[#00e676] font-black tracking-[0.2em] mb-1.5 opacity-60">
                     MERCADO SELECCIONADO
                   </span>
@@ -222,8 +222,8 @@ export function PickRow({ pick }: PickRowProps) {
              </div>
 
             {/* Column 6: Odds */}
-            <div className="flex items-center justify-center md:w-[110px] shrink-0 md:border-r border-white/5 py-4 md:py-0">
-               <div className="bg-[#00e676]/10 border border-[#00e676]/20 px-3 py-1.5 rounded-lg flex flex-col items-center relative group/tooltip">
+            <div className="flex items-center justify-center md:w-[110px] shrink-0 md:border-r border-white/5 py-4 md:py-0 h-full">
+               <div className="bg-[#00e676]/10 border border-[#00e676]/20 px-3 py-3 rounded-xl flex flex-col items-center relative group/tooltip min-h-[85px] justify-center w-[90px] backdrop-blur-sm shadow-inner transition-all hover:bg-[#00e676]/20">
                   <span className="text-[8px] text-[#00e676]/60 font-black tracking-widest uppercase">Cuota</span>
                   <div className="flex items-center gap-1">
                     <span className="text-base font-black text-[#00e676] italic">@{normalizeOdds(pick.odds).toFixed(2)}</span>
@@ -241,7 +241,7 @@ export function PickRow({ pick }: PickRowProps) {
             </div>
 
             {/* Column 7: Actions & Badge */}
-            <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-[200px] shrink-0 pt-4 md:pt-0 px-2 md:pl-6">
+            <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-[200px] shrink-0 pt-4 md:pt-0 px-2 md:pl-6 h-full min-h-[85px]">
                {/* Interactive Badge */}
                <div className="group relative flex items-center justify-center">
                  <div className={cn(
