@@ -75,6 +75,12 @@ export function PickRow({ pick }: PickRowProps) {
   const GENERIC_SHIELD = "https://img.icons8.com/ios-filled/100/ffffff/shield.png";
   const GENERIC_LEAGUE = "https://img.icons8.com/ios-filled/100/ffffff/trophy.png";
 
+  const getLocalLogoPath = (url: string | undefined, type: 'teams' | 'leagues') => {
+    if (!url || !url.includes('/')) return null;
+    const filename = url.split('/').pop();
+    return `/logos/${type}/${filename}`;
+  };
+
   return (
     <div className="mb-3">
       {/* Main Card */}
@@ -88,7 +94,19 @@ export function PickRow({ pick }: PickRowProps) {
             {/* Column 1: League (Fixed width) */}
             <div className="hidden md:flex flex-col items-center justify-center w-[70px] shrink-0 md:border-r border-white/5 pr-4">
                 <div className="h-10 w-10 flex items-center justify-center bg-white/5 rounded-xl border border-white/10 overflow-hidden shadow-inner" title={pick.competition}>
-                  <img src={pick.league_logo || GENERIC_LEAGUE} alt={pick.competition} className="h-7 w-7 object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.15)] opacity-80" />
+                  <img 
+                    src={getLocalLogoPath(pick.league_logo, 'leagues') || pick.league_logo || GENERIC_LEAGUE} 
+                    alt={pick.competition} 
+                    className="h-7 w-7 object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.15)] opacity-80"
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      if (target.src.includes('/logos/')) {
+                        target.src = pick.league_logo || GENERIC_LEAGUE;
+                      } else {
+                        target.src = GENERIC_LEAGUE;
+                      }
+                    }}
+                  />
                 </div>
             </div>
 
@@ -108,7 +126,19 @@ export function PickRow({ pick }: PickRowProps) {
                 <div className="flex flex-1 items-center justify-end gap-3 min-w-0">
                    <span className="text-sm font-bold text-white truncate text-right uppercase tracking-tight">{homeName}</span>
                     <div className="shrink-0 h-8 w-8 flex items-center justify-center bg-white/5 rounded-lg border border-white/10 overflow-hidden">
-                      <img src={pick.home_logo || GENERIC_SHIELD} alt="" className={cn("h-5 w-5 object-contain drop-shadow-[0_0_5px_rgba(255,255,255,0.2)]", !pick.home_logo && "opacity-30 grayscale")} />
+                      <img 
+                        src={getLocalLogoPath(pick.home_logo, 'teams') || pick.home_logo || GENERIC_SHIELD} 
+                        alt="" 
+                        className={cn("h-5 w-5 object-contain drop-shadow-[0_0_5px_rgba(255,255,255,0.2)]", !pick.home_logo && "opacity-30 grayscale")} 
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          if (target.src.includes('/logos/')) {
+                            target.src = pick.home_logo || GENERIC_SHIELD;
+                          } else {
+                            target.src = GENERIC_SHIELD;
+                          }
+                        }}
+                      />
                     </div>
                 </div>
 
