@@ -119,9 +119,9 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
              </div>
           </div>
 
-          {/* C3: Mercado Header Label (flex-2.7) - ALINEACIÓN TOTAL */}
-          <div className="flex-[2.7] shrink-0 h-8 flex items-center justify-center">
-             <span className="text-[8px] text-neon-green font-black tracking-[0.3em] uppercase opacity-30">Mercado</span>
+          {/* C3: Mercado Header Label (flex-2.7) - ESTILO UNIFICADO */}
+          <div className="flex-[2.7] shrink-0 h-8 flex items-center justify-center opacity-50">
+             <span className="text-[10px] text-white font-bold uppercase tracking-[0.2em]">Mercado</span>
           </div>
 
           {/* C4: Odds Space (80px) */}
