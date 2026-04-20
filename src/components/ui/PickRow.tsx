@@ -97,14 +97,14 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
           isSelected && "border-[#00e676]/50 shadow-[0_0_25px_rgba(0,255,135,0.15)] bg-slate-900/80"
         )}
       >
-        {/* Header Grid: Sincronizada con el desplazamiento a la izquierda */}
+        {/* Header Grid: Sincronizada con el desplazamiento agresivo a la izquierda */}
         <div className="hidden md:flex items-center px-6 md:px-8 pt-3 pb-0 gap-4 md:gap-6 relative z-10 overflow-hidden">
           {/* C1: League Space */}
-          <div className="w-[50px] shrink-0 h-8" />
+          <div className="w-[50px] shrink-0 h-8 font-black" />
           
-          {/* C2: Time Center (flex-5.2 para mover a la izquierda) */}
-          <div className="flex-[5.2] relative h-8 flex items-center justify-center">
-             <div className="flex w-full items-center justify-center opacity-50">
+          {/* C2: Time Center (flex-4.8 para mover más a la izquierda) */}
+          <div className="flex-[4.8] relative h-8 flex items-center justify-center">
+             <div className="flex w-full items-center justify-center opacity-50 px-4">
                 <div className="flex-1 flex items-center justify-end gap-3 min-w-0">
                   <span className="text-[10px] uppercase font-bold text-white tracking-[0.2em] truncate">{formattedDay}</span>
                   <div className="h-[1px] w-4 bg-white/10 shrink-0" />
@@ -119,8 +119,8 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
              </div>
           </div>
 
-          {/* C3: Market Area Space (flex-2.3) */}
-          <div className="flex-[2.3] shrink-0 h-8" />
+          {/* C3: Market Area Space (flex-2.7 para empujar) */}
+          <div className="flex-[2.7] shrink-0 h-8" />
 
           {/* C4: Odds Area Space (80px) */}
           <div className="w-[80px] shrink-0 h-8" />
@@ -133,7 +133,7 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
                     <div key={i} className={cn("w-0.5 h-2.5 rounded-full transition-all", i < (pick.confianza || pick.stake || 5) ? (pick.confianza || pick.stake || 5) >= 8 ? "bg-neon-green shadow-sm" : "bg-white/40" : "bg-white/5")} />
                   ))}
                 </div>
-                <span className="text-[7px] font-black uppercase text-white/20">Confianza</span>
+                <span className="text-[7px] font-black uppercase text-white/20 whitespace-nowrap">Confianza</span>
              </div>
              <div className={cn("flex items-center justify-center h-6 md:w-24 rounded-lg border", pick.status === 'pending' ? "text-slate-900 bg-[#c9a84c] border-[#c9a84c]" : statusStyles[pick.status as keyof typeof statusStyles])}>
                 <span className="text-[8px] font-black uppercase tracking-tight px-2">{statusLabels[pick.status as keyof typeof statusLabels]}</span>
@@ -149,8 +149,8 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
               </div>
           </div>
 
-          {/* Column 2: Teams Area (flex-5.2) */}
-          <div className="hidden md:flex flex-[5.2] flex-col items-center justify-center px-6 border-r border-white/5 h-full min-w-0">
+          {/* Column 2: Teams Area (flex-4.8 + px-4 para mover más a la izquierda) */}
+          <div className="hidden md:flex flex-[4.8] flex-col items-center justify-center px-4 border-r border-white/5 h-full min-w-0">
             <div className="flex items-center justify-center gap-4 w-full">
               <div className="flex flex-1 items-center justify-end gap-3 min-w-0">
                  <span className="text-sm font-bold text-white truncate text-right uppercase tracking-tight">{homeName}</span>
@@ -180,8 +180,8 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
              </div>
           </div>
 
-          {/* Column 3: Market Info (flex-2.3) */}
-          <div className="flex flex-[2.3] flex-col items-center justify-center px-4 border-r border-white/5 text-center h-full min-w-0">
+          {/* Column 3: Market Info (flex-2.7) */}
+          <div className="flex flex-[2.7] flex-col items-center justify-center px-4 border-r border-white/5 text-center h-full min-w-0">
             <div className="flex flex-col gap-0.5 items-center bg-slate-900/40 p-2 rounded-xl border border-white/5 w-full max-w-[140px] shadow-inner min-h-[70px] justify-center">
               <span className="text-[8px] text-[#00e676] font-black tracking-[0.2em] mb-0.5 opacity-60 uppercase">Mercado</span>
               <div className="flex flex-col gap-0.5 w-full">
