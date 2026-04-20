@@ -197,7 +197,7 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
 
           {/* Cuerpo Horizonte 70px - FIXED ALIGNMENT */}
           <div className="flex items-center h-[70px] px-8 gap-6 relative mb-5">
-            <div className="flex items-center justify-center w-[50px] shrink-0 h-full">
+            <div className="flex items-center justify-center w-[50px] shrink-0 h-full -translate-y-0.5">
                 <div className="h-9 w-9 flex items-center justify-center bg-white rounded-lg border border-white/20 overflow-hidden shadow-sm">
                   <img src={getLocalLogoPath(pick.league_logo, 'leagues') || pick.league_logo || GENERIC_LEAGUE} alt="" className="h-6 w-6 object-contain" />
                 </div>
