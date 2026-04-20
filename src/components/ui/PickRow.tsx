@@ -186,7 +186,9 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
                 <div className="shrink-0 h-11 w-11 flex items-center justify-center bg-white rounded-xl border-2 border-white/20 overflow-hidden p-1.5 shadow-[0_0_20px_rgba(255,255,255,0.05)] transform hover:scale-110 transition-transform">
                   <img src={getLocalLogoPath(pick.home_logo, 'teams') || pick.home_logo || GENERIC_SHIELD} alt="" className="h-full w-full object-contain" />
                 </div>
-              </di              {/* Centro de Acción - STRIPPED MINIMALISM */}
+              </div>
+
+              {/* Centro de Acción - STRIPPED MINIMALISM */}
               <div className="flex flex-col items-center gap-2 shrink-0 px-2 pt-1">
                 <div className="flex items-center justify-center h-5">
                    <span className="text-[8px] font-black italic text-neon-green/40 px-2 py-0.5 rounded border border-neon-green/10">VS</span>
