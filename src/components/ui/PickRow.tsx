@@ -97,20 +97,20 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
           isSelected && "border-[#00e676]/50 shadow-[0_0_25px_rgba(0,255,135,0.15)] bg-slate-900/80"
         )}
       >
-        {/* Top Header Bar */}
-        <div className="hidden md:flex items-center px-6 pt-3.5 pb-1 gap-4 md:gap-6 relative z-10">
-          <div className="w-[50px] shrink-0" />
+        {/* Top Header Bar: Sincronizada con los paddings del cuerpo */}
+        <div className="hidden md:flex items-center px-6 md:px-8 pt-3.5 pb-1 gap-4 md:gap-6 relative z-10">
+          <div className="w-[50px] shrink-0" /> {/* League space spacer */}
           
-          <div className="flex-[5.5] flex items-center justify-center gap-3 opacity-40">
+          <div className="flex-[5.5] flex items-center justify-center gap-3 opacity-50 px-6">
              <span className="text-[10px] uppercase font-bold text-white tracking-[0.2em]">{formattedDay}</span>
              <div className="h-[1px] w-4 bg-white/10" />
              <span className="text-[10px] font-black text-neon-green tracking-wider">{formattedTime}</span>
              <div className="h-[1px] w-4 bg-white/10" />
-             <span className="text-[9px] text-white font-black uppercase tracking-[0.1em]">{pick.competition}</span>
+             <span className="text-[9px] text-white font-black uppercase tracking-[0.1em] truncate max-w-[150px]">{pick.competition}</span>
           </div>
 
           <div className="flex-[4.5] flex items-center justify-end gap-5">
-             <div className="flex items-center gap-2 pr-2">
+             <div className="flex items-center gap-2">
                 <div className="flex gap-0.5">
                   {[...Array(10)].map((_, i) => (
                     <div key={i} className={cn("w-0.5 h-2.5 rounded-full transition-all duration-500", i < (pick.confianza || pick.stake || 5) ? (pick.confianza || pick.stake || 5) >= 8 ? "bg-neon-green shadow-[0_0_8px_rgba(0,255,135,0.5)]" : "bg-white/40" : "bg-white/5")} />
@@ -136,7 +136,7 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
               </div>
           </div>
 
-          {/* Column 2: Teams Area */}
+          {/* Column 2: Teams Area - Refuerzo de centrado exacto */}
           <div className="hidden md:flex flex-[5.5] flex-col items-center justify-center px-6 border-r border-white/5 h-full min-w-0">
             <div className="flex items-center justify-center gap-4 w-full">
               <div className="flex flex-1 items-center justify-end gap-3 min-w-0">
@@ -167,7 +167,7 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
              </div>
           </div>
 
-          {/* Column 5: Market Info (Reduced Size) */}
+          {/* Column 5: Market Info */}
           <div className="flex flex-[2] flex-col items-center justify-center px-4 border-r border-white/5 text-center h-full min-w-0">
             <div className="flex flex-col gap-0.5 items-center bg-slate-900/40 p-2 rounded-xl border border-white/5 w-full max-w-[140px] shadow-inner min-h-[70px] justify-center">
               <span className="text-[8px] text-[#00e676] font-black tracking-[0.2em] mb-0.5 opacity-60 uppercase">Mercado</span>
@@ -178,7 +178,7 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
             </div>
           </div>
 
-          {/* Column 6: Odds (Reduced Size) */}
+          {/* Column 6: Odds */}
           <div className="flex items-center justify-center md:w-[80px] shrink-0 md:border-r border-white/5 py-4 md:py-0 h-full">
              <button 
                 onClick={(e) => { e.stopPropagation(); onToggle?.(); }}
