@@ -97,11 +97,10 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
           isSelected && "border-[#00e676]/50 shadow-[0_0_25px_rgba(0,255,135,0.15)] bg-slate-900/80"
         )}
       >
-        {/* Top Header Bar: Date/Time + Confidence + Status */}
+        {/* Top Header Bar */}
         <div className="hidden md:flex items-center px-6 pt-3.5 pb-1 gap-4 md:gap-6 relative z-10">
-          <div className="w-[50px] shrink-0" /> {/* Spacer for League */}
+          <div className="w-[50px] shrink-0" />
           
-          {/* Centered Date/Time over Teams */}
           <div className="flex-[5.5] flex items-center justify-center gap-3 opacity-40">
              <span className="text-[10px] uppercase font-bold text-white tracking-[0.2em]">{formattedDay}</span>
              <div className="h-[1px] w-4 bg-white/10" />
@@ -110,7 +109,6 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
              <span className="text-[9px] text-white font-black uppercase tracking-[0.1em]">{pick.competition}</span>
           </div>
 
-          {/* Right Header Area: Pushed to the far right */}
           <div className="flex-[4.5] flex items-center justify-end gap-5">
              <div className="flex items-center gap-2 pr-2">
                 <div className="flex gap-0.5">
@@ -130,7 +128,7 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row md:items-center pt-2 md:pt-4 pb-6 md:pb-8 px-6 md:px-8 gap-4 md:gap-6 relative">
+        <div className="flex flex-col md:flex-row md:items-center pt-2 md:pt-4 pb-4 md:pb-6 px-6 md:px-8 gap-4 md:gap-6 relative">
           {/* Column 1: League */}
           <div className="hidden md:flex flex-col items-center justify-center w-[50px] shrink-0 border-r border-white/5 pr-4 h-full">
               <div className="h-9 w-9 flex items-center justify-center bg-white rounded-lg border border-white/20 overflow-hidden shadow-sm">
@@ -169,30 +167,30 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
              </div>
           </div>
 
-          {/* Column 5: Market Info */}
+          {/* Column 5: Market Info (Reduced Size) */}
           <div className="flex flex-[2] flex-col items-center justify-center px-4 border-r border-white/5 text-center h-full min-w-0">
-            <div className="flex flex-col gap-1 items-center bg-slate-900/40 p-2.5 rounded-xl border border-white/5 w-full max-w-[160px] shadow-inner min-h-[85px] justify-center">
-              <span className="text-[9px] text-[#00e676] font-black tracking-[0.2em] mb-1 opacity-60 uppercase">Mercado</span>
+            <div className="flex flex-col gap-0.5 items-center bg-slate-900/40 p-2 rounded-xl border border-white/5 w-full max-w-[140px] shadow-inner min-h-[70px] justify-center">
+              <span className="text-[8px] text-[#00e676] font-black tracking-[0.2em] mb-0.5 opacity-60 uppercase">Mercado</span>
               <div className="flex flex-col gap-0.5 w-full">
-                <span className="text-[10px] text-white/50 uppercase font-bold italic tracking-wide truncate">{translateBettingTerm(pick.market || "Hándicap")}</span>
-                <span className="text-sm font-black uppercase text-[#00e676] leading-none italic truncate">{translateBettingTerm(pick.pick)}</span>
+                <span className="text-[9px] text-white/50 uppercase font-bold italic tracking-wide truncate">{translateBettingTerm(pick.market || "Hándicap")}</span>
+                <span className="text-[12px] font-black uppercase text-[#00e676] leading-none italic truncate">{translateBettingTerm(pick.pick)}</span>
               </div>
             </div>
           </div>
 
-          {/* Column 6: Odds */}
-          <div className="flex items-center justify-center md:w-[90px] shrink-0 md:border-r border-white/5 py-4 md:py-0 h-full">
+          {/* Column 6: Odds (Reduced Size) */}
+          <div className="flex items-center justify-center md:w-[80px] shrink-0 md:border-r border-white/5 py-4 md:py-0 h-full">
              <button 
                 onClick={(e) => { e.stopPropagation(); onToggle?.(); }}
                 className={cn(
-                  "flex flex-col items-center relative min-h-[85px] justify-center w-[80px] rounded-xl border transition-all duration-300 backdrop-blur-sm shadow-inner",
+                  "flex flex-col items-center relative min-h-[70px] justify-center w-[70px] rounded-xl border transition-all duration-300 backdrop-blur-sm shadow-inner",
                   isSelected 
                     ? "bg-neon-green border-neon-green text-deep-black shadow-[0_0_20px_rgba(0,255,135,0.4)] scale-105" 
                     : "bg-neon-green/10 border-neon-green/20 text-neon-green hover:bg-neon-green/20"
                 )}
               >
                 <span className={cn("text-[8px] font-black uppercase", isSelected ? "text-deep-black/60" : "text-neon-green/60")}>Cuota</span>
-                <span className="text-base font-black italic">@{normalizeOdds(pick.odds).toFixed(2)}</span>
+                <span className="text-sm font-black italic">@{normalizeOdds(pick.odds).toFixed(2)}</span>
              </button>
           </div>
 
