@@ -206,7 +206,6 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
               </div>
             </div>
           </div>
-          </div>
 
         {/* Expanded Analysis */}
         {isExpanded && (
