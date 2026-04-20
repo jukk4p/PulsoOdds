@@ -144,7 +144,7 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
              </div>
           </div>
 
-          {/* Column 5: Market */}
+          {/* Column 5: Market Info */}
           <div className="flex flex-[2] flex-col items-center justify-center px-4 border-r border-white/5 text-center h-full min-w-0">
             <div className="flex flex-col gap-1 items-center bg-slate-900/40 p-2.5 rounded-xl border border-white/5 w-full max-w-[160px] shadow-inner min-h-[85px] justify-center">
               <span className="text-[9px] text-[#00e676] font-black tracking-[0.2em] mb-1 opacity-60 uppercase">Mercado</span>
@@ -171,26 +171,26 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
              </button>
           </div>
 
-          {/* Column 7: Actions */}
-          <div className="flex items-center justify-between md:justify-end gap-5 w-full md:w-[220px] shrink-0 pt-4 md:pt-0 h-full self-center">
-             <div className="flex flex-col items-center md:items-end gap-2 h-[85px] justify-center">
+          {/* Column 7: Actions (Compact) */}
+          <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-[190px] shrink-0 pt-4 md:pt-0 h-full self-center">
+             <div className="flex flex-col items-center md:items-end gap-1.5 h-[85px] justify-center">
                 <div className="flex gap-0.5">
                   {[...Array(10)].map((_, i) => (
-                    <div key={i} className={cn("w-1 h-3 rounded-full transition-all duration-500", i < (pick.confianza || pick.stake || 5) ? (pick.confianza || pick.stake || 5) >= 8 ? "bg-neon-green shadow-[0_0_8px_rgba(0,255,135,0.5)]" : "bg-white/40" : "bg-white/5")} />
+                    <div key={i} className={cn("w-0.5 h-2.5 rounded-full transition-all duration-500", i < (pick.confianza || pick.stake || 5) ? (pick.confianza || pick.stake || 5) >= 8 ? "bg-neon-green shadow-[0_0_8px_rgba(0,255,135,0.5)]" : "bg-white/40" : "bg-white/5")} />
                   ))}
                 </div>
-                <span className="text-[8px] font-black uppercase tracking-widest text-white/20 whitespace-nowrap">Confianza</span>
+                <span className="text-[7px] font-black uppercase tracking-wider text-white/20 whitespace-nowrap">Confianza</span>
              </div>
 
-             <div className="flex items-center gap-3">
-               <div className={cn("flex items-center justify-center h-10 w-10 md:w-28 rounded-xl border transition-all duration-300", pick.status === 'pending' ? "text-slate-900 bg-[#c9a84c] border-[#c9a84c]" : statusStyles[pick.status as keyof typeof statusStyles])}>
-                  <div className="flex items-center gap-2 px-3">
-                    {statusIcons[pick.status as keyof typeof statusIcons]}
-                    <span className="hidden md:block text-[10px] font-black uppercase tracking-tighter">{statusLabels[pick.status as keyof typeof statusLabels]}</span>
+             <div className="flex items-center gap-2">
+               <div className={cn("flex items-center justify-center h-8 md:w-24 rounded-lg border transition-all duration-300", pick.status === 'pending' ? "text-slate-900 bg-[#c9a84c] border-[#c9a84c]" : statusStyles[pick.status as keyof typeof statusStyles])}>
+                  <div className="flex items-center gap-1.5 px-2">
+                    <span className="scale-75 origin-center">{statusIcons[pick.status as keyof typeof statusIcons]}</span>
+                    <span className="hidden md:block text-[9px] font-black uppercase tracking-tight">{statusLabels[pick.status as keyof typeof statusLabels]}</span>
                   </div>
                </div>
-               <button onClick={() => setIsExpanded(!isExpanded)} className="h-10 w-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white/40 transition-all">
-                 {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+               <button onClick={() => setIsExpanded(!isExpanded)} className="h-8 w-8 flex items-center justify-center rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 text-white/40 transition-all">
+                 {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                </button>
              </div>
           </div>
