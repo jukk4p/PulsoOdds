@@ -97,24 +97,49 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
           isSelected && "border-[#00e676]/50 shadow-[0_0_25px_rgba(0,255,135,0.15)] bg-slate-900/80"
         )}
       >
-        <div className="flex flex-col md:flex-row md:items-center pt-9 pb-6 md:pt-11 md:pb-8 px-6 md:px-8 gap-4 md:gap-6 relative">
+        {/* Top Header Bar: Date/Time + Confidence + Status */}
+        <div className="hidden md:flex items-center px-6 pt-3.5 pb-1 gap-4 md:gap-6 relative z-10">
+          <div className="w-[50px] shrink-0" /> {/* Spacer for League */}
+          
+          {/* Centered Date/Time over Teams */}
+          <div className="flex-[5.5] flex items-center justify-center gap-3 opacity-40">
+             <span className="text-[10px] uppercase font-bold text-white tracking-[0.2em]">{formattedDay}</span>
+             <div className="h-[1px] w-4 bg-white/10" />
+             <span className="text-[10px] font-black text-neon-green tracking-wider">{formattedTime}</span>
+             <div className="h-[1px] w-4 bg-white/10" />
+             <span className="text-[9px] text-white font-black uppercase tracking-[0.1em]">{pick.competition}</span>
+          </div>
+
+          {/* Right Header Area: Linked to Market start */}
+          <div className="flex-[4.5] flex items-center gap-6">
+             <div className="flex items-center gap-2">
+                <div className="flex gap-0.5">
+                  {[...Array(10)].map((_, i) => (
+                    <div key={i} className={cn("w-0.5 h-2.5 rounded-full transition-all duration-500", i < (pick.confianza || pick.stake || 5) ? (pick.confianza || pick.stake || 5) >= 8 ? "bg-neon-green shadow-[0_0_8px_rgba(0,255,135,0.5)]" : "bg-white/40" : "bg-white/5")} />
+                  ))}
+                </div>
+                <span className="text-[7px] font-black uppercase tracking-wider text-white/20 whitespace-nowrap">Confianza</span>
+             </div>
+
+             <div className={cn("flex items-center justify-center h-6 md:w-24 rounded-lg border transition-all duration-300", pick.status === 'pending' ? "text-slate-900 bg-[#c9a84c] border-[#c9a84c]" : statusStyles[pick.status as keyof typeof statusStyles])}>
+                <div className="flex items-center gap-1.5 px-2">
+                  <span className="scale-75 origin-center">{statusIcons[pick.status as keyof typeof statusIcons]}</span>
+                  <span className="text-[8px] font-black uppercase tracking-tight">{statusLabels[pick.status as keyof typeof statusLabels]}</span>
+                </div>
+             </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col md:flex-row md:items-center pt-2 md:pt-4 pb-6 md:pb-8 px-6 md:px-8 gap-4 md:gap-6 relative">
           {/* Column 1: League */}
           <div className="hidden md:flex flex-col items-center justify-center w-[50px] shrink-0 border-r border-white/5 pr-4 h-full">
-              <div className="h-9 w-9 flex items-center justify-center bg-white rounded-lg border border-white/20 overflow-hidden shadow-sm" title={pick.competition}>
+              <div className="h-9 w-9 flex items-center justify-center bg-white rounded-lg border border-white/20 overflow-hidden shadow-sm">
                 <img src={getLocalLogoPath(pick.league_logo, 'leagues') || pick.league_logo || GENERIC_LEAGUE} alt="" className="h-6 w-6 object-contain" />
               </div>
           </div>
 
-          {/* Column 2: Date & Teams Area */}
+          {/* Column 2: Teams Area */}
           <div className="hidden md:flex flex-[5.5] flex-col items-center justify-center px-6 border-r border-white/5 h-full min-w-0">
-            <div className="absolute top-3 left-0 right-0 md:left-auto md:right-auto md:w-full flex items-center justify-center gap-3 opacity-60 pointer-events-none">
-               <span className="text-[10px] uppercase font-bold text-white/30 tracking-[0.2em]">{formattedDay}</span>
-               <div className="h-[1px] w-4 bg-white/10" />
-               <span className="text-xs font-black text-neon-green tracking-wider">{formattedTime}</span>
-               <div className="h-[1px] w-4 bg-white/10" />
-               <span className="text-[9px] text-white/30 font-black uppercase tracking-[0.1em]">{pick.competition}</span>
-            </div>
-
             <div className="flex items-center justify-center gap-4 w-full">
               <div className="flex flex-1 items-center justify-end gap-3 min-w-0">
                  <span className="text-sm font-bold text-white truncate text-right uppercase tracking-tight">{homeName}</span>
@@ -163,36 +188,19 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
                   "flex flex-col items-center relative min-h-[85px] justify-center w-[80px] rounded-xl border transition-all duration-300 backdrop-blur-sm shadow-inner",
                   isSelected 
                     ? "bg-neon-green border-neon-green text-deep-black shadow-[0_0_20px_rgba(0,255,135,0.4)] scale-105" 
-                    : "bg-[#00e676]/10 border-[#00e676]/20 text-[#00e676] hover:bg-[#00e676]/20"
+                    : "bg-neon-green/10 border-neon-green/20 text-neon-green hover:bg-neon-green/20"
                 )}
               >
-                <span className={cn("text-[8px] font-black uppercase", isSelected ? "text-deep-black/60" : "text-[#00e676]/60")}>Cuota</span>
+                <span className={cn("text-[8px] font-black uppercase", isSelected ? "text-deep-black/60" : "text-neon-green/60")}>Cuota</span>
                 <span className="text-base font-black italic">@{normalizeOdds(pick.odds).toFixed(2)}</span>
              </button>
           </div>
 
-          {/* Column 7: Actions (Compact) */}
-          <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-[190px] shrink-0 pt-4 md:pt-0 h-full self-center">
-             <div className="flex flex-col items-center md:items-end gap-1.5 h-[85px] justify-center">
-                <div className="flex gap-0.5">
-                  {[...Array(10)].map((_, i) => (
-                    <div key={i} className={cn("w-0.5 h-2.5 rounded-full transition-all duration-500", i < (pick.confianza || pick.stake || 5) ? (pick.confianza || pick.stake || 5) >= 8 ? "bg-neon-green shadow-[0_0_8px_rgba(0,255,135,0.5)]" : "bg-white/40" : "bg-white/5")} />
-                  ))}
-                </div>
-                <span className="text-[7px] font-black uppercase tracking-wider text-white/20 whitespace-nowrap">Confianza</span>
-             </div>
-
-             <div className="flex items-center gap-2">
-               <div className={cn("flex items-center justify-center h-8 md:w-24 rounded-lg border transition-all duration-300", pick.status === 'pending' ? "text-slate-900 bg-[#c9a84c] border-[#c9a84c]" : statusStyles[pick.status as keyof typeof statusStyles])}>
-                  <div className="flex items-center gap-1.5 px-2">
-                    <span className="scale-75 origin-center">{statusIcons[pick.status as keyof typeof statusIcons]}</span>
-                    <span className="hidden md:block text-[9px] font-black uppercase tracking-tight">{statusLabels[pick.status as keyof typeof statusLabels]}</span>
-                  </div>
-               </div>
-               <button onClick={() => setIsExpanded(!isExpanded)} className="h-8 w-8 flex items-center justify-center rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 text-white/40 transition-all">
-                 {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-               </button>
-             </div>
+          {/* Column 7: Actions (Extra Expand) */}
+          <div className="flex items-center justify-center w-full md:w-[60px] shrink-0 pt-4 md:pt-0 h-full self-center">
+             <button onClick={() => setIsExpanded(!isExpanded)} className="h-8 w-8 flex items-center justify-center rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 text-white/40 transition-all">
+               {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+             </button>
           </div>
         </div>
 
