@@ -241,33 +241,34 @@ export function PickRow({ pick }: PickRowProps) {
             </div>
 
             {/* Column 7: Actions & Badge */}
-            <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-[200px] shrink-0 pt-4 md:pt-0 px-2 md:pl-6 h-full min-h-[85px]">
-               {/* Interactive Badge */}
-               <div className="group relative flex items-center justify-center">
-                 <div className={cn(
-                   "flex items-center justify-center h-10 w-10 md:group-hover:w-32 rounded-full md:rounded-xl border transition-all duration-300 ease-out overflow-hidden cursor-help",
-                   pick.status === 'pending' ? "text-slate-900 bg-[#c9a84c] border-[#c9a84c] shadow-[0_0_15px_rgba(201,168,76,0.2)]" : statusStyles[pick.status as keyof typeof statusStyles]
-                 )}>
-                    <div className="flex items-center gap-2 px-3">
-                      {statusIcons[pick.status as keyof typeof statusIcons] || statusIcons.pending}
-                      <span className="hidden md:group-hover:block text-[10px] font-black uppercase tracking-widest whitespace-nowrap animate-in fade-in slide-in-from-left-2 duration-300">
-                        {statusLabels[pick.status as keyof typeof statusLabels]}
-                      </span>
-                    </div>
+            <div className="flex items-center justify-between md:justify-end gap-3 w-full md:w-[150px] shrink-0 pt-4 md:pt-0 px-2 md:pl-6 h-full self-center">
+               <div className="flex items-center gap-3 h-[85px]">
+                 {/* Interactive Badge */}
+                 <div className="group relative flex items-center justify-center">
+                   <div className={cn(
+                     "flex items-center justify-center h-10 w-10 md:group-hover:w-32 rounded-full md:rounded-xl border transition-all duration-300 ease-out overflow-hidden cursor-help",
+                     pick.status === 'pending' ? "text-slate-900 bg-[#c9a84c] border-[#c9a84c] shadow-[0_0_15px_rgba(201,168,76,0.2)]" : statusStyles[pick.status as keyof typeof statusStyles]
+                   )}>
+                      <div className="flex items-center gap-2 px-3">
+                        {statusIcons[pick.status as keyof typeof statusIcons] || statusIcons.pending}
+                        <span className="hidden md:group-hover:block text-[10px] font-black uppercase tracking-widest whitespace-nowrap animate-in fade-in slide-in-from-left-2 duration-300">
+                          {statusLabels[pick.status as keyof typeof statusLabels]}
+                        </span>
+                      </div>
+                   </div>
+                   
+                   <span className="md:hidden absolute -top-8 left-1/2 -translate-x-1/2 bg-black/90 text-[8px] font-bold px-2 py-1 rounded border border-white/10 opacity-0 group-active:opacity-100 transition-opacity">
+                     {statusLabels[pick.status as keyof typeof statusLabels]}
+                   </span>
                  </div>
                  
-                 {/* Mobile Tooltip indicator or just simpler for mobile */}
-                 <span className="md:hidden absolute -top-8 left-1/2 -translate-x-1/2 bg-black/90 text-[8px] font-bold px-2 py-1 rounded border border-white/10 opacity-0 group-active:opacity-100 transition-opacity">
-                   {statusLabels[pick.status as keyof typeof statusLabels]}
-                 </span>
+                 <button 
+                   onClick={() => setIsExpanded(!isExpanded)}
+                   className="h-10 w-10 flex items-center justify-center rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-all active:scale-90 text-white/40"
+                 >
+                    {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                 </button>
                </div>
-               
-               <button 
-                 onClick={() => setIsExpanded(!isExpanded)}
-                 className="h-10 w-10 flex items-center justify-center rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-all active:scale-90 text-white/40"
-               >
-                  {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-               </button>
             </div>
           </div>
 
