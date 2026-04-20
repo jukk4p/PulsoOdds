@@ -248,7 +248,6 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
             </div>
           </div>
         </div>
-        </div>
 
         {/* Análisis Expandido (Común) */}
         {isExpanded && (
