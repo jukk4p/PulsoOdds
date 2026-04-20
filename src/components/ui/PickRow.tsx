@@ -156,100 +156,95 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
         </div>
 
         {/* ==========================================
-            VISTA ESCRITORIO (HORIZONTE 70PX)
+            VISTA ESCRITORIO (ARQUITECTURA 2x3)
             ========================================== */}
-        <div className="hidden md:block">
-          {/* Header Técnico */}
-          <div className="flex items-center px-8 pt-3 pb-0 gap-6">
-            <div className="w-[50px] shrink-0 h-8 pr-4" />
-            <div className="flex-[4.6] relative h-8 flex items-center justify-center px-4">
-               <div className="flex w-full items-center justify-center opacity-50">
-                  <div className="flex-1 flex items-center justify-end gap-3 min-w-0">
-                    <span className="text-[10px] uppercase font-bold text-white tracking-[0.2em] truncate">{formattedDay}</span>
-                    <div className="h-[1px] w-4 bg-white/10 shrink-0" />
-                  </div>
-                  <div className="shrink-0 px-2 font-black text-neon-green text-[10px] tracking-wider">{formattedTime}</div>
-                  <div className="flex-1 flex items-center justify-start gap-3 min-w-0">
-                    <div className="h-[1px] w-4 bg-white/10 shrink-0" />
-                    <span className="text-[10px] text-white font-bold uppercase tracking-[0.1em] truncate">{pick.competition}</span>
-                  </div>
-               </div>
+        <div className="hidden md:flex flex-col h-[100px] px-8 py-3 group relative space-y-2">
+          {/* Fila 1: Metadatos Superiores */}
+          <div className="flex items-center gap-6 h-1/2">
+            {/* Col 1: Fecha y Hora */}
+            <div className="w-[180px] flex items-center justify-start opacity-40">
+              <div className="flex items-center gap-2">
+                <Calendar size={12} className="text-neon-green" />
+                <span className="text-[10px] font-black uppercase tracking-widest text-white italic">{formattedDay}</span>
+                <span className="text-[10px] font-black text-neon-green">{formattedTime}</span>
+              </div>
             </div>
-            <div className="flex-[3.2] h-8 flex items-center justify-center px-4">
-               <span className="text-[10px] text-white font-bold uppercase tracking-[0.2em] w-full max-w-[185px] text-center opacity-50">Mercado</span>
+
+            {/* Col 2: Equipos (Header) */}
+            <div className="flex-1 flex items-center justify-center gap-6 overflow-hidden">
+              <div className="flex-1 flex items-center justify-end min-w-0">
+                <span className="text-xs font-black text-white/90 uppercase truncate tracking-tight">{homeName}</span>
+              </div>
+              <div className="shrink-0 w-8 flex items-center justify-center">
+                 <span className="text-[8px] font-black italic text-neon-green/30 px-1.5 py-0.5 rounded border border-neon-green/10">VS</span>
+              </div>
+              <div className="flex-1 flex items-center justify-start min-w-0">
+                <span className="text-xs font-black text-white/90 uppercase truncate tracking-tight">{awayName}</span>
+              </div>
             </div>
-            <div className="w-[80px] shrink-0 h-8" />
-            <div className="w-[60px] md:flex-1 flex items-center justify-end gap-5 h-8">
+
+            {/* Col 3: Status y Confianza */}
+            <div className="w-[180px] flex items-center justify-end gap-4">
                <div className="flex items-center gap-2">
                   <div className="flex gap-0.5">
                     {[...Array(10)].map((_, i) => {
                       const confidenceLevel = (pick.confianza || pick.stake * 10 || 50) / 10;
-                      return <div key={i} className={cn("w-0.5 h-2.5 rounded-full transition-all", i < confidenceLevel ? confidenceLevel >= 8 ? "bg-neon-green shadow-sm" : "bg-white/60" : "bg-white/10")} />;
+                      return <div key={i} className={cn("w-0.5 h-2 rounded-full transition-all", i < confidenceLevel ? confidenceLevel >= 8 ? "bg-neon-green shadow-[0_0_5px_rgba(0,230,118,0.5)]" : "bg-white/60" : "bg-white/5")} />;
                     })}
                   </div>
-                  <span className="text-[7px] font-black uppercase text-white/20 whitespace-nowrap">Confianza</span>
+                  <span className="text-[7px] font-black uppercase text-white/20 whitespace-nowrap tracking-tighter">Confianza</span>
                </div>
-               <div className={cn("flex items-center justify-center h-6 md:w-24 rounded-lg border px-2", pick.status === 'pending' ? "text-slate-900 bg-[#c9a84c] border-[#c9a84c]" : statusStyles[pick.status as keyof typeof statusStyles])}>
-                  <span className="text-[8px] font-black uppercase tracking-tight">{statusLabels[pick.status as keyof typeof statusLabels]}</span>
+               <div className={cn("h-5 min-w-[70px] flex items-center justify-center rounded-md border px-2", pick.status === 'pending' ? "text-slate-900 bg-[#c9a84c] border-[#c9a84c]" : statusStyles[pick.status as keyof typeof statusStyles])}>
+                  <span className="text-[7px] font-black uppercase tracking-tighter">{statusLabels[pick.status as keyof typeof statusLabels]}</span>
                </div>
             </div>
           </div>
 
-          {/* Cuerpo Horizonte 70px - FIXED ALIGNMENT */}
-          <div className="flex items-center h-[70px] px-8 gap-6 relative mb-5">
-            <div className="flex items-center justify-center w-[50px] shrink-0 h-full -translate-y-[5px]">
-                <div className="h-9 w-9 flex items-center justify-center bg-white rounded-lg border border-white/20 overflow-hidden shadow-sm">
-                  <img src={getLocalLogoPath(pick.league_logo, 'leagues') || pick.league_logo || GENERIC_LEAGUE} alt="" className="h-6 w-6 object-contain" />
-                </div>
-            </div>
-
-            <div className="flex-[4.6] flex items-center justify-center h-full min-w-0">
-              <div className="flex items-center justify-center gap-4 w-full">
-                <div className="flex flex-1 items-center justify-end min-w-0 h-8">
-                  <div className="flex items-center justify-end gap-3 w-full">
-                    <span className="text-sm font-bold text-white truncate text-right uppercase tracking-tight leading-none">{homeName}</span>
-                    <div className="shrink-0 h-8 w-8 flex items-center justify-center bg-white rounded-lg border border-white/20 overflow-hidden p-1 shadow-sm">
-                      <img src={getLocalLogoPath(pick.home_logo, 'teams') || pick.home_logo || GENERIC_SHIELD} alt="" className="h-6 w-6 object-contain" />
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center shrink-0 h-8">
-                   <span className="text-[9px] font-black italic text-neon-green bg-neon-green/10 px-2 py-0.5 rounded-md border border-neon-green/20">VS</span>
-                </div>
-                <div className="flex flex-1 items-center justify-start min-w-0 h-8">
-                  <div className="flex items-center justify-start gap-3 w-full">
-                    <div className="h-8 w-8 flex items-center justify-center bg-white rounded-lg border border-white/20 overflow-hidden p-1 shadow-sm">
-                      <img src={getLocalLogoPath(pick.away_logo, 'teams') || pick.away_logo || GENERIC_SHIELD} alt="" className="h-6 w-6 object-contain" />
-                    </div>
-                    <span className="text-sm font-bold text-white truncate text-left uppercase tracking-tight leading-none">{awayName}</span>
-                  </div>
-                </div>
+          {/* Fila 2: Acción Principal */}
+          <div className="flex items-center gap-6 h-1/2">
+            {/* Col 1: Liga e Info */}
+            <div className="w-[180px] flex items-center justify-start gap-3">
+              <div className="h-8 w-8 flex items-center justify-center bg-white rounded-lg border border-white/20 overflow-hidden shadow-lg -translate-y-1">
+                <img src={getLocalLogoPath(pick.league_logo, 'leagues') || pick.league_logo || GENERIC_LEAGUE} alt="" className="h-5 w-5 object-contain" />
+              </div>
+              <div className="flex flex-col min-w-0">
+                <span className="text-[9px] text-white/40 font-bold uppercase tracking-tight truncate">{pick.competition || "Premier League"}</span>
+                <span className="text-[8px] text-neon-green/60 font-black uppercase tracking-widest -mt-0.5 italic">Verified Pick</span>
               </div>
             </div>
 
-            <div className="flex-[3.2] flex items-center justify-center h-full min-w-0 pr-12">
-              <div className="flex flex-col gap-0.5 items-center bg-slate-900/40 p-2 rounded-xl border border-white/5 w-full max-w-[185px] shadow-inner h-[50px] justify-center">
-                <div className="flex flex-col gap-0.5 w-full items-center text-center">
-                  <span className="text-[8px] text-white/50 uppercase font-bold italic tracking-wide truncate">{translateBettingTerm(pick.market || "Hándicap")}</span>
-                  <span className="text-[11px] font-black uppercase text-[#00e676] leading-tight italic">{translateBettingTerm(pick.pick)}</span>
-                </div>
+            {/* Col 2: Escudos y Mercado */}
+            <div className="flex-1 flex items-center justify-center gap-10">
+              <div className="flex items-center gap-5 translate-x-2">
+                 {/* Escudo Local */}
+                 <div className="shrink-0 h-10 w-10 flex items-center justify-center bg-white rounded-xl border-2 border-white/20 overflow-hidden p-1.5 shadow-[0_0_15px_rgba(255,255,255,0.05)] transform hover:scale-110 transition-transform">
+                   <img src={getLocalLogoPath(pick.home_logo, 'teams') || pick.home_logo || GENERIC_SHIELD} alt="" className="h-full w-full object-contain" />
+                 </div>
+                 
+                 {/* Bloque Mercado Central */}
+                 <div className="flex flex-col items-center bg-white/[0.03] border border-white/5 py-1 px-4 rounded-xl min-w-[160px] shadow-inner backdrop-blur-sm">
+                   <span className="text-[7px] text-white/30 uppercase font-bold tracking-[0.2em]">{translateBettingTerm(pick.market || "Hándicap")}</span>
+                   <span className="text-sm font-black uppercase text-neon-green italic leading-tight">{translateBettingTerm(pick.pick)}</span>
+                 </div>
+
+                 {/* Escudo Visitante */}
+                 <div className="shrink-0 h-10 w-10 flex items-center justify-center bg-white rounded-xl border-2 border-white/20 overflow-hidden p-1.5 shadow-[0_0_15px_rgba(255,255,255,0.05)] transform hover:scale-110 transition-transform">
+                   <img src={getLocalLogoPath(pick.away_logo, 'teams') || pick.away_logo || GENERIC_SHIELD} alt="" className="h-full w-full object-contain" />
+                 </div>
               </div>
             </div>
 
-            <div className="flex items-center justify-center w-[80px] shrink-0 h-full">
-               <button onClick={(e) => { e.stopPropagation(); onToggle?.(); }} className={cn("flex flex-col items-center justify-center w-[70px] h-[50px] rounded-xl border transition-all duration-300 relative overflow-hidden group", isSelected ? "bg-[#00e676] border-[#00e676] text-[#0a0f16] shadow-[0_0_20px_rgba(0,230,118,0.3)] scale-105" : "bg-slate-900 border-white/10 text-[#00e676] hover:border-[#00e676]/50 hover:bg-slate-800")}>
-                  {!isSelected && <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent opacity-50" />}
+            {/* Col 3: Cuota y Acción */}
+            <div className="w-[180px] flex items-center justify-end gap-4">
+              <button onClick={(e) => { e.stopPropagation(); onToggle?.(); }} className={cn("flex flex-col items-center justify-center w-[85px] h-11 rounded-xl border transition-all duration-300 relative overflow-hidden group", isSelected ? "bg-neon-green border-neon-green text-[#0a0f16] shadow-[0_0_25px_rgba(0,230,118,0.4)] scale-105" : "bg-white/[0.05] border-white/10 text-neon-green hover:border-neon-green/50 hover:bg-white/[0.08]")}>
                   <div className="flex flex-col items-center relative z-10">
-                     <span className={cn("text-[8px] font-bold uppercase tracking-[0.1em] mb-0.5 opacity-40", isSelected ? "text-[#0a0f16]" : "text-white")}>Cuota</span>
-                     <span className="text-base font-black tracking-tight leading-none">{normalizeOdds(pick.odds).toFixed(2)}</span>
+                     <span className={cn("text-[7px] font-bold uppercase tracking-[0.2em] mb-0.5", isSelected ? "text-[#0a0f16]/60" : "text-white/40")}>Cuota</span>
+                     <span className="text-lg font-black tracking-tight leading-none">{normalizeOdds(pick.odds).toFixed(2)}</span>
                   </div>
-               </button>
-            </div>
-
-            <div className="flex items-center justify-center w-[60px] shrink-0 h-full">
-               <button onClick={() => setIsExpanded(!isExpanded)} className="h-8 w-8 flex items-center justify-center rounded-lg bg-transparent hover:bg-white/5 text-white/20 hover:text-neon-green transition-all translate-y-[2px]">
-                 {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-               </button>
+              </button>
+              <button onClick={() => setIsExpanded(!isExpanded)} className="h-10 w-10 flex items-center justify-center rounded-xl bg-white/[0.03] hover:bg-white/[0.08] text-white/20 hover:text-neon-green transition-all border border-white/5">
+                 {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+              </button>
             </div>
           </div>
         </div>
