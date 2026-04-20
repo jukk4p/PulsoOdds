@@ -30,11 +30,12 @@ async function getStatsData() {
   // Group by sport
   const sportsData: Record<string, { stake: number; profit: number; count: number }> = {};
   (picks || []).forEach(p => {
-    if (!sportsData[p.sport]) sportsData[p.sport] = { stake: 0, profit: 0, count: 0 };
-    sportsData[p.sport].count++;
-    sportsData[p.sport].stake += p.stake;
-    if (p.status === 'won') sportsData[p.sport].profit += (p.stake * p.odds) - p.stake;
-    else if (p.status === 'lost') sportsData[p.sport].profit -= p.stake;
+    const sportName = (p.sport || 'Otros').toLowerCase() === 'football' ? 'Fútbol' : p.sport;
+    if (!sportsData[sportName]) sportsData[sportName] = { stake: 0, profit: 0, count: 0 };
+    sportsData[sportName].count++;
+    sportsData[sportName].stake += p.stake;
+    if (p.status === 'won') sportsData[sportName].profit += (p.stake * p.odds) - p.stake;
+    else if (p.status === 'lost') sportsData[sportName].profit -= p.stake;
   });
 
   return { stats, dailyProfits, sportsData: Object.entries(sportsData) };
@@ -83,12 +84,12 @@ export default async function StatsPage() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="text-[10px] uppercase text-white/20 tracking-[0.2em] border-b border-white/5">
-                  <th className="pb-4 font-black text-left">Deporte</th>
-                  <th className="pb-4 font-black text-center">Picks</th>
-                  <th className="pb-4 font-black text-center">Inversión</th>
-                  <th className="pb-4 font-black text-center">Beneficio</th>
-                  <th className="pb-4 font-black text-right">ROI</th>
+                <tr className="text-[10px] md:text-[12px] uppercase text-white/20 tracking-[0.2em] border-b border-white/5">
+                  <th className="pb-6 font-black text-left">Deporte</th>
+                  <th className="pb-6 font-black text-center">Picks</th>
+                  <th className="pb-6 font-black text-center">Inversión</th>
+                  <th className="pb-6 font-black text-center">Beneficio</th>
+                  <th className="pb-6 font-black text-right">ROI</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
@@ -96,18 +97,18 @@ export default async function StatsPage() {
                   const roiValue = (d.profit / d.stake * 100);
                   return (
                     <tr key={sport} className="group hover:bg-white/[0.02] transition-colors">
-                      <td className="py-5 font-black text-white uppercase text-sm tracking-tight">{sport}</td>
-                      <td className="py-5 text-center text-white/60 text-sm font-medium">{d.count}</td>
-                      <td className="py-5 text-center text-white/60 text-sm font-medium">{d.stake.toFixed(1)}u</td>
+                      <td className="py-6 font-black text-white uppercase text-sm md:text-base tracking-tight">{sport}</td>
+                      <td className="py-6 text-center text-white/60 text-sm md:text-base font-medium">{d.count}</td>
+                      <td className="py-6 text-center text-white/60 text-sm md:text-base font-medium">{d.stake.toFixed(1)}u</td>
                       <td className={cn(
-                        "py-5 text-center text-sm font-black italic", 
+                        "py-6 text-center text-sm md:text-base font-black italic", 
                         d.profit >= 0 ? "text-neon-green" : "text-red-500"
                       )}>
                         {d.profit > 0 ? '+' : ''}{d.profit.toFixed(1)}u
                       </td>
-                      <td className="py-5 text-right">
+                      <td className="py-6 text-right">
                         <span className={cn(
-                          "inline-flex items-center justify-center px-3 py-1.5 rounded-lg text-[10px] font-black min-w-[60px] border",
+                          "inline-flex items-center justify-center px-3 py-1.5 md:px-4 md:py-2 rounded-lg text-[10px] md:text-[13px] font-black min-w-[60px] md:min-w-[85px] border transition-all",
                           roiValue >= 0 
                             ? "bg-neon-green/10 text-neon-green border-neon-green/20 shadow-[0_0_10px_rgba(0,230,118,0.1)]" 
                             : "bg-red-500/10 text-red-500 border-red-500/20"
