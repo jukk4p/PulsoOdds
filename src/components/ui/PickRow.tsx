@@ -97,16 +97,16 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
           isSelected && "border-[#00e676]/50 shadow-[0_0_25px_rgba(0,255,135,0.15)] bg-slate-900/80"
         )}
       >
-        <div className="flex flex-col md:flex-row md:items-center pt-9 pb-4 md:pt-11 md:pb-5 px-5 md:px-6 gap-4 md:gap-0 relative">
-          {/* Column 1: League (Fixed width) */}
-          <div className="hidden md:flex flex-col items-center justify-center w-[70px] shrink-0 md:border-r border-white/5 pr-4">
+        <div className="flex flex-col md:flex-row md:items-center pt-9 pb-6 md:pt-11 md:pb-8 px-6 md:px-8 gap-6 md:gap-10 relative">
+          {/* Column 1: League */}
+          <div className="hidden md:flex flex-col items-center justify-center w-[60px] shrink-0 border-r border-white/5 pr-6 h-full">
               <div className="h-10 w-10 flex items-center justify-center bg-white rounded-xl border border-white/20 overflow-hidden shadow-lg" title={pick.competition}>
                 <img src={getLocalLogoPath(pick.league_logo, 'leagues') || pick.league_logo || GENERIC_LEAGUE} alt="" className="h-7 w-7 object-contain" />
               </div>
           </div>
 
           {/* Column 2: Date & Teams Area */}
-          <div className="hidden md:flex flex-[4] flex-col items-center justify-center px-6 border-r border-white/5">
+          <div className="hidden md:flex flex-[3.5] flex-col items-center justify-center px-4 border-r border-white/5 h-full min-w-0">
             <div className="absolute top-3 left-0 right-0 md:left-auto md:right-auto md:w-full flex items-center justify-center gap-3 opacity-60 pointer-events-none">
                <span className="text-[10px] uppercase font-bold text-white/30 tracking-[0.2em]">{formattedDay}</span>
                <div className="h-[1px] w-4 bg-white/10" />
@@ -134,36 +134,36 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
             </div>
           </div>
 
-          {/* MOBILE ONLY: Match Row */}
+          {/* MOBILE ONLY */}
           <div className="md:hidden flex flex-col items-center py-4 bg-white/[0.02] rounded-xl my-2 w-full">
              <span className="text-[10px] font-bold text-neon-green mb-2">{formattedDay} - {formattedTime}</span>
              <div className="flex items-center justify-center gap-4">
                <span className="text-sm font-bold text-white uppercase italic">{homeName}</span>
-               <span className="text-[9px] font-black text-neon-green italic opacity-40">VS</span>
+               <span className="text-[9px] font-black text-neon-green italic opacity-50">VS</span>
                <span className="text-sm font-bold text-white uppercase italic">{awayName}</span>
              </div>
           </div>
 
-          {/* Column 5: Betting Description */}
-          <div className="flex flex-[2.5] flex-col items-center justify-center px-4 py-4 md:py-0 border-y md:border-y-0 md:border-r border-white/5 text-center h-full">
-            <div className="flex flex-col gap-1 items-center bg-slate-900/40 p-3 rounded-xl border border-white/5 w-full max-w-[200px] shadow-inner min-h-[85px] justify-center">
+          {/* Column 5: Market Info */}
+          <div className="flex flex-[2] flex-col items-center justify-center px-4 border-r border-white/5 text-center h-full min-w-0">
+            <div className="flex flex-col gap-1 items-center bg-slate-900/40 p-3 rounded-xl border border-white/5 w-full max-w-[180px] shadow-inner min-h-[85px] justify-center">
               <span className="text-[9px] text-neon-green font-black tracking-[0.2em] mb-1 opacity-60 uppercase">Mercado</span>
               <div className="flex flex-col gap-0.5">
-                <span className="text-[10px] text-white/50 uppercase font-bold italic tracking-wide">{translateBettingTerm(pick.market || "Hándicap")}</span>
-                <span className="text-sm font-black uppercase text-neon-green leading-none italic">{translateBettingTerm(pick.pick)}</span>
+                <span className="text-[10px] text-white/50 uppercase font-bold italic tracking-wide truncate w-full">{translateBettingTerm(pick.market || "Hándicap")}</span>
+                <span className="text-sm font-black uppercase text-neon-green leading-none italic truncate w-full">{translateBettingTerm(pick.pick)}</span>
               </div>
             </div>
           </div>
 
           {/* Column 6: Odds (Interactivas) */}
-          <div className="flex items-center justify-center md:w-[110px] shrink-0 md:border-r border-white/5 py-4 md:py-0 h-full">
+          <div className="flex items-center justify-center md:w-[100px] shrink-0 md:border-r border-white/5 py-4 md:py-0 h-full">
              <button 
                 onClick={(e) => { e.stopPropagation(); onToggle?.(); }}
                 className={cn(
-                  "flex flex-col items-center relative group/tooltip min-h-[85px] justify-center w-[90px] rounded-xl border transition-all duration-300 backdrop-blur-sm shadow-inner",
+                  "flex flex-col items-center relative min-h-[85px] justify-center w-[85px] rounded-xl border transition-all duration-300 backdrop-blur-sm shadow-inner",
                   isSelected 
                     ? "bg-neon-green border-neon-green text-deep-black shadow-[0_0_20px_rgba(0,255,135,0.4)] scale-105" 
-                    : "bg-neon-green/5 border-neon-green/20 text-neon-green hover:bg-neon-green/10"
+                    : "bg-neon-green/10 border-neon-green/20 text-neon-green hover:bg-neon-green/20"
                 )}
               >
                 <span className={cn("text-[8px] font-black uppercase", isSelected ? "text-deep-black/60" : "text-neon-green/60")}>Cuota</span>
@@ -172,21 +172,21 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
           </div>
 
           {/* Column 7: Actions (Confidence & Status) */}
-          <div className="flex items-center justify-between md:justify-end gap-3 w-full md:w-[200px] shrink-0 pt-4 md:pt-0 px-2 md:pl-6 h-full self-center">
+          <div className="flex items-center justify-between md:justify-end gap-6 w-full md:w-[240px] shrink-0 pt-4 md:pt-0 h-full self-center">
              <div className="flex flex-col items-center md:items-end gap-2 h-[85px] justify-center">
                 <div className="flex gap-0.5">
                   {[...Array(10)].map((_, i) => (
                     <div key={i} className={cn("w-1 h-3 rounded-full transition-all duration-500", i < (pick.confianza || pick.stake || 5) ? (pick.confianza || pick.stake || 5) >= 8 ? "bg-neon-green shadow-[0_0_8px_rgba(0,255,135,0.5)]" : "bg-white/40" : "bg-white/5")} />
                   ))}
                 </div>
-                <span className="text-[8px] font-black uppercase tracking-widest text-white/20">Confianza</span>
+                <span className="text-[8px] font-black uppercase tracking-widest text-white/20 whitespace-nowrap">Confianza</span>
              </div>
 
              <div className="flex items-center gap-3">
                <div className={cn("flex items-center justify-center h-10 w-10 md:w-32 rounded-xl border transition-all duration-300", pick.status === 'pending' ? "text-slate-900 bg-[#c9a84c] border-[#c9a84c]" : statusStyles[pick.status as keyof typeof statusStyles])}>
                   <div className="flex items-center gap-2 px-3">
                     {statusIcons[pick.status as keyof typeof statusIcons]}
-                    <span className="hidden md:block text-[10px] font-black uppercase">{statusLabels[pick.status as keyof typeof statusLabels]}</span>
+                    <span className="hidden md:block text-[10px] font-black uppercase tracking-tight">{statusLabels[pick.status as keyof typeof statusLabels]}</span>
                   </div>
                </div>
                <button onClick={() => setIsExpanded(!isExpanded)} className="h-10 w-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white/40 transition-all">
