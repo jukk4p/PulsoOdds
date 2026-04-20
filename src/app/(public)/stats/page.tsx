@@ -89,7 +89,7 @@ export default async function StatsPage() {
                   <th className="pb-6 font-black text-center">Picks</th>
                   <th className="pb-6 font-black text-center">Inversión</th>
                   <th className="pb-6 font-black text-center">Beneficio</th>
-                  <th className="pb-6 font-black text-right">ROI</th>
+                  <th className="pb-6 font-black text-center">ROI</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
@@ -106,7 +106,7 @@ export default async function StatsPage() {
                       )}>
                         {d.profit > 0 ? '+' : ''}{d.profit.toFixed(1)} unidades
                       </td>
-                      <td className="py-6 text-right">
+                      <td className="py-6 text-center">
                         <span className={cn(
                           "inline-flex items-center justify-center px-3 py-1.5 md:px-4 md:py-2 rounded-lg text-[10px] md:text-[13px] font-black min-w-[60px] md:min-w-[85px] border transition-all",
                           roiValue >= 0 
