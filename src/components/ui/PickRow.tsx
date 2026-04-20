@@ -98,28 +98,6 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
         )}
       >
           <div className="flex flex-col md:flex-row md:items-center pt-9 pb-4 md:pt-11 md:pb-5 px-5 md:px-6 gap-4 md:gap-0 relative">
-            {/* Column 0: Selection Toggle (New) */}
-            <div className="absolute top-3 right-3 md:relative md:top-0 md:right-0 md:flex items-center justify-center w-[50px] shrink-0 z-20">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onToggle?.();
-                }}
-                className={cn(
-                  "h-8 w-8 rounded-full border transition-all duration-300 flex items-center justify-center group/btn",
-                  isSelected 
-                    ? "bg-neon-green border-neon-green text-deep-black shadow-[0_0_15px_rgba(0,255,135,0.4)]" 
-                    : "bg-white/5 border-white/10 text-white/20 hover:border-neon-green/50 hover:text-neon-green"
-                )}
-              >
-                {isSelected ? (
-                  <CheckCircle2 size={18} className="animate-in zoom-in" />
-                ) : (
-                  <Zap size={16} className="group-hover/btn:scale-110 transition-transform" />
-                )}
-              </button>
-            </div>
-
             {/* Column 1: League (Fixed width) */}
             <div className="hidden md:flex flex-col items-center justify-center w-[70px] shrink-0 md:border-r border-white/5 pr-4">
                 <div className="h-10 w-10 flex items-center justify-center bg-white rounded-xl border border-white/20 overflow-hidden shadow-lg" title={pick.competition}>
@@ -322,7 +300,30 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
             </div>
 
             {/* Column 7: Actions & Badge */}
-            <div className="flex items-center justify-between md:justify-end gap-3 w-full md:w-[220px] shrink-0 pt-4 md:pt-0 px-2 md:pl-6 h-full self-center">
+            <div className="flex items-center justify-between md:justify-end gap-3 w-full md:w-[260px] shrink-0 pt-4 md:pt-0 px-2 md:pl-6 h-full self-center">
+               {/* Selection Toggle (Moved here) */}
+               <div className="flex items-center justify-center mr-2">
+                 <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onToggle?.();
+                    }}
+                    className={cn(
+                      "h-10 w-10 md:h-9 md:w-9 rounded-xl border transition-all duration-300 flex items-center justify-center group/btn shadow-sm",
+                      isSelected 
+                        ? "bg-neon-green border-neon-green text-deep-black shadow-[0_0_15px_rgba(0,255,135,0.4)]" 
+                        : "bg-white/5 border-white/10 text-white/20 hover:border-neon-green/50 hover:text-neon-green hover:bg-neon-green/5"
+                    )}
+                    title={isSelected ? "Quitar de la combinada" : "Añadir a la combinada"}
+                  >
+                    {isSelected ? (
+                      <CheckCircle2 size={18} className="animate-in zoom-in" />
+                    ) : (
+                      <TrendingUp size={16} className="group-hover/btn:scale-110 transition-transform" />
+                    )}
+                  </button>
+               </div>
+
                <div className="flex flex-col items-center md:items-end gap-2 h-[85px] justify-center mr-2">
                  {/* Confidence Meter */}
                  <div className="flex flex-col items-center md:items-end gap-1">
