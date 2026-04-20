@@ -97,16 +97,27 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
           isSelected && "border-[#00e676]/50 shadow-[0_0_25px_rgba(0,255,135,0.15)] bg-slate-900/80"
         )}
       >
-        {/* Top Header Bar: Sincronizada con los paddings del cuerpo */}
-        <div className="hidden md:flex items-center px-6 md:px-8 pt-3.5 pb-1 gap-4 md:gap-6 relative z-10">
-          <div className="w-[50px] shrink-0" /> {/* League space spacer */}
+        {/* Top Header Bar: Arquitectura de 3 columnas para centrado absoluto de la hora */}
+        <div className="hidden md:flex items-center px-6 md:px-8 pt-3.5 pb-1 gap-4 md:gap-6 relative z-10 overflow-hidden">
+          <div className="w-[50px] shrink-0" /> {/* League spacer */}
           
-          <div className="flex-[5.5] flex items-center justify-center gap-3 opacity-50 px-6">
-             <span className="text-[10px] uppercase font-bold text-white tracking-[0.2em]">{formattedDay}</span>
-             <div className="h-[1px] w-4 bg-white/10" />
-             <span className="text-[10px] font-black text-neon-green tracking-wider">{formattedTime}</span>
-             <div className="h-[1px] w-4 bg-white/10" />
-             <span className="text-[9px] text-white font-black uppercase tracking-[0.1em] truncate max-w-[150px]">{pick.competition}</span>
+          <div className="flex-[5.5] flex items-center justify-center opacity-50">
+             {/* Left side: Date (Takes half of the remaining space) */}
+             <div className="flex-1 flex items-center justify-end gap-3 min-w-0">
+                <span className="text-[10px] uppercase font-bold text-white tracking-[0.2em] whitespace-nowrap truncate">{formattedDay}</span>
+                <div className="h-[1px] w-4 bg-white/10 shrink-0" />
+             </div>
+
+             {/* Center: Time (Exactly over the VS) */}
+             <div className="shrink-0 px-1">
+                <span className="text-[10px] font-black text-neon-green tracking-wider">{formattedTime}</span>
+             </div>
+
+             {/* Right side: Competition (Takes the other half) */}
+             <div className="flex-1 flex items-center justify-start gap-3 min-w-0">
+                <div className="h-[1px] w-4 bg-white/10 shrink-0" />
+                <span className="text-[9px] text-white font-black uppercase tracking-[0.1em] truncate">{pick.competition}</span>
+             </div>
           </div>
 
           <div className="flex-[4.5] flex items-center justify-end gap-5">
@@ -136,7 +147,7 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
               </div>
           </div>
 
-          {/* Column 2: Teams Area - Refuerzo de centrado exacto */}
+          {/* Column 2: Teams Area */}
           <div className="hidden md:flex flex-[5.5] flex-col items-center justify-center px-6 border-r border-white/5 h-full min-w-0">
             <div className="flex items-center justify-center gap-4 w-full">
               <div className="flex flex-1 items-center justify-end gap-3 min-w-0">
