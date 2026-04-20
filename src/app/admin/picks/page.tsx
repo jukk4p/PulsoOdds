@@ -106,84 +106,30 @@ export default function AdminPicksPage() {
     }
   };
 
-  const handleValidateAll = async () => {
-    const pendingPicks = picks.filter(p => !p.is_verified && p.status === 'pending');
+  const handleCheckAssets = () => {
+    const GENERIC_SHIELD = "https://img.icons8.com/ios-filled/100/ffffff/shield.png";
+    const GENERIC_LEAGUE = "https://img.icons8.com/ios-filled/100/ffffff/trophy.png";
+
+    const missingHome = picks.filter(p => !p.home_logo || p.home_logo.includes('shield.png'));
+    const missingAway = picks.filter(p => !p.away_logo || p.away_logo.includes('shield.png'));
+    const missingLeague = picks.filter(p => !p.league_logo || p.league_logo.includes('trophy.png'));
     
-    if (pendingPicks.length === 0) {
-      alert('¡Nada que hacer! Todos los picks actuales ya están verificados o cerrados.');
-      return;
-    }
+    const uniqueTeams = Array.from(new Set([
+      ...missingHome.map(p => p.match.split(/\s+vs\s+/i)[0]),
+      ...missingAway.map(p => p.match.split(/\s+vs\s+/i)[1])
+    ])).filter(Boolean);
 
-    if (!confirm(`Se intentarán sincronizar ${pendingPicks.length} picks pendientes. ¿Continuar?`)) return;
-    
-    setLoading(true);
-    let updatedCount = 0;
-    let noMatchCount = 0;
-    let skippedCount = picks.length - pendingPicks.length;
-    
-    try {
-      // Intentamos detectar el deporte del primer pick para ser un poco más dinámicos
-      const firstSport = pendingPicks[0].sport_key || 'soccer_germany_bundesliga';
-      const resp = await fetch(`/api/odds?sport=${firstSport}`);
-      const data = await resp.json();
-      
-      if (data.error || !Array.isArray(data)) {
-        throw new Error(data.error || 'No se pudieron obtener datos del mercado');
-      }
+    alert(
+      `📊 AUDITORÍA DE ACTIVOS (Logos):\n\n` +
+      `⚽ EQUIPOS SIN ESCUDO: ${uniqueTeams.length}\n` +
+      `🏆 LIGAS SIN LOGO: ${new Set(missingLeague.map(p => p.competition)).size}\n\n` +
+      `📋 ACCIÓN RECOMENDADA:\n` +
+      `Verifica que las imágenes existan en "/public/logos/" con el ID correcto.`
+    );
+  };
 
-      // Procesamos solo los pendientes
-      for (const pick of pendingPicks) {
-        const match = data.find((event: any) => 
-          pick.match.toLowerCase().includes(event.home_team.toLowerCase()) ||
-          pick.match.toLowerCase().includes(event.away_team.toLowerCase())
-        );
-
-        if (match) {
-          const bookmaker = match.bookmakers[0];
-          if (bookmaker) {
-            const isBTTSPick = pick.market.toLowerCase().includes('marcan') || pick.market.toLowerCase().includes('btts');
-            const marketKey = isBTTSPick ? 'btts' : 'h2h';
-            const market = bookmaker.markets.find((m: any) => m.key === marketKey);
-            
-            if (market) {
-              let outcome = null;
-              if (market.key === 'btts') {
-                const isYes = pick.pick.toLowerCase().includes('sí') || pick.pick.toLowerCase().includes('yes');
-                outcome = market.outcomes.find((o: any) => 
-                  isYes ? o.name.toLowerCase() === 'yes' : o.name.toLowerCase() === 'no'
-                );
-              } else {
-                outcome = market.outcomes.find((o: any) => 
-                  pick.pick.toLowerCase().includes(o.name.toLowerCase())
-                ) || market.outcomes[0];
-              }
-
-              if (outcome) {
-                await supabase
-                  .from('picks')
-                  .update({ odds: outcome.price, is_verified: true })
-                  .eq('id', pick.id);
-                updatedCount++;
-                continue;
-              }
-            }
-          }
-        }
-        noMatchCount++;
-      }
-      
-      alert(
-        `Sincronización masiva completada.\n\n` +
-        `✅ Actualizados: ${updatedCount}\n` +
-        `⚠️ No encontrados en mercado: ${noMatchCount}\n` +
-        `⏭️ Saltados (ya cerrados/listos): ${skippedCount}`
-      );
-      fetchPicks();
-    } catch (err: any) {
-      alert(`Error en sincronización: ${err.message}`);
-    } finally {
-      setLoading(false);
-    }
+  const handleNewPick = () => {
+    alert("🚀 MÓDULO DE CREACIÓN MANUAL (v7.0)\n\nEsta función estará disponible en la próxima actualización. Por ahora, sigue publicando a través del comando /picks del bot en Telegram.");
   };
 
   const filteredPicks = picks.filter(p => 
@@ -219,13 +165,15 @@ export default function AdminPicksPage() {
 
           <div className="flex items-center gap-3 w-full md:w-auto justify-center">
             <button 
-              onClick={handleValidateAll}
-              disabled={loading}
-              className="flex-1 md:flex-none bg-blue-500/10 text-blue-400 border border-blue-500/20 font-black px-6 py-3.5 rounded-xl flex items-center justify-center gap-2 hover:bg-blue-500/20 transition-all active:scale-95 text-[11px] tracking-tighter uppercase disabled:opacity-50"
+              onClick={handleCheckAssets}
+              className="flex-1 md:flex-none bg-blue-500/10 text-blue-400 border border-blue-500/20 font-black px-6 py-3.5 rounded-xl flex items-center justify-center gap-2 hover:bg-blue-500/20 transition-all active:scale-95 text-[11px] tracking-tighter uppercase"
             >
-              <ShieldCheck className="h-4 w-4" /> Validar Todo
+              <ShieldCheck className="h-4 w-4" /> Auditar Activos
             </button>
-            <button className="flex-1 md:flex-none bg-neon-green text-deep-black font-black px-8 py-3.5 rounded-xl flex items-center justify-center gap-2 hover:shadow-[0_0_30px_rgba(0,255,135,0.5)] transition-all active:scale-95 text-[11px] tracking-tighter uppercase">
+            <button 
+              onClick={handleNewPick}
+              className="flex-1 md:flex-none bg-neon-green text-deep-black font-black px-8 py-3.5 rounded-xl flex items-center justify-center gap-2 hover:shadow-[0_0_30px_rgba(0,255,135,0.5)] transition-all active:scale-95 text-[11px] tracking-tighter uppercase"
+            >
               <Plus className="h-5 w-5 stroke-[3px]" /> Nuevo
             </button>
           </div>
