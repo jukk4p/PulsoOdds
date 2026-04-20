@@ -205,20 +205,24 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
 
             <div className="flex-[4.6] flex items-center justify-center h-full min-w-0">
               <div className="flex items-center justify-center gap-4 w-full">
-                <div className="flex flex-1 items-center justify-end gap-3 min-w-0">
-                   <span className="text-sm font-bold text-white truncate text-right uppercase tracking-tight">{homeName}</span>
+                <div className="flex flex-1 items-center justify-end min-w-0 h-8">
+                  <div className="flex items-center justify-end gap-3 w-full">
+                    <span className="text-sm font-bold text-white truncate text-right uppercase tracking-tight leading-none">{homeName}</span>
                     <div className="shrink-0 h-8 w-8 flex items-center justify-center bg-white rounded-lg border border-white/20 overflow-hidden p-1 shadow-sm">
                       <img src={getLocalLogoPath(pick.home_logo, 'teams') || pick.home_logo || GENERIC_SHIELD} alt="" className="h-6 w-6 object-contain" />
                     </div>
+                  </div>
                 </div>
-                <div className="flex items-center shrink-0">
+                <div className="flex items-center shrink-0 h-8">
                    <span className="text-[9px] font-black italic text-neon-green bg-neon-green/10 px-2 py-0.5 rounded-md border border-neon-green/20">VS</span>
                 </div>
-                <div className="flex flex-1 items-center justify-start gap-3 min-w-0">
+                <div className="flex flex-1 items-center justify-start min-w-0 h-8">
+                  <div className="flex items-center justify-start gap-3 w-full">
                     <div className="h-8 w-8 flex items-center justify-center bg-white rounded-lg border border-white/20 overflow-hidden p-1 shadow-sm">
                       <img src={getLocalLogoPath(pick.away_logo, 'teams') || pick.away_logo || GENERIC_SHIELD} alt="" className="h-6 w-6 object-contain" />
                     </div>
-                   <span className="text-sm font-bold text-white truncate text-left uppercase tracking-tight">{awayName}</span>
+                    <span className="text-sm font-bold text-white truncate text-left uppercase tracking-tight leading-none">{awayName}</span>
+                  </div>
                 </div>
               </div>
             </div>
