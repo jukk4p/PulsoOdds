@@ -108,7 +108,7 @@ export function BetSlip({ picks, onRemove, onClear }: BetSlipProps) {
                   onChange={(e) => setStake(Math.max(1, Number(e.target.value)))}
                   className="bg-transparent text-white text-xs font-black w-12 focus:outline-none text-right"
                 />
-                <span className="text-[10px] text-white/20 font-bold">u</span>
+                <span className="text-[10px] text-white/20 font-bold ml-1">unidades</span>
               </div>
             </div>
 
@@ -117,7 +117,7 @@ export function BetSlip({ picks, onRemove, onClear }: BetSlipProps) {
             <div className="flex items-center justify-between">
               <div className="flex flex-col">
                 <span className="text-[10px] text-white/40 font-black uppercase tracking-widest">Beneficio Potencial</span>
-                <span className="text-lg font-black text-neon-green italic">+{potentialProfit.toFixed(2)}u</span>
+                <span className="text-lg font-black text-neon-green italic">+{Number(potentialProfit.toFixed(2))} unidades</span>
               </div>
               <div className="h-10 w-10 rounded-full bg-neon-green/20 flex items-center justify-center text-neon-green">
                 <TrendingUp size={20} />
