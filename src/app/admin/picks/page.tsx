@@ -363,7 +363,7 @@ export default function AdminPicksPage() {
                       <div className="flex flex-col items-center">
                         <div className="flex items-center gap-1.5">
                           <p className="text-white font-black font-mono">@{pick.odds.toFixed(2)}</p>
-                          {pick.is_verified && <ShieldCheck className="h-3.5 w-3.5 text-blue-400" title="Cuota Verificada" />}
+                          {pick.is_verified && <ShieldCheck className="h-3.5 w-3.5 text-blue-400" />}
                         </div>
                         <p className="text-[10px] text-white/20 font-bold uppercase whitespace-nowrap">Stake {pick.stake}</p>
                       </div>
