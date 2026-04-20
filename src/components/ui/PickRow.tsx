@@ -186,14 +186,12 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
                 <div className="shrink-0 h-11 w-11 flex items-center justify-center bg-white rounded-xl border-2 border-white/20 overflow-hidden p-1.5 shadow-[0_0_20px_rgba(255,255,255,0.05)] transform hover:scale-110 transition-transform">
                   <img src={getLocalLogoPath(pick.home_logo, 'teams') || pick.home_logo || GENERIC_SHIELD} alt="" className="h-full w-full object-contain" />
                 </div>
-              </div>
-
-              {/* Centro de Acción */}
+              </di              {/* Centro de Acción - STRIPPED MINIMALISM */}
               <div className="flex flex-col items-center gap-2 shrink-0 px-2 pt-1">
                 <div className="flex items-center justify-center h-5">
                    <span className="text-[8px] font-black italic text-neon-green/40 px-2 py-0.5 rounded border border-neon-green/10">VS</span>
                 </div>
-                <div className="flex flex-col items-center bg-white/[0.03] border border-white/5 py-1.5 px-6 rounded-xl min-w-[200px] shadow-inner backdrop-blur-sm">
+                <div className="flex flex-col items-center py-1.5 px-6 min-w-[200px]">
                    <span className="text-[7px] text-white/30 uppercase font-black tracking-[0.2em] mb-0.5">{translateBettingTerm(pick.market || "Hándicap")}</span>
                    <span className="text-[11px] font-black uppercase text-neon-green italic leading-tight tracking-widest text-center">{translateBettingTerm(pick.pick)}</span>
                 </div>
@@ -210,25 +208,25 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
             </div>
           </div>
 
-          {/* Col 3: Métricas y Cuota (w-160) - CENTERED SUB-STACK */}
+          {/* Col 3: Métricas y Cuota (w-160) - STRIPPED MINIMALISM */}
           <div className="w-[160px] flex flex-col justify-center items-end h-full shrink-0">
              <div className="flex flex-col items-center gap-2">
                 <div className={cn("h-5 min-w-[75px] flex items-center justify-center rounded-md border px-2 shadow-sm mb-0.5", pick.status === 'pending' ? "text-slate-900 bg-[#c9a84c] border-[#c9a84c]" : statusStyles[pick.status as keyof typeof statusStyles])}>
-                   <span className="text-[7px] font-black uppercase tracking-tighter">{statusLabels[pick.status as keyof typeof statusLabels]}</span>
+                   <span className="text-[7px] font-black uppercase tracking-[0.3em]">{statusLabels[pick.status as keyof typeof statusLabels]}</span>
                 </div>
-                <div className="flex items-center justify-center gap-3 -translate-y-1">
-                  <button onClick={(e) => { e.stopPropagation(); onToggle?.(); }} className={cn("flex flex-col items-center justify-center w-[90px] h-12 rounded-xl border transition-all duration-300 relative overflow-hidden group", isSelected ? "bg-neon-green border-neon-green text-[#0a0f16] shadow-[0_0_25px_rgba(0,230,118,0.4)] scale-105" : "bg-white/[0.05] border-white/10 text-neon-green hover:border-neon-green/50 hover:bg-white/[0.08]")}>
+                <div className="flex items-center justify-center gap-6 -translate-y-1">
+                  <button onClick={(e) => { e.stopPropagation(); onToggle?.(); }} className={cn("flex flex-col items-center justify-center transition-all duration-300 relative group", isSelected ? "text-neon-green scale-110" : "text-white/40 hover:text-neon-green")}>
                       <div className="flex flex-col items-center relative z-10">
-                         <span className={cn("text-[7px] font-bold uppercase tracking-[0.2em] mb-0.5", isSelected ? "text-[#0a0f16]/60" : "text-white/40")}>Cuota</span>
-                         <span className="text-xl font-black tracking-tighter leading-none">{normalizeOdds(pick.odds).toFixed(2)}</span>
+                         <span className={cn("text-[7px] font-bold uppercase tracking-[0.2em] mb-0.5", isSelected ? "text-neon-green" : "text-white/20")}>Cuota</span>
+                         <span className={cn("text-xl font-black tracking-tighter leading-none", isSelected ? "text-neon-green" : "text-white/90")}>{normalizeOdds(pick.odds).toFixed(2)}</span>
                       </div>
                   </button>
-                  <button onClick={() => setIsExpanded(!isExpanded)} className="h-10 w-10 flex items-center justify-center rounded-xl bg-white/[0.03] hover:bg-white/[0.08] text-white/20 hover:text-neon-green transition-all border border-white/5 translate-y-[4px]">
-                     {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                  <button onClick={() => setIsExpanded(!isExpanded)} className="flex items-center justify-center text-white/20 hover:text-neon-green transition-all translate-y-[4px]">
+                     {isExpanded ? <ChevronUp size={22} /> : <ChevronDown size={22} />}
                   </button>
                 </div>
              </div>
-          </div>
+          </div> </div>
         </div>
 
         {/* Análisis Expandido (Común) */}
