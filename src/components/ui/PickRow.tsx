@@ -222,7 +222,7 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
                      <span className="text-xl font-black tracking-tighter leading-none">{normalizeOdds(pick.odds).toFixed(2)}</span>
                   </div>
               </button>
-              <button onClick={() => setIsExpanded(!isExpanded)} className="h-10 w-10 flex items-center justify-center rounded-xl bg-white/[0.03] hover:bg-white/[0.08] text-white/20 hover:text-neon-green transition-all border border-white/5">
+              <button onClick={() => setIsExpanded(!isExpanded)} className="h-10 w-10 flex items-center justify-center rounded-xl bg-white/[0.03] hover:bg-white/[0.08] text-white/20 hover:text-neon-green transition-all border border-white/5 translate-y-[2px]">
                  {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
               </button>
             </div>
