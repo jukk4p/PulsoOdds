@@ -80,7 +80,7 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
   const GENERIC_SHIELD = "https://img.icons8.com/ios-filled/100/ffffff/shield.png";
   const GENERIC_LEAGUE = "https://img.icons8.com/ios-filled/100/ffffff/trophy.png";
 
-  const getLocalLogoPath = (url: string | undefined, type: 'teams' | 'leagues') => {
+  const getLocalLogoPath = (url: string | undefined, type: 'leagues' | 'teams') => {
     if (!url || !url.includes('/')) return null;
     const filename = url.split('/').pop();
     return `/logos/${type}/${filename}`;
@@ -97,7 +97,7 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
           isSelected && "border-[#00e676]/50 shadow-[0_0_25px_rgba(0,255,135,0.15)] bg-slate-900/80"
         )}
       >
-        {/* Header Grid: Sincronizada */}
+        {/* Header Grid: SIN ETIQUETA DE CUOTA PARA EVITAR SOLAPE */}
         <div className="hidden md:flex items-center px-6 md:px-8 pt-3 pb-0 gap-4 md:gap-6 relative z-10 overflow-hidden">
           {/* C1: League Space */}
           <div className="w-[50px] shrink-0 h-8 border-r border-transparent pr-4" />
@@ -124,10 +124,8 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
              <span className="text-[10px] text-white font-bold uppercase tracking-[0.2em] w-full max-w-[140px] text-center opacity-50">Mercado</span>
           </div>
 
-          {/* C4: Cuota Header Label */}
-          <div className="w-[80px] shrink-0 h-8 flex items-center justify-center border-r border-transparent">
-             <span className="text-[10px] text-white font-bold uppercase tracking-[0.2em] opacity-50">Cuota</span>
-          </div>
+          {/* C4: Cuota Espacio (Vaciado para evitar solape en header) */}
+          <div className="w-[80px] shrink-0 h-8" />
 
           {/* C5: Actions Area */}
           <div className="w-[60px] md:flex-1 flex items-center justify-end gap-5 h-8">
@@ -146,14 +144,14 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
         </div>
 
         <div className="flex flex-col md:flex-row md:items-center pt-1 md:pt-2 pb-4 md:pb-6 px-6 md:px-8 gap-4 md:gap-6 relative">
-          {/* Column 1: League logo - ALTURA FIJA 70PX */}
+          {/* Column 1: League logo */}
           <div className="hidden md:flex flex-col items-center justify-center w-[50px] shrink-0 h-[70px]">
               <div className="h-9 w-9 flex items-center justify-center bg-white rounded-lg border border-white/20 overflow-hidden shadow-sm">
                 <img src={getLocalLogoPath(pick.league_logo, 'leagues') || pick.league_logo || GENERIC_LEAGUE} alt="" className="h-6 w-6 object-contain" />
               </div>
           </div>
 
-          {/* Column 2: Teams Area - ALTURA FIJA 70PX */}
+          {/* Column 2: Teams Area */}
           <div className="hidden md:flex flex-[4.8] flex-col items-center justify-center h-[70px] min-w-0">
             <div className="flex items-center justify-center gap-4 w-full">
               <div className="flex flex-1 items-center justify-end gap-3 min-w-0">
@@ -174,7 +172,7 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
             </div>
           </div>
 
-          {/* Column 3: Market Info - EL PATRÓN DE 70PX */}
+          {/* Column 3: Market Info */}
           <div className="flex flex-[2.7] flex-col items-center justify-center text-center h-[70px] min-w-0 pr-12">
             <div className="flex flex-col gap-0.5 items-center bg-slate-900/40 p-2 rounded-xl border border-white/5 w-full max-w-[140px] shadow-inner h-full justify-center">
               <div className="flex flex-col gap-0.5 w-full">
@@ -184,7 +182,7 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
             </div>
           </div>
 
-          {/* Column 4: Odds - AJUSTADO A 70PX */}
+          {/* Column 4: Odds - CUOTA RE-INTEGRADA DE FORMA ELEGANTE */}
           <div className="flex items-center justify-center md:w-[80px] shrink-0 h-[70px] py-4 md:py-0">
              <button 
                 onClick={(e) => { e.stopPropagation(); onToggle?.(); }}
@@ -196,13 +194,14 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
                 )}
               >
                 {!isSelected && <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent opacity-50" />}
-                <div className="flex items-baseline gap-0.5 relative z-10">
-                   <span className="text-base font-black tracking-tight">{normalizeOdds(pick.odds).toFixed(2)}</span>
+                <div className="flex flex-col items-center relative z-10">
+                   <span className={cn("text-[8px] font-bold uppercase tracking-[0.1em] mb-0.5 opacity-40", isSelected ? "text-[#0a0f16]" : "text-white")}>Cuota</span>
+                   <span className="text-base font-black tracking-tight leading-none">{normalizeOdds(pick.odds).toFixed(2)}</span>
                 </div>
              </button>
           </div>
 
-          {/* Column 5: Actions - CENTRADO EN 70PX */}
+          {/* Column 5: Actions */}
           <div className="flex items-center justify-center w-full md:w-[60px] shrink-0 h-[70px] pt-4 md:pt-0">
              <button onClick={() => setIsExpanded(!isExpanded)} className="h-9 w-9 flex items-center justify-center rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 text-white/40 transition-all shadow-sm">
                {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
