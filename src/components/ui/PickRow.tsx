@@ -110,9 +110,9 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
              <span className="text-[9px] text-white font-black uppercase tracking-[0.1em]">{pick.competition}</span>
           </div>
 
-          {/* Right Header Area: Linked to Market start */}
-          <div className="flex-[4.5] flex items-center gap-6">
-             <div className="flex items-center gap-2">
+          {/* Right Header Area: Pushed to the far right */}
+          <div className="flex-[4.5] flex items-center justify-end gap-5">
+             <div className="flex items-center gap-2 pr-2">
                 <div className="flex gap-0.5">
                   {[...Array(10)].map((_, i) => (
                     <div key={i} className={cn("w-0.5 h-2.5 rounded-full transition-all duration-500", i < (pick.confianza || pick.stake || 5) ? (pick.confianza || pick.stake || 5) >= 8 ? "bg-neon-green shadow-[0_0_8px_rgba(0,255,135,0.5)]" : "bg-white/40" : "bg-white/5")} />
@@ -196,7 +196,7 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
              </button>
           </div>
 
-          {/* Column 7: Actions (Extra Expand) */}
+          {/* Column 7: Actions */}
           <div className="flex items-center justify-center w-full md:w-[60px] shrink-0 pt-4 md:pt-0 h-full self-center">
              <button onClick={() => setIsExpanded(!isExpanded)} className="h-8 w-8 flex items-center justify-center rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 text-white/40 transition-all">
                {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
