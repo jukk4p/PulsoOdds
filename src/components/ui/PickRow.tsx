@@ -6,6 +6,7 @@ import { ChevronDown, ChevronUp, Zap, List, AlertTriangle, TrendingUp, CheckCirc
 
 interface PickRowProps {
   pick: {
+    id: string;
     sport: string;
     competition: string;
     match: string;
@@ -27,9 +28,11 @@ interface PickRowProps {
     home_logo?: string;
     away_logo?: string;
   };
+  isSelected?: boolean;
+  onToggle?: () => void;
 }
 
-export function PickRow({ pick }: PickRowProps) {
+export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const matchDate = new Date(pick.match_date);
@@ -88,12 +91,35 @@ export function PickRow({ pick }: PickRowProps) {
       {/* Main Card */}
       <div 
         className={cn(
-          "bg-[#111f2e] border border-white/5 rounded-[10px] overflow-hidden transition-all duration-300",
+          "bg-[#111f2e] border border-white/5 rounded-[10px] overflow-hidden transition-all duration-300 relative",
           "hover:border-[#00e676]/30 hover:shadow-[0_0_20px_rgba(0,230,118,0.05)]",
-          (pick.confianza || pick.stake || 5) >= 8 && "border-[#00e676]/20 shadow-[0_0_15px_rgba(0,230,118,0.1)]"
+          (pick.confianza || pick.stake || 5) >= 8 && "border-[#00e676]/20 shadow-[0_0_15px_rgba(0,230,118,0.1)]",
+          isSelected && "border-[#00e676]/50 shadow-[0_0_25px_rgba(0,255,135,0.15)] bg-slate-900/80"
         )}
       >
           <div className="flex flex-col md:flex-row md:items-center pt-9 pb-4 md:pt-11 md:pb-5 px-5 md:px-6 gap-4 md:gap-0 relative">
+            {/* Column 0: Selection Toggle (New) */}
+            <div className="absolute top-3 right-3 md:relative md:top-0 md:right-0 md:flex items-center justify-center w-[50px] shrink-0 z-20">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggle?.();
+                }}
+                className={cn(
+                  "h-8 w-8 rounded-full border transition-all duration-300 flex items-center justify-center group/btn",
+                  isSelected 
+                    ? "bg-neon-green border-neon-green text-deep-black shadow-[0_0_15px_rgba(0,255,135,0.4)]" 
+                    : "bg-white/5 border-white/10 text-white/20 hover:border-neon-green/50 hover:text-neon-green"
+                )}
+              >
+                {isSelected ? (
+                  <CheckCircle2 size={18} className="animate-in zoom-in" />
+                ) : (
+                  <Zap size={16} className="group-hover/btn:scale-110 transition-transform" />
+                )}
+              </button>
+            </div>
+
             {/* Column 1: League (Fixed width) */}
             <div className="hidden md:flex flex-col items-center justify-center w-[70px] shrink-0 md:border-r border-white/5 pr-4">
                 <div className="h-10 w-10 flex items-center justify-center bg-white rounded-xl border border-white/20 overflow-hidden shadow-lg" title={pick.competition}>

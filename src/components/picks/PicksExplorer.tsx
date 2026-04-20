@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { PickRow } from "@/components/ui/PickRow";
 import { cn } from "@/lib/utils";
+import { BetSlip } from "./BetSlip";
 
 interface Pick {
   id: string;
@@ -31,6 +32,7 @@ export function PicksExplorer({ initialPicks }: PicksExplorerProps) {
   const [filter, setFilter] = useState<string>("pending");
   const [selectedSport, setSelectedSport] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedPickIds, setSelectedPickIds] = useState<string[]>([]);
 
   const filterOptions = [
     { id: "pending", label: "Pendientes" },
@@ -87,6 +89,17 @@ export function PicksExplorer({ initialPicks }: PicksExplorerProps) {
       all: initialPicks.length
     };
   }, [initialPicks]);
+
+  const togglePick = (id: string) => {
+    setSelectedPickIds(prev => 
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
+  const selectedPicks = useMemo(() => 
+    initialPicks.filter(p => selectedPickIds.includes(p.id)),
+    [initialPicks, selectedPickIds]
+  );
 
   return (
     <div className="space-y-6">
@@ -174,7 +187,12 @@ export function PicksExplorer({ initialPicks }: PicksExplorerProps) {
         {filteredPicks.length > 0 ? (
           <div className="glass-card neon-border rounded-2xl overflow-hidden divide-y divide-white/5">
             {filteredPicks.map((pick) => (
-              <PickRow key={pick.id} pick={pick} />
+              <PickRow 
+                key={pick.id} 
+                pick={pick} 
+                isSelected={selectedPickIds.includes(pick.id)}
+                onToggle={() => togglePick(pick.id)}
+              />
             ))}
           </div>
         ) : (
@@ -191,6 +209,12 @@ export function PicksExplorer({ initialPicks }: PicksExplorerProps) {
           </div>
         )}
       </div>
+
+      <BetSlip 
+        picks={selectedPicks} 
+        onRemove={togglePick} 
+        onClear={() => setSelectedPickIds([])} 
+      />
     </div>
   );
 }
