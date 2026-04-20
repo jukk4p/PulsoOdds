@@ -160,7 +160,7 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
             ========================================== */}
         <div className="hidden md:flex flex-col h-[100px] px-8 py-3 group relative space-y-2">
           {/* Fila 1: Metadatos Superiores */}
-          <div className="flex items-center gap-6 h-1/2">
+          <div className="flex items-center gap-12 h-1/2">
             {/* Col 1: Fecha y Hora */}
             <div className="w-[180px] flex items-center justify-start opacity-40">
               <div className="flex items-center gap-2">
@@ -201,7 +201,7 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
           </div>
 
           {/* Fila 2: Acción Principal */}
-          <div className="flex items-center gap-6 h-1/2">
+          <div className="flex items-center gap-12 h-1/2">
             {/* Col 1: Liga e Info */}
             <div className="w-[180px] flex items-center justify-start gap-3">
               <div className="h-8 w-8 flex items-center justify-center bg-white rounded-lg border border-white/20 overflow-hidden shadow-lg -translate-y-1">
