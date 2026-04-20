@@ -158,9 +158,9 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
         {/* ==========================================
             VISTA ESCRITORIO (ARQUITECTURA 2x3 CON EJES VERTICALES)
             ========================================== */}
-        <div className="hidden md:flex items-center h-[110px] px-8 py-3 group relative gap-12">
-          {/* Col 1: Contexto de Tiempo y Liga (w-160) */}
-          <div className="w-[160px] flex flex-col justify-center gap-4 h-full shrink-0">
+        <div className="hidden md:flex items-center h-[110px] px-8 py-3 group relative gap-10">
+          {/* Col 1: Contexto de Tiempo y Liga (w-200) - NO TRUNCATE */}
+          <div className="w-[200px] flex flex-col justify-center gap-4 h-full shrink-0">
             <div className="flex items-center gap-2 opacity-50">
               <Calendar size={12} className="text-neon-green" />
               <span className="text-[10px] font-black uppercase tracking-widest text-white italic">{formattedDay}</span>
@@ -170,13 +170,13 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
                 <img src={getLocalLogoPath(pick.league_logo, 'leagues') || pick.league_logo || GENERIC_LEAGUE} alt="" className="h-6 w-6 object-contain" />
               </div>
               <div className="flex flex-col min-w-0">
-                <span className="text-[10px] text-white/50 font-black uppercase tracking-tight truncate leading-tight">{pick.competition || "Premier League"}</span>
+                <span className="text-[10px] text-white/50 font-black uppercase tracking-tight leading-tight">{pick.competition || "Premier League"}</span>
                 <span className="text-[8px] text-neon-green/60 font-black uppercase tracking-widest italic">Verified</span>
               </div>
             </div>
           </div>
 
-          {/* Col 2: El Corazón (Equipos y Mercado) - ARCHITECTURAL CHANGE */}
+          {/* Col 2: El Corazón (Equipos y Mercado) */}
           <div className="flex-1 flex items-center justify-center h-full">
             <div className="flex items-center justify-between w-full max-w-[550px] gap-4">
               
@@ -210,8 +210,8 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
             </div>
           </div>
 
-          {/* Col 3: Métricas y Cuota (w-160) - MINIMALIST ALIGNMENT */}
-          <div className="w-[160px] flex flex-col justify-center items-end gap-4 h-full shrink-0">
+          {/* Col 3: Métricas y Cuota (w-140) */}
+          <div className="w-[140px] flex flex-col justify-center items-end gap-3 h-full shrink-0">
              <div className={cn("h-5 min-w-[75px] flex items-center justify-center rounded-md border px-2 shadow-sm mb-1", pick.status === 'pending' ? "text-slate-900 bg-[#c9a84c] border-[#c9a84c]" : statusStyles[pick.status as keyof typeof statusStyles])}>
                 <span className="text-[7px] font-black uppercase tracking-tighter">{statusLabels[pick.status as keyof typeof statusLabels]}</span>
              </div>
