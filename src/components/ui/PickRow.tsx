@@ -210,23 +210,23 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
             </div>
           </div>
 
-          {/* Col 3: Métricas y Cuota (w-160) */}
-          <div className="w-[160px] flex flex-col justify-center gap-3 h-full shrink-0">
-            <div className="flex flex-col items-end gap-2">
-               <div className={cn("h-5 min-w-[80px] flex items-center justify-center rounded-md border px-2", pick.status === 'pending' ? "text-slate-900 bg-[#c9a84c] border-[#c9a84c]" : statusStyles[pick.status as keyof typeof statusStyles])}>
-                  <span className="text-[7px] font-black uppercase tracking-tighter">{statusLabels[pick.status as keyof typeof statusLabels]}</span>
+          {/* Col 3: Métricas y Cuota (w-160) - FIXED RIGHT ALIGNMENT */}
+          <div className="w-[160px] flex flex-col justify-center items-end gap-3 h-full shrink-0">
+            <div className="flex flex-col items-end gap-1.5">
+               <div className={cn("h-6 min-w-[90px] flex items-center justify-center rounded-lg border px-3 shadow-sm", pick.status === 'pending' ? "text-slate-900 bg-[#c9a84c] border-[#c9a84c]" : statusStyles[pick.status as keyof typeof statusStyles])}>
+                  <span className="text-[8px] font-black uppercase tracking-tighter">{statusLabels[pick.status as keyof typeof statusLabels]}</span>
                </div>
-               <div className="flex items-center gap-2">
+               <div className="flex items-center gap-2 pr-1">
                   <span className="text-[7px] font-black uppercase text-white/20 tracking-tighter">Stake</span>
                   <div className="flex gap-0.5">
                     {[...Array(10)].map((_, i) => {
                       const confidenceLevel = (pick.confianza || pick.stake * 10 || 50) / 10;
-                      return <div key={i} className={cn("w-0.5 h-2.5 rounded-full transition-all", i < confidenceLevel ? "bg-neon-green" : "bg-white/5")} />;
+                      return <div key={i} className={cn("w-1 h-2 rounded-full transition-all", i < confidenceLevel ? "bg-neon-green" : "bg-white/5")} />;
                     })}
                   </div>
                </div>
             </div>
-            <div className="flex items-center justify-end gap-3 pt-1">
+            <div className="flex items-center justify-end gap-3">
               <button onClick={(e) => { e.stopPropagation(); onToggle?.(); }} className={cn("flex flex-col items-center justify-center w-[90px] h-12 rounded-xl border transition-all duration-300 relative overflow-hidden group", isSelected ? "bg-neon-green border-neon-green text-[#0a0f16] shadow-[0_0_25px_rgba(0,230,118,0.4)] scale-105" : "bg-white/[0.05] border-white/10 text-neon-green hover:border-neon-green/50 hover:bg-white/[0.08]")}>
                   <div className="flex flex-col items-center relative z-10">
                      <span className={cn("text-[7px] font-bold uppercase tracking-[0.2em] mb-0.5", isSelected ? "text-[#0a0f16]/60" : "text-white/40")}>Cuota</span>
