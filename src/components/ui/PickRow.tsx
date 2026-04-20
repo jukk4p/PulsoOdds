@@ -241,7 +241,7 @@ export function PickRow({ pick }: PickRowProps) {
             </div>
 
             {/* Column 7: Actions & Badge */}
-            <div className="flex items-center justify-between md:justify-end gap-3 w-full md:w-[150px] shrink-0 pt-4 md:pt-0 px-2 md:pl-6 h-full self-center">
+            <div className="flex items-center justify-between md:justify-end gap-3 w-full md:w-[200px] shrink-0 pt-4 md:pt-0 px-2 md:pl-6 h-full self-center">
                <div className="flex items-center gap-3 h-[85px]">
                  {/* Interactive Badge */}
                  <div className="group relative flex items-center justify-center">
