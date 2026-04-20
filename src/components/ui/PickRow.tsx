@@ -282,12 +282,29 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
 
             {/* Column 6: Odds */}
             <div className="flex items-center justify-center md:w-[110px] shrink-0 md:border-r border-white/5 py-4 md:py-0 h-full">
-               <div className="bg-[#00e676]/10 border border-[#00e676]/20 px-3 py-3 rounded-xl flex flex-col items-center relative group/tooltip min-h-[85px] justify-center w-[90px] backdrop-blur-sm shadow-inner transition-all hover:bg-[#00e676]/20">
-                  <span className="text-[8px] text-[#00e676]/60 font-black tracking-widest uppercase">Cuota</span>
+               <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggle?.();
+                  }}
+                  className={cn(
+                    "flex flex-col items-center relative group/tooltip min-h-[85px] justify-center w-[90px] rounded-xl border transition-all duration-300 backdrop-blur-sm shadow-inner",
+                    isSelected 
+                      ? "bg-neon-green border-neon-green text-deep-black shadow-[0_0_20px_rgba(0,255,135,0.4)] scale-105" 
+                      : "bg-[#00e676]/10 border-[#00e676]/20 text-[#00e676] hover:bg-[#00e676]/20 hover:border-[#00e676]/40"
+                  )}
+                >
+                  <span className={cn(
+                    "text-[8px] font-black tracking-widest uppercase",
+                    isSelected ? "text-deep-black/60" : "text-[#00e676]/60"
+                  )}>Cuota</span>
                   <div className="flex items-center gap-1">
-                    <span className="text-base font-black text-[#00e676] italic">@{normalizeOdds(pick.odds).toFixed(2)}</span>
+                    <span className="text-base font-black italic">@{normalizeOdds(pick.odds).toFixed(2)}</span>
                     {pick.is_verified && (
-                      <ShieldCheck className="h-3.5 w-3.5 text-blue-400 drop-shadow-[0_0_8px_rgba(96,165,250,0.5)]" />
+                      <ShieldCheck className={cn(
+                        "h-3.5 w-3.5 drop-shadow-[0_0_8px_rgba(96,165,250,0.5)]",
+                        isSelected ? "text-deep-black" : "text-blue-400"
+                      )} />
                     )}
                   </div>
                   
@@ -296,34 +313,11 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
                       Cuota Verificada
                     </div>
                   )}
-               </div>
+               </button>
             </div>
 
             {/* Column 7: Actions & Badge */}
-            <div className="flex items-center justify-between md:justify-end gap-3 w-full md:w-[260px] shrink-0 pt-4 md:pt-0 px-2 md:pl-6 h-full self-center">
-               {/* Selection Toggle (Moved here) */}
-               <div className="flex items-center justify-center mr-2">
-                 <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onToggle?.();
-                    }}
-                    className={cn(
-                      "h-10 w-10 md:h-9 md:w-9 rounded-xl border transition-all duration-300 flex items-center justify-center group/btn shadow-sm",
-                      isSelected 
-                        ? "bg-neon-green border-neon-green text-deep-black shadow-[0_0_15px_rgba(0,255,135,0.4)]" 
-                        : "bg-white/5 border-white/10 text-white/20 hover:border-neon-green/50 hover:text-neon-green hover:bg-neon-green/5"
-                    )}
-                    title={isSelected ? "Quitar de la combinada" : "Añadir a la combinada"}
-                  >
-                    {isSelected ? (
-                      <CheckCircle2 size={18} className="animate-in zoom-in" />
-                    ) : (
-                      <TrendingUp size={16} className="group-hover/btn:scale-110 transition-transform" />
-                    )}
-                  </button>
-               </div>
-
+            <div className="flex items-center justify-between md:justify-end gap-3 w-full md:w-[200px] shrink-0 pt-4 md:pt-0 px-2 md:pl-6 h-full self-center">
                <div className="flex flex-col items-center md:items-end gap-2 h-[85px] justify-center mr-2">
                  {/* Confidence Meter */}
                  <div className="flex flex-col items-center md:items-end gap-1">
