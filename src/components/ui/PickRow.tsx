@@ -16,9 +16,11 @@ interface PickRowProps {
     status: string;
     match_date: string;
     analysis?: string;
+    razonamiento?: string;
     alertas?: string;
     factores?: string;
     ev?: number;
+    is_verified?: boolean;
     kickoff?: string;
     confianza?: number;
     league_logo?: string;
