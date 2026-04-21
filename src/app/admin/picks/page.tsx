@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Trash2, CheckCircle, XCircle, MinusCircle, Plus, Search, ShieldCheck } from 'lucide-react';
-import { cn, normalizeBettingPick, translateBettingTerm, substituteTeamNames, translateLeagueName } from '@/lib/utils';
+import { cn, normalizeBettingPick, translateBettingTerm, substituteTeamNames, translateLeagueName, formatMatchName } from '@/lib/utils';
 
 export default function AdminPicksPage() {
   const [picks, setPicks] = useState<any[]>([]);
@@ -208,7 +208,8 @@ export default function AdminPicksPage() {
         const newMarket = translateBettingTerm(p.market);
         const newPick = translateBettingTerm(p.pick);
         const newLeague = translateLeagueName(p.competition);
-        return newMarket !== p.market || newPick !== p.pick || newLeague !== p.competition;
+        const newMatch = formatMatchName(p.match);
+        return newMarket !== p.market || newPick !== p.pick || newLeague !== p.competition || newMatch !== p.match;
       });
  
       if (updates.length === 0) {
@@ -222,14 +223,15 @@ export default function AdminPicksPage() {
           .update({
             market: translateBettingTerm(p.market),
             pick: translateBettingTerm(p.pick),
-            competition: translateLeagueName(p.competition)
+            competition: translateLeagueName(p.competition),
+            match: formatMatchName(p.match)
           })
           .eq('id', p.id);
         
         if (!upError) updatedCount++;
       }
  
-      alert(`🚀 ¡Auditoría completada!\n\nSe han corregido y traducido ${updatedCount} registros (mercados y ligas) en tu histórico.`);
+      alert(`🚀 ¡Auditoría completada!\n\nSe han corregido y traducido ${updatedCount} registros (equipos, mercados y ligas) en tu histórico.`);
       fetchPicks();
     } catch (err) {
       alert("Error durante la auditoría de traducciones.");
