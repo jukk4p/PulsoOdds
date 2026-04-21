@@ -3,12 +3,13 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Trash2, CheckCircle, XCircle, MinusCircle, Plus, Search, ShieldCheck } from 'lucide-react';
-import { cn, normalizeBettingPick, translateBettingTerm } from '@/lib/utils';
+import { cn, normalizeBettingPick, translateBettingTerm, substituteTeamNames } from '@/lib/utils';
 
 export default function AdminPicksPage() {
   const [picks, setPicks] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
+  const [selectedPicks, setSelectedPicks] = useState<Set<string>>(new Set());
 
   const fetchPicks = async () => {
     setLoading(true);
@@ -17,13 +18,36 @@ export default function AdminPicksPage() {
       .select('*')
       .order('created_at', { ascending: false });
 
-    if (!error) setPicks(data || []);
+    if (!error) {
+      setPicks(data || []);
+      // Limpiar selección después de recargar
+      setSelectedPicks(new Set());
+    }
     setLoading(false);
   };
 
   useEffect(() => {
     fetchPicks();
   }, []);
+
+  const toggleSelectAll = () => {
+    if (selectedPicks.size === filteredPicks.length && filteredPicks.length > 0) {
+      setSelectedPicks(new Set());
+    } else {
+      setSelectedPicks(new Set(filteredPicks.map(p => p.id)));
+    }
+  };
+
+  const toggleSelectOne = (id: string, event?: React.MouseEvent) => {
+    if (event) event.stopPropagation();
+    const newSelection = new Set(selectedPicks);
+    if (newSelection.has(id)) {
+      newSelection.delete(id);
+    } else {
+      newSelection.add(id);
+    }
+    setSelectedPicks(newSelection);
+  };
 
   const updateStatus = async (id: string, status: string) => {
     const { error } = await supabase
@@ -36,8 +60,25 @@ export default function AdminPicksPage() {
     }
   };
 
+  const bulkUpdateStatus = async (status: string) => {
+    const ids = Array.from(selectedPicks);
+    if (ids.length === 0) return;
+
+    setLoading(true);
+    const { error } = await supabase
+      .from('picks')
+      .update({ status })
+      .in('id', ids);
+
+    if (!error) {
+      setPicks(picks.map(p => ids.includes(p.id) ? { ...p, status } : p));
+      setSelectedPicks(new Set());
+    }
+    setLoading(false);
+  };
+
   const deletePick = async (id: string) => {
-    if (!confirm('¿Seguro que quieres eliminar este pick?')) return;
+    if (!confirm('¿Seguro quieres eliminar este pick?')) return;
     const { error } = await supabase
       .from('picks')
       .delete()
@@ -45,7 +86,28 @@ export default function AdminPicksPage() {
 
     if (!error) {
       setPicks(picks.filter(p => p.id !== id));
+      const newSelection = new Set(selectedPicks);
+      newSelection.delete(id);
+      setSelectedPicks(newSelection);
     }
+  };
+
+  const bulkDelete = async () => {
+    const ids = Array.from(selectedPicks);
+    if (ids.length === 0) return;
+    if (!confirm(`¿Seguro que quieres eliminar ${ids.length} picks seleccionados?`)) return;
+
+    setLoading(true);
+    const { error } = await supabase
+      .from('picks')
+      .delete()
+      .in('id', ids);
+
+    if (!error) {
+      setPicks(picks.filter(p => !ids.includes(p.id)));
+      setSelectedPicks(new Set());
+    }
+    setLoading(false);
   };
 
   const handleValidate = async (pick: any) => {
@@ -132,6 +194,48 @@ export default function AdminPicksPage() {
     alert("🚀 MÓDULO DE CREACIÓN MANUAL (v7.0)\n\nEsta función estará disponible en la próxima actualización. Por ahora, sigue publicando a través del comando /picks del bot en Telegram.");
   };
 
+  const handleTranslateAudit = async () => {
+    if (!confirm('Esta herramienta buscará picks con términos en inglés o técnicos y los actualizará automáticamente al español pro. ¿Deseas continuar?')) return;
+    
+    setLoading(true);
+    let updatedCount = 0;
+    
+    try {
+      const { data: allPicks, error } = await supabase.from('picks').select('*');
+      if (error) throw error;
+
+      const updates = allPicks.filter(p => {
+        const newMarket = translateBettingTerm(p.market);
+        const newPick = translateBettingTerm(p.pick);
+        return newMarket !== p.market || newPick !== p.pick;
+      });
+
+      if (updates.length === 0) {
+        alert('✅ ¡Limpieza total! No se encontraron mercados por traducir.');
+        return;
+      }
+
+      for (const p of updates) {
+        const { error: upError } = await supabase
+          .from('picks')
+          .update({
+            market: translateBettingTerm(p.market),
+            pick: translateBettingTerm(p.pick)
+          })
+          .eq('id', p.id);
+        
+        if (!upError) updatedCount++;
+      }
+
+      alert(`🚀 ¡Auditoría completada!\n\nSe han corregido y traducido ${updatedCount} términos de mercados/selecciones en tu histórico.`);
+      fetchPicks();
+    } catch (err) {
+      alert("Error durante la auditoría de traducciones.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const filteredPicks = picks.filter(p => 
     p.match.toLowerCase().includes(searchQuery.toLowerCase()) ||
     p.market.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -141,6 +245,58 @@ export default function AdminPicksPage() {
 
   return (
     <div className="space-y-6 text-center sm:text-left">
+      {/* Bulk Action Bar (Floating/Sticky) */}
+      {selectedPicks.size > 0 && (
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <div className="bg-deep-black/90 backdrop-blur-xl border border-neon-green/30 px-6 py-4 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex items-center gap-6">
+            <div className="flex flex-col">
+              <span className="text-neon-green font-black text-lg tracking-tighter leading-none">{selectedPicks.size}</span>
+              <span className="text-[10px] text-white/40 uppercase font-black tracking-widest">Seleccionados</span>
+            </div>
+
+            <div className="h-8 w-[1px] bg-white/10" />
+
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => bulkUpdateStatus('won')}
+                className="bg-neon-green/10 text-neon-green hover:bg-neon-green/20 p-2.5 rounded-xl transition-all group"
+                title="Marcar como Ganados"
+              >
+                <CheckCircle className="h-5 w-5" />
+              </button>
+              <button 
+                onClick={() => bulkUpdateStatus('lost')}
+                className="bg-red-500/10 text-red-500 hover:bg-red-500/20 p-2.5 rounded-xl transition-all"
+                title="Marcar como Perdidos"
+              >
+                <XCircle className="h-5 w-5" />
+              </button>
+              <button 
+                onClick={() => bulkUpdateStatus('void')}
+                className="bg-white/5 text-white/40 hover:bg-white/10 p-2.5 rounded-xl transition-all"
+                title="Marcar como Nulos"
+              >
+                <MinusCircle className="h-5 w-5" />
+              </button>
+              <button 
+                onClick={bulkDelete}
+                className="bg-white/5 text-red-400 hover:bg-red-500/10 p-2.5 rounded-xl transition-all ml-2"
+                title="Eliminar Selección"
+              >
+                <Trash2 className="h-5 w-5" />
+              </button>
+            </div>
+
+            <button 
+              onClick={() => setSelectedPicks(new Set())}
+              className="text-[10px] text-white/20 hover:text-white uppercase font-black tracking-widest ml-2 transition-colors"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Header Block */}
       <div className="flex flex-col lg:flex-row justify-between items-center gap-6 mb-8">
         <div className="flex flex-col items-center sm:items-start">
@@ -163,16 +319,22 @@ export default function AdminPicksPage() {
             />
           </div>
 
-          <div className="flex items-center gap-3 w-full md:w-auto justify-center">
+          <div className="flex flex-wrap items-center gap-3 w-full md:w-auto justify-center">
             <button 
               onClick={handleCheckAssets}
-              className="flex-1 md:flex-none bg-blue-500/10 text-blue-400 border border-blue-500/20 font-black px-6 py-3.5 rounded-xl flex items-center justify-center gap-2 hover:bg-blue-500/20 transition-all active:scale-95 text-[11px] tracking-tighter uppercase"
+              className="flex-1 md:flex-none bg-blue-500/10 text-blue-400 border border-blue-500/20 font-black px-4 py-3.5 rounded-xl flex items-center justify-center gap-2 hover:bg-blue-500/20 transition-all active:scale-95 text-[10px] tracking-tighter uppercase"
             >
-              <ShieldCheck className="h-4 w-4" /> Auditar Activos
+              <ShieldCheck className="h-4 w-4" /> Logos
+            </button>
+            <button 
+              onClick={handleTranslateAudit}
+              className="flex-1 md:flex-none bg-purple-500/10 text-purple-400 border border-purple-500/20 font-black px-4 py-3.5 rounded-xl flex items-center justify-center gap-2 hover:bg-purple-500/20 transition-all active:scale-95 text-[10px] tracking-tighter uppercase"
+            >
+              <Search className="h-4 w-4" /> Mercados
             </button>
             <button 
               onClick={handleNewPick}
-              className="flex-1 md:flex-none bg-neon-green text-deep-black font-black px-8 py-3.5 rounded-xl flex items-center justify-center gap-2 hover:shadow-[0_0_30px_rgba(0,255,135,0.5)] transition-all active:scale-95 text-[11px] tracking-tighter uppercase"
+              className="flex-1 md:flex-none bg-neon-green text-deep-black font-black px-6 py-3.5 rounded-xl flex items-center justify-center gap-2 hover:shadow-[0_0_30px_rgba(0,255,135,0.5)] transition-all active:scale-95 text-[11px] tracking-tighter uppercase"
             >
               <Plus className="h-5 w-5 stroke-[3px]" /> Nuevo
             </button>
@@ -190,15 +352,31 @@ export default function AdminPicksPage() {
             <div className="p-12 text-center text-white/20 italic">No se encontraron resultados.</div>
           ) : (
             filteredPicks.map((pick) => (
-              <div key={pick.id} className="p-5 space-y-4 hover:bg-white/[0.02] transition-colors">
+              <div 
+                key={pick.id} 
+                className={cn(
+                  "p-5 space-y-4 hover:bg-white/[0.02] transition-colors relative",
+                  selectedPicks.has(pick.id) && "bg-neon-green/[0.03] border-l-2 border-neon-green"
+                )}
+                onClick={() => toggleSelectOne(pick.id)}
+              >
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
                     <p className="text-white font-black leading-tight mb-1">{pick.match}</p>
                     <p className="text-[10px] text-white/40 uppercase font-black tracking-widest">{pick.sport} • {pick.competition}</p>
                   </div>
-                  <div className="text-right flex flex-col items-end gap-1">
-                    <span className="text-lg font-mono text-neon-green leading-none">@{pick.odds.toFixed(2)}</span>
-                    <span className="text-xs text-white/20 font-bold">Stake {pick.stake}/10</span>
+                  <div className="flex items-start gap-3">
+                    <div className="text-right flex flex-col items-end gap-1">
+                      <span className="text-lg font-mono text-neon-green leading-none">@{pick.odds.toFixed(2)}</span>
+                      <span className="text-xs text-white/20 font-bold">Stake {pick.stake}/5</span>
+                    </div>
+                    {/* Checkbox Móvil */}
+                    <div className={cn(
+                      "h-5 w-5 rounded-md border-2 transition-all flex items-center justify-center",
+                      selectedPicks.has(pick.id) ? "bg-neon-green border-neon-green" : "border-white/10 bg-white/5"
+                    )}>
+                      {selectedPicks.has(pick.id) && <CheckCircle className="h-4 w-4 text-deep-black stroke-[3px]" />}
+                    </div>
                   </div>
                 </div>
 
@@ -220,13 +398,15 @@ export default function AdminPicksPage() {
                     return (
                       <>
                         <p className="text-[10px] text-white/30 uppercase font-black mb-0.5">{translateBettingTerm(normalizeBettingPick(pick.market))}</p>
-                        <p className="text-neon-green font-black uppercase text-sm">{normalizeBettingPick(pick.pick)}</p>
+                        <p className="text-neon-green font-black uppercase text-sm">
+                          {substituteTeamNames(normalizeBettingPick(pick.pick), pick.match)}
+                        </p>
                       </>
                     );
                   })()}
                 </div>
 
-                <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center justify-between gap-4" onClick={(e) => e.stopPropagation()}>
                   <span className={cn(
                     "px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest",
                     pick.status === 'won' && "bg-neon-green/10 text-neon-green",
@@ -262,6 +442,21 @@ export default function AdminPicksPage() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-white/5 text-white/40 text-[10px] uppercase tracking-widest">
+                <th className="px-6 py-5 font-black w-10">
+                  <button 
+                    onClick={toggleSelectAll}
+                    className={cn(
+                      "h-5 w-5 rounded-md border-2 transition-all flex items-center justify-center",
+                      selectedPicks.size === filteredPicks.length && filteredPicks.length > 0 
+                        ? "bg-neon-green border-neon-green" 
+                        : "border-white/20 bg-white/5 hover:border-white/40"
+                    )}
+                  >
+                    {selectedPicks.size === filteredPicks.length && filteredPicks.length > 0 && 
+                      <CheckCircle className="h-4 w-4 text-deep-black stroke-[3px]" />
+                    }
+                  </button>
+                </th>
                 <th className="px-6 py-5 font-black text-neon-green whitespace-nowrap">Evento / Deporte</th>
                 <th className="px-6 py-5 font-black whitespace-nowrap">Mercado / Pronóstico</th>
                 <th className="px-6 py-5 font-black text-center whitespace-nowrap">Cuota / Stake</th>
@@ -280,7 +475,27 @@ export default function AdminPicksPage() {
                 </tr>
               ) : (
                 filteredPicks.map((pick) => (
-                  <tr key={pick.id} className="hover:bg-white/[0.02] transition-colors group">
+                  <tr 
+                    key={pick.id} 
+                    onClick={() => toggleSelectOne(pick.id)}
+                    className={cn(
+                      "hover:bg-white/[0.02] transition-colors group cursor-pointer border-l-2 border-transparent",
+                      selectedPicks.has(pick.id) && "bg-neon-green/[0.02] border-neon-green"
+                    )}
+                  >
+                    <td className="px-6 py-6" onClick={(e) => e.stopPropagation()}>
+                      <button 
+                        onClick={() => toggleSelectOne(pick.id)}
+                        className={cn(
+                          "h-5 w-5 rounded-md border-2 transition-all flex items-center justify-center",
+                          selectedPicks.has(pick.id) 
+                            ? "bg-neon-green border-neon-green" 
+                            : "border-white/10 bg-white/5 group-hover:border-white/30"
+                        )}
+                      >
+                        {selectedPicks.has(pick.id) && <CheckCircle className="h-4 w-4 text-deep-black stroke-[3px]" />}
+                      </button>
+                    </td>
                     <td className="px-6 py-6 border-b border-white/5">
                       <p className="text-white font-bold leading-none mb-1.5 whitespace-nowrap">{pick.match}</p>
                       <p className="text-[10px] text-white/30 uppercase font-black tracking-widest whitespace-nowrap">{pick.sport} • {pick.competition}</p>
@@ -302,7 +517,9 @@ export default function AdminPicksPage() {
                         return (
                           <>
                             <p className="text-[11px] text-white/40 uppercase font-bold mb-1 whitespace-nowrap">{translateBettingTerm(normalizeBettingPick(pick.market))}</p>
-                            <p className="text-neon-green font-black uppercase text-sm whitespace-nowrap">{normalizeBettingPick(pick.pick)}</p>
+                            <p className="text-neon-green font-black uppercase text-sm whitespace-nowrap">
+                              {substituteTeamNames(normalizeBettingPick(pick.pick), pick.match)}
+                            </p>
                           </>
                         );
                       })()}
@@ -327,7 +544,7 @@ export default function AdminPicksPage() {
                         {pick.status === 'pending' ? 'Pendiente' : pick.status === 'won' ? 'Ganado' : pick.status === 'lost' ? 'Perdido' : 'Nulo'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
                       <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button onClick={() => updateStatus(pick.id, 'won')} className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-neon-green/20 text-white/10 hover:text-neon-green transition-all" title="Ganado">
                           <CheckCircle className="h-4 w-4" />

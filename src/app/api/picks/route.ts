@@ -26,11 +26,13 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // --- PREVENCIÓN DE DUPLICADOS ---
+    // --- PREVENCIÓN DE DUPLICADOS REFORZADA ---
+    // Ahora validamos por Partido + Fecha + Mercado + Selección
     const { data: existingPick } = await supabaseAdmin
       .from('picks')
       .select('id')
       .eq('match', body.match)
+      .eq('match_date', body.match_date)
       .eq('market', translateBettingTerm(body.market))
       .eq('pick', translateBettingTerm(body.pick))
       .maybeSingle();
@@ -38,10 +40,11 @@ export async function POST(req: NextRequest) {
     if (existingPick) {
       return NextResponse.json({ 
         success: true, 
-        message: 'Pick ya publicado anteriormente', 
+        message: `El pick para [${body.match}] ya existe con este mercado y selección.`, 
         pick_id: existingPick.id 
       });
     }
+    // ------------------------------------------
     // --------------------------------
 
     // 🏁 DB PAYLOAD CORREGIDO: Nombres exactos para la Web

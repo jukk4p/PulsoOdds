@@ -75,6 +75,10 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
 
   const getLocalLogoPath = (url: string | undefined, type: 'leagues' | 'teams') => {
     if (!url || !url.includes('/')) return null;
+    
+    // Si ya es una URL completa (empieza por http), la devolvemos tal cual
+    if (url.startsWith('http')) return url;
+    
     const filename = url.split('/').pop();
     return `/logos/${type}/${filename}`;
   };

@@ -265,7 +265,12 @@ export function normalizeBettingPick(text: string): string {
   // 1. Traducir/Normalizar frases completas primero (usando nuestro diccionario pro)
   let normalized = translateBettingTerm(text);
   
-  // 2. Si sigue siendo muy largo, limpiar ruido residual
+  // 2. Limpieza de hándicaps feos: "LOCAL (HDP -1.75)" -> "LOCAL -1.75"
+  normalized = normalized.replace(/\(HDP\s*([+-]?[\d.]+)\)/gi, '$1');
+  normalized = normalized.replace(/\(HÁNDICAP\s*([+-]?[\d.]+)\)/gi, '$1');
+  normalized = normalized.replace(/\(HDP\)/gi, ''); // Por si viene vacío
+  
+  // 3. Si sigue siendo muy largo, limpiar ruido residual
   const noise = [
     /\bEN EL PARTIDO\b/gi,
     /\bEL PARTIDO TENDRÁ\b/gi,
@@ -281,4 +286,24 @@ export function normalizeBettingPick(text: string): string {
   });
   
   return normalized.trim();
+}
+
+/**
+ * Reemplaza términos genéricos (LOCAL/VISITANTE) por el nombre real del equipo
+ */
+export function substituteTeamNames(pickText: string, matchName: string | undefined): string {
+  if (!pickText || !matchName || !matchName.toLowerCase().includes(' vs ')) {
+    return pickText;
+  }
+  
+  const [home, away] = matchName.split(/\s+vs\s+/i);
+  let result = pickText;
+  
+  // Reemplazar LOCAL/HOME (con regex para ser precisos)
+  result = result.replace(/\b(LOCAL|HOME)\b/gi, formatTeamName(home));
+  
+  // Reemplazar VISITANTE/AWAY
+  result = result.replace(/\b(VISITANTE|AWAY|VISITOR)\b/gi, formatTeamName(away));
+  
+  return result;
 }

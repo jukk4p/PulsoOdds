@@ -30,7 +30,7 @@ interface PicksExplorerProps {
 
 export function PicksExplorer({ initialPicks }: PicksExplorerProps) {
   const [filter, setFilter] = useState<string>("pending");
-  const [selectedSport, setSelectedSport] = useState<string>("all");
+  const [selectedMarket, setSelectedMarket] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPickIds, setSelectedPickIds] = useState<string[]>([]);
 
@@ -42,13 +42,73 @@ export function PicksExplorer({ initialPicks }: PicksExplorerProps) {
     { id: "all", label: "Historial Total" }
   ];
 
-  const sportOptions = [
-    { id: "all", label: "Todos", icon: "💎" },
-    { id: "football", label: "Fútbol", icon: "⚽" },
-    { id: "basketball", label: "Basket", icon: "🏀" },
-    { id: "tennis", label: "Tenis", icon: "🎾" },
-    { id: "top", label: "Top Picks", icon: "🔥" },
-  ];
+  const marketOptions = useMemo(() => {
+    const uniqueMarkets = new Set<string>();
+    initialPicks.forEach(p => {
+      if (p.market) {
+        let m = p.market.toUpperCase();
+        let baseMarket = "";
+
+        // Reglas de agrupación inteligente (Mapeo Semántico)
+        if (m.includes("EMPATE NO VÁLIDO") || m.includes("DRAW NO BET") || m.includes("DNB")) {
+          baseMarket = "Empate No Válido";
+        } else if (m.includes("PRIMERA PARTE") || m.includes("1ª MITAD") || m.includes("1ST HALF") || m.includes("PRIMERA MITAD") || m.includes("1H")) {
+          baseMarket = "1ª Mitad";
+        } else if (
+          m.includes("GANA LOCAL") || m.includes("GANA VISITANTE") || 
+          m.includes("VICTORIA LOCAL") || m.includes("VICTORIA VISITANTE") || 
+          m.includes("VICTORIA DEL") || m.includes("EMPATE") || 
+          m.includes("RESULTADO FINAL") || m.includes("1X2") || 
+          m.includes("MONEY LINE") || m.includes("DRAW")
+        ) {
+          baseMarket = "Resultado Final";
+        } else if (
+          m.includes("MÁS DE") || m.includes("MENOS DE") || 
+          m.includes("TOTAL DE GOLES") || m.includes("GOLES TOTALES") || 
+          m.includes("OVER") || m.includes("UNDER")
+        ) {
+          baseMarket = "Total de Goles";
+        } else if (m.includes("DOBLE OPORTUNIDAD")) {
+          baseMarket = "Doble Oportunidad";
+        } else {
+          baseMarket = p.market.split(' - ')[0].split(' (')[0].trim();
+        }
+        
+        const marketLabel = baseMarket.charAt(0).toUpperCase() + baseMarket.slice(1).toLowerCase();
+        uniqueMarkets.add(marketLabel);
+      }
+    });
+
+    const options = [
+      { id: "all", label: "Todos", icon: "💎" },
+      { id: "top", label: "Top Picks", icon: "🔥" },
+    ];
+
+    Array.from(uniqueMarkets).sort().forEach(m => {
+      let icon = "🎯";
+      const lowM = m.toLowerCase();
+      if (lowM.includes('anotan') || lowM.includes('marcan')) icon = "⚽";
+      if (lowM.includes('hándicap') || lowM.includes('handicap')) icon = "📊";
+      if (lowM.includes('primera') || lowM.includes('1ª') || lowM.includes('1st')) icon = "⏱️";
+      if (lowM.includes('total') || lowM.includes('más de') || lowM.includes('menos de') || lowM.includes('over') || lowM.includes('under')) icon = "🔢";
+      if (lowM.includes('resultado') || lowM.includes('final') || lowM.includes('gana') || lowM.includes('victoria') || lowM.includes('empate')) {
+        // Aseguramos que el icono de copa sea para Resultado Final, no para DNB
+        icon = lowM.includes('no válido') ? "🛡️" : "🏆";
+      }
+      if (lowM.includes('córner') || lowM.includes('esquina')) icon = "🚩";
+      if (lowM.includes('tarjeta')) icon = "🟨";
+      if (lowM.includes('oportunidad')) icon = "🛡️";
+      if (lowM.includes('no válido')) icon = "🛡️";
+      
+      options.push({
+        id: m.toLowerCase(),
+        label: m,
+        icon: icon
+      });
+    });
+
+    return options;
+  }, [initialPicks]);
 
   const filteredPicks = useMemo(() => {
     let result = initialPicks;
@@ -58,13 +118,44 @@ export function PicksExplorer({ initialPicks }: PicksExplorerProps) {
       result = result.filter((p) => p.status === filter);
     }
 
-    // Sport / Top filter
-    if (selectedSport === "top") {
+    // Market / Top filter
+    if (selectedMarket === "top") {
       result = result.filter(p => (p.confianza || p.stake) >= 8);
-    } else if (selectedSport !== "all") {
-      result = result.filter(p => 
-        (p.sport || "").toLowerCase().includes(selectedSport)
-      );
+    } else if (selectedMarket !== "all") {
+      result = result.filter(p => {
+        const m = (p.market || "").toLowerCase();
+        
+        // Lógica de filtrado inteligente para 1ª Mitad
+        if (selectedMarket === "1ª mitad") {
+          return m.includes("primera parte") || m.includes("1ª mitad") || m.includes("1st half") || m.includes("primera mitad") || m.includes("1h");
+        }
+
+        // Lógica de filtrado inteligente para Empate No Válido (Prioridad)
+        if (selectedMarket === "empate no válido") {
+          return m.includes("empate no válido") || m.includes("draw no bet") || m.includes("dnb");
+        }
+
+        // Lógica de filtrado inteligente para Resultado Final (Excluye DNB)
+        if (selectedMarket === "resultado final") {
+          const isDNB = m.includes("empate no válido") || m.includes("draw no bet") || m.includes("dnb");
+          if (isDNB) return false;
+          return (
+            m.includes("resultado final") || m.includes("gana local") || m.includes("gana visitante") || 
+            m.includes("victoria local") || m.includes("victoria visitante") || m.includes("victoria del") ||
+            m.includes("empate") || m.includes("1x2") || m.includes("money line") || m.includes("draw")
+          );
+        }
+
+        // Lógica de filtrado inteligente para Total de Goles
+        if (selectedMarket === "total de goles") {
+          return (
+            m.includes("total de goles") || m.includes("más de") || m.includes("menos de") ||
+            m.includes("over") || m.includes("under") || m.includes("goles totales")
+          );
+        }
+        
+        return m.startsWith(selectedMarket);
+      });
     }
     
     // Search filter
@@ -73,12 +164,13 @@ export function PicksExplorer({ initialPicks }: PicksExplorerProps) {
       result = result.filter(p => 
         (p.match?.toLowerCase().includes(q) || false) ||
         (p.competition?.toLowerCase().includes(q) || false) ||
+        (p.market?.toLowerCase().includes(q) || false) ||
         (p.pick?.toLowerCase().includes(q) || false)
       );
     }
     
     return result;
-  }, [initialPicks, filter, selectedSport, searchQuery]);
+  }, [initialPicks, filter, selectedMarket, searchQuery]);
 
   const counts = useMemo(() => {
     return {
@@ -122,14 +214,14 @@ export function PicksExplorer({ initialPicks }: PicksExplorerProps) {
           </div>
         </div>
 
-        {/* Sport Categories Picker */}
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2">
-          {sportOptions.map((sport) => {
-            const isActive = selectedSport === sport.id;
+        {/* Market Categories Picker */}
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 pr-10">
+          {marketOptions.map((market) => {
+            const isActive = selectedMarket === market.id;
             return (
               <button
-                key={sport.id}
-                onClick={() => setSelectedSport(sport.id)}
+                key={market.id}
+                onClick={() => setSelectedMarket(market.id)}
                 className={cn(
                   "flex items-center gap-2 px-5 py-2.5 rounded-xl border font-bold text-xs uppercase tracking-tighter transition-all whitespace-nowrap",
                   isActive 
@@ -137,8 +229,8 @@ export function PicksExplorer({ initialPicks }: PicksExplorerProps) {
                     : "bg-white/5 border-white/5 text-white/40 hover:bg-white/10 hover:text-white/70"
                 )}
               >
-                <span>{sport.icon}</span>
-                {sport.label}
+                <span>{market.icon}</span>
+                {market.label}
               </button>
             );
           })}

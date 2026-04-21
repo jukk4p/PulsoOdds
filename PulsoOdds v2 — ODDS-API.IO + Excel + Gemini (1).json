@@ -1,0 +1,600 @@
+{
+  "name": "PulsoOdds v2 — ODDS-API.IO + Excel + Gemini",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "id": "188dc30b-641d-4c87-9eb8-e9cb246d71ed",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -464,
+        -304
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// 1️⃣ Función de limpieza total\nconst clean = (s) => (s || \"\").toString().toLowerCase().normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\").replace(/[^a-z0-9]/g, \"\");\n\n// 2️⃣ Recuperamos los datos del Excel (usamos .first() para evitar errores de emparejamiento)\nconst excelRows = $(\"Agrupar Excel\").first().json.excel_data;\n\n// 3️⃣ Función de búsqueda inteligente\nconst findTeam = (name) => {\n  if (!name) return null;\n  const n = clean(name);\n  \n  let found = excelRows.find(row => clean(row.Equipo) === n);\n  if (found) return found;\n\n  return excelRows.find(row => {\n    const e = clean(row.Equipo);\n    if (e.length < 3) return false;\n\n    const conflicts = [\n      { city: \"madrid\", keys: [\"real\", \"atletico\", \"rayo\"] },\n      { city: \"manchester\", keys: [\"city\", \"united\"] },\n      { city: \"milan\", keys: [\"inter\", \"ac\"] },\n      { city: \"sevilla\", keys: [\"betis\", \"sevilla\"] },\n      { city: \"liverpool\", keys: [\"everton\", \"liverpool\"] },\n      { city: \"london\", keys: [\"arsenal\", \"chelsea\", \"tottenham\", \"west\", \"crystal\", \"fulham\", \"brentford\"] }\n    ];\n\n    for (const conflict of conflicts) {\n      if (n.includes(conflict.city) && e.includes(conflict.city)) {\n        return conflict.keys.some(key => n.includes(key) && e.includes(key));\n      }\n    }\n    return n.includes(e) || e.includes(n);\n  });\n};\n\n// 4️⃣ Procesamos el item actual\nconst matchData = $json;\nconst homeRow = findTeam(matchData.home);\nconst awayRow = findTeam(matchData.away);\n\nconst homePos = parseInt(homeRow?.Pos || homeRow?.posicion) || 12;\nconst awayPos = parseInt(awayRow?.Pos || awayRow?.posicion) || 12;\nconst posDiff = Math.abs(homePos - awayPos);\n\nreturn {\n  json: {\n    ...matchData,\n    home_pos: homePos,\n    away_pos: awayPos,\n    pos_diff: posDiff,\n    interest_score: (posDiff >= 8 ? 40 : 0) + (homePos <= 6 || awayPos <= 6 ? 30 : 0),\n    home_stats: homeRow || {},\n    away_stats: awayRow || {}\n  }\n};\n"
+      },
+      "id": "765b2cbd-057a-4cef-9aef-64a9c7a70ccd",
+      "name": "Cruzar con Excel",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        608,
+        -256
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "c-score",
+              "leftValue": "={{ $json.interest_score }}",
+              "rightValue": 35,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "c-cuota",
+              "leftValue": "={{ $json.main_odds.home }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "14353360-3361-46e3-971c-182a5eee82a1",
+      "name": "Filtro Pre-LLM",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [
+        848,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "maxItems": 8
+      },
+      "id": "007b324b-e709-407f-bea8-b1e8a60be666",
+      "name": "Limit 6 Partidos",
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        1136,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = [];\n// Intentamos buscar el nodo de Excel. Si falla, el catch nos avisará.\nlet originalData = [];\ntry {\n  originalData = $(\"Cruzar con Excel\").all();\n} catch (e) {\n  // Si tu nodo se llama distinto, poné el nombre exacto aquí abajo:\n  originalData = $(\"Cruzar con Excel\").all(); \n}\n\nconst clean = (s) => (s || \"\").toString().toLowerCase()\n    .normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\")\n    .replace(/[^a-z0-9]/g, \"\");\n\nfor (const item of $input.all()) {\n    const raw = item.json?.text ?? item.json?.content?.parts?.[0]?.text ?? \"\";\n    let parsed = {};\n    \n    try {\n        const start = raw.indexOf('{');\n        const end = raw.lastIndexOf('}');\n        if (start === -1 || end === -1) throw new Error(\"No JSON found\");\n        parsed = JSON.parse(raw.substring(start, end + 1));\n\n        const homePick = clean(parsed.home || parsed.match || \"\");\n        \n        // 🧠 Búsqueda ultra-segura\n        const matchedNode = originalData.find(o => {\n            const oHome = clean(o.json.home || \"\");\n            const oMatch = clean(o.json.match || \"\");\n            return (homePick.includes(oHome) && oHome.length > 3) || (oMatch.includes(homePick));\n        });\n\n        const orig = matchedNode ? matchedNode.json : {};\n\n        // 🛡️ NORMALIZACIÓN TOTAL (Aquí evitamos el undefined)\n        const output = {\n            ...orig,        // Trae stats e interest_score de Excel\n            ...parsed,      // Trae razonamiento y selección de la IA\n            stake: parsed.stake || parsed.stake_recomendado || orig.stake || 1,\n            confianza: parsed.confianza || parsed.nivel_confianza || orig.confianza || 70,\n            interest_score: orig.interest_score || parsed.interest_score || 0,\n            _valid: true\n        };\n\n        results.push({ json: output });\n\n    } catch(e) {\n        results.push({ json: { _valid: false, _error: e.message, raw_text: raw } });\n    }\n}\nreturn results;\n"
+      },
+      "id": "a256310b-ac14-489c-ab8d-0c4a3ba5f3d1",
+      "name": "Parsear Gemini y Stake",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1696,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.recomendar }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            },
+            {
+              "id": "c2",
+              "leftValue": "={{ $json.confianza }}",
+              "rightValue": 60,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "41572cfb-8d85-4572-a2e9-294c711639c0",
+      "name": "Filtro Calidad Final",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [
+        1904,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const p = $json;\n\n// 🌍 1. TRADUCTOR DE MERCADOS \"ESTÁNDAR PRO\"\nlet mercadoRaw = (p.mercado || \"\").toString().toLowerCase();\nlet seleccionRaw = (p.seleccion || \"\").toString().toLowerCase();\nlet mercadoEs = p.mercado || \"Mercado Desconocido\";\n\nif (mercadoRaw.includes('both teams') || mercadoRaw.includes('btts')) {\n    mercadoEs = 'Ambos Marcan (BTTS)';\n} \nelse if (mercadoRaw.includes('spread') || mercadoRaw.includes('asian') || seleccionRaw.includes('.25') || seleccionRaw.includes('.75')) {\n    mercadoEs = 'Hándicap Asiático';\n} \nelse if (mercadoRaw.includes('handicap')) {\n    mercadoEs = 'Hándicap Europeo (3-Way)';\n}\nelse if (mercadoRaw.includes('totals') || mercadoRaw.includes('over') || mercadoRaw.includes('under')) {\n    mercadoEs = 'Goles Totales (O/U)';\n}\nelse if (mercadoRaw.includes('ml') || mercadoRaw.includes('money line') || mercadoRaw.includes('result') || mercadoRaw.includes('1x2')) {\n    mercadoEs = 'Resultado Final (1X2)';\n}\nelse if (mercadoRaw.includes('draw no bet') || mercadoRaw.includes('dnb')) {\n    mercadoEs = 'Empate no Válido (DNB)';\n}\n\n// 🌍 2. TRADUCTOR DE SELECCIONES\nlet seleccionEs = (p.seleccion || '')\n    .toString()\n    .replace(/yes/gi, 'Sí').replace(/no/gi, 'No')\n    .replace(/home/gi, 'Local').replace(/away/gi, 'Visitante').replace(/draw/gi, 'Empate')\n    .replace(/over/gi, 'Más de').replace(/under/gi, 'Menos de');\n\n// 🔢 3. CÁLCULOS DE DISEÑO (Barra, Estrellas, Cuota)\nconst numConfianza = parseInt(p.confianza) || 70;\nconst numStake = parseInt(p.stake) || 1;\nconst cuota = parseFloat(p.cuota_objetivo || p.cuota) || 0;\nconst stars = \"⭐\".repeat(Math.min(5, Math.ceil(numStake)));\nconst barLen = Math.round(numConfianza / 10);\nconst bar = \"🟦\".repeat(Math.max(0, barLen)) + \"⬜\".repeat(Math.max(0, 10 - barLen));\n\n// 📊 4. ESTADÍSTICAS (Contrato Directo con la IA)\nconst l = p.stats_local || p.stats?.local || p.home_stats || {};\nconst v = p.stats_visitante || p.stats?.visitante || p.away_stats || {};\n\n// 📝 5. CONSTRUCCIÓN DEL MENSAJE FINAL\nconst msg = [\n    `🌍 *PARTIDO*`,\n    `🏆 *${p.competition || p.league || 'Fútbol'}*`,\n    `🤝 ${p.match || (p.home + ' vs ' + p.away)}`,\n    `📅 ${p.date ? p.date.split('T')[0] : ''}  ·  ⏰ ${p.kickoff || ''}`,\n    \n    `\\n🎯 *PICK RECOMENDADO:*`,\n    `🔹 *Mercado:* ${mercadoEs}`,\n    `✅ *Selección:* ${seleccionEs}`,\n    `💰 *Cuota:* ${cuota.toFixed(2)} _(Bet365)_`,\n    \n    `\\n📉 *ANÁLISIS CUANTITATIVO:*`,\n    `· Prob. estimada: *${(parseFloat(p.prob_estimada || 0) * 100).toFixed(1)}%*`,\n    `· Valor Esperado (EV): *+${(parseFloat(p.ev || 0) * 100).toFixed(1)}%*`,\n    `· Confianza: *${numConfianza}%*`,\n    `  [${bar}]`,\n    `· Stake sugerido: ${stars} *${numStake}/5*`,\n    \n    `\\n💡 *RAZONAMIENTO:*`,\n    `${p.razonamiento || 'Sin razonamiento disponible.'}`,\n    \n    `\\n🔘 *ESTADÍSTICAS DE EQUIPOS:*`,\n    `🏠 *Local:* Pos ${l.posicion || l.pos || '-'} | ${l.puntos || l.pts || 0} pts`,\n    `   Récord: ${l.pj || 0}pj (${l.pg || 0}V-${l.pe || 0}E-${l.pp || 0}D)`,\n    `\\n🚀 *Visitante:* Pos ${v.posicion || v.pos || '-'} | ${v.puntos || v.pts || 0} pts`,\n    `   Récord: ${v.pj || 0}pj (${v.pg || 0}V-${v.pe || 0}E-${v.pp || 0}D)`,\n    \n    `\\n🔥 *Score de Interés:* ${p.interest_score || p.score_interes || p.score || 0}/100`\n].join('\\n');\n\nreturn { json: { ...p, telegram_text: msg } };\n"
+      },
+      "id": "e00d307b-4144-4ea6-837b-4fb403c0edaa",
+      "name": "Formatear Telegram",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2320,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "=134285537",
+        "text": "={{ $json.telegram_text }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "a1dbe942-90ed-48cf-8fc7-11980e1ef225",
+      "name": "Enviar Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2832,
+        -32
+      ],
+      "webhookId": "32193c41-d695-4418-8acd-ef834959bef2",
+      "credentials": {
+        "telegramApi": {
+          "id": "YlrBrvmvSXW2Y7wb",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ⚡ Modo Fórmula 1: Directo y sin nodos externos\nreturn $input.all().map((item) => {\n  const p = item.json;\n\n  // 🛡️ Extraemos los logos directamente de los objetos home_stats y away_stats\n  // Usamos corchetes [\"...\"] porque los nombres tienen espacios\n  const homeLogo = p.home_stats?.[\"Logo Equipo\"] || \"\";\n  const awayLogo = p.away_stats?.[\"Logo Equipo\"] || \"\";\n  const leagueLogo = p.home_stats?.[\"Logo Liga\"] || \"\";\n\n  return {\n    json: {\n      sport: 'football',\n      competition: p.competition || p.league || '-',\n      match: p.match || (p.home + \" vs \" + p.away),\n      market: p.market || p.mercado,\n      pick: p.pick || p.seleccion,\n      odds: parseFloat(p.odds || p.cuota_objetivo || 0),\n      stake: parseInt(p.stake) || 1,\n      match_date: p.date,\n      razonamiento: p.razonamiento || '',\n      confianza: parseInt(p.confianza) || 85,\n      \n      // Asignamos las URLs finales\n      home_logo: homeLogo,\n      away_logo: awayLogo,\n      league_logo: leagueLogo,\n      \n      home_stats: p.home_stats || {},\n      away_stats: p.away_stats || {},\n      status: 'pending'\n    }\n  };\n});\n"
+      },
+      "id": "5c1ccbf3-c9cb-493f-8939-b24e49ed5dba",
+      "name": "Build Pick Web",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2624,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://pulsoodds.ivangonzalez.cloud/api/picks",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "pulso_odds_secreto_220209.x"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "ba054860-a74a-4fe9-8d6a-3025cfc864ce",
+      "name": "Publicar en Web",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2832,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1oN_W3RTwVaxZm5zyKv8HQwgUsjAEZlpJSCFDe21GJWI",
+          "mode": "list",
+          "cachedResultName": "ligas_automatico_v5",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oN_W3RTwVaxZm5zyKv8HQwgUsjAEZlpJSCFDe21GJWI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "n8n_Consolidado",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -144,
+        -304
+      ],
+      "id": "ee8dd7f0-bb92-4f67-9bb2-49fe4f8c47a0",
+      "name": "Get row(s) in sheet",
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "bIECu4KTunbXppTW",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.odds-api.io/v3/events",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "apiKey",
+              "value": "4425ffe591a5f69f998cdc94a53d86ca13b81449c25fbf1081c3e42e5de57578"
+            },
+            {
+              "name": "sport",
+              "value": "football"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "id": "1bc122ed-3e5a-469a-848a-f5a984142073",
+      "name": "Obtener Eventos OddsApi",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -784,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nconst LIGAS_TOP = [\n  'spain-laliga', 'england-premier-league', 'italy-serie-a', \n  'germany-bundesliga', 'france-ligue-1', 'usa-mls', 'brazil-serie-a'\n];\n\n// 1. Filtramos\nconst filtrados = items.filter(i => \n  LIGAS_TOP.includes(i.json.league?.slug) && \n  i.json.status !== 'cancelled'\n).slice(0, 40); // Tomamos los mejores 40\n\n// 2. Función para dividir en grupos de 10\nconst chunkArray = (arr, size) => {\n  const chunks = [];\n  for (let i = 0; i < arr.length; i += size) {\n    chunks.push(arr.slice(i, i + size));\n  }\n  return chunks;\n};\n\nconst lotesDe10 = chunkArray(filtrados, 10);\n\n// 3. Devolvemos un ITEM por cada LOTE\n// Esto hará que el siguiente nodo (HTTP) se ejecute 1 vez por cada lote\nreturn lotesDe10.map(lote => {\n  return {\n    json: {\n      eventIds: lote.map(p => p.json.id).join(','),\n      partidos_en_este_lote: lote.length\n    }\n  };\n});\n"
+      },
+      "id": "1660744d-4d47-4a62-8cf5-243cfdf9069d",
+      "name": "Filtrar y Parsear Cuotas (Odds-API.io)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -544,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://api.odds-api.io/v3/odds/multi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "apiKey",
+              "value": "4425ffe591a5f69f998cdc94a53d86ca13b81449c25fbf1081c3e42e5de57578"
+            },
+            {
+              "name": "eventIds",
+              "value": "={{ $json.eventIds }}"
+            },
+            {
+              "name": "markets",
+              "value": "h2h,over_under_2_5,btts"
+            },
+            {
+              "name": "bookmakers",
+              "value": "Bet365"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -336,
+        144
+      ],
+      "id": "f6c3d379-ba58-43e4-bfb4-f707a53f3baf",
+      "name": "Obtener Cuotas"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const data = $json;\nconst b365 = data.bookmakers?.Bet365 || [];\n\n// ✅ LISTA BLANCA PROFESIONAL\nconst whitelist = [\n    'ML', 'Both Teams To Score', 'Totals', 'Spread', \n    'Double Chance', 'Draw No Bet', 'Corners', \n    'Half Time', 'Result/Both Teams To Score'\n];\n\nconst allMarketsSummary = b365\n    .filter(m => whitelist.some(word => m.name.includes(word))) \n    .map(market => {\n        const oddsInfo = market.odds.map(o => {\n            const parts = [];\n            // Si hay hándicap o etiqueta, los ponemos primero\n            if (o.hdp) parts.push(`(Hdp ${o.hdp})`);\n            if (o.label) parts.push(`${o.label}:`);\n            \n            // Buscamos todas las claves de cuotas posibles en el objeto\n            const keys = ['home', 'draw', 'away', 'yes', 'no', 'over', 'under', 'price'];\n            keys.forEach(key => {\n                if (o[key] && o[key] !== 'N/A') {\n                    // Si el label ya existe (como en Doble Oportunidad), no repetimos la clave\n                    const prefix = o.label ? '' : `${key.toUpperCase()}:`;\n                    parts.push(`${prefix}${o[key]}`);\n                }\n            });\n            return parts.join(' ');\n        }).join(' | ');\n        \n        return `[${market.name}]: ${oddsInfo}`;\n    }).join('\\n');\n\nconst getOdds = (name) => b365.find(m => m.name === name)?.odds?.[0] || {};\nconst ml = getOdds('ML');\nconst btts = getOdds('Both Teams To Score');\n\nreturn {\n    home: data.home,\n    away: data.away,\n    match: `${data.home} vs ${data.away}`,\n    league: data.league?.name || \"Liga\",\n    competition: data.league?.name || \"Fútbol\", \n    date: data.date,\n    kickoff: data.date ? new Date(data.date).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) : \"-\",\n    main_odds: {\n        home: parseFloat(ml.home || ml.price) || 0,\n        draw: parseFloat(ml.draw || ml.price) || 0,\n        away: parseFloat(ml.away || ml.price) || 0,\n        btts_yes: parseFloat(btts.yes || btts.price) || 0\n    },\n    full_market_dump: allMarketsSummary,\n    home_logo: \"https://via.placeholder.com/64?text=Home\",\n    away_logo: \"https://via.placeholder.com/64?text=Away\",\n    league_logo: \"https://via.placeholder.com/64?text=League\"\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -96,
+        160
+      ],
+      "id": "c9532616-fb62-4fb8-bc02-b201984b2847",
+      "name": "Mapear Datos"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Convertimos los 200 items en 1 SOLO item que contiene la lista\nreturn {\n  json: {\n    excel_data: $input.all().map(item => item.json)\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        64,
+        -304
+      ],
+      "id": "a4235a76-d5ad-4adf-923d-f4aa2e90c103",
+      "name": "Agrupar Excel"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "Eres un analista experto en apuestas deportivas, especializado en probabilidad, cuotas y valor esperado.\n\nTienes que analizar el partido usando únicamente los datos proporcionados en el JSON de entrada.\n\nOBJETIVO:\nDebes identificar el mejor pick por valor esperado (EV+) a partir de:\n1. Fuerza relativa de ambos equipos.\n2. Rendimiento de local y visitante.\n3. Coherencia entre forma, posición y cuotas.\n4. Diferencia entre probabilidad implícita y probabilidad estimada.\n5. Riesgo y solidez estadística del pick.\n\nREGLAS DE ANÁLISIS:\n- No inventes datos no presentes.\n- Si la información es insuficiente, baja la confianza.\n- Prioriza mercados con mejor relación riesgo/recompensa.\n- Solo recomienda un pick si detectas valor real.\n- Si no hay valor claro, marca recomendar false.\n- La cuota objetivo debe ser la mínima cuota aceptable para tener valor.\n- La probabilidad estimada debe reflejar tu estimación real, no la implícita de la casa.\n- El EV debe calcularse de forma aproximada y ser coherente con la cuota y la probabilidad.\n\nCRITERIOS DE CALIDAD:\n- EVALUACIÓN DE FORMA: Usa los datos de Puntos, PJ, PG, PE y PP para determinar si un equipo está subestimado o sobreestimado por la cuota.\n- confianza de 1 a 100.\n- confianza alta solo si hay clara ventaja estadística y cuota atractiva.\n- Penaliza equipos con pocos partidos o datos inconsistentes.\n- Evita picks demasiado especulativos.\n\nREGLAS DE FORMATO (CRÍTICO):\n- Responde ÚNICAMENTE con el objeto JSON.\n- PROHIBIDO usar bloques de código markdown (nada de ```json).\n- PROHIBIDO escribir texto fuera de las llaves { }.\n- En 'razonamiento': NO uses comillas dobles (\"), usa solo comillas simples ('). Máximo 30 palabras.\n\nESTRUCTURA:\n{\"match\":\"Nombre del Partido\", \"mercado\":\"...\", \"seleccion\":\"...\", \"cuota_objetivo\":0.00, \"prob_estimada\":0.50, \"ev\":0.05, \"confianza\":70, \"razonamiento\":\"Texto técnico corto\", \"casa_recomendada\":\"Bet365\", \"recomendar\":true}",
+              "role": "model"
+            },
+            {
+              "content": "=Actúa como un Senior Value Betting Analyst especializado en detectar apuestas con ventaja estadística.\n\nTu tarea es encontrar SOLO el mejor pick del partido, basándote en probabilidad real, cuota de mercado y valor esperado positivo.\n\nDATOS PARA ANALIZAR: \nID_PARTIDO: {{ $json.match }}\nPARTIDO: {{ $json.home }} vs {{ $json.away }}\nLIGA: {{ $json.league }}\n\nSTATS:\n- Local: Pos {{ $json.home_pos }}º ({{ $json.home_stats.Pts }} pts)\n    Partidos Jugados: {{ $json.home_stats.PJ }}\n    Partidos Ganados: {{ $json.home_stats.PG }}\n    Partidos Perdidos: {{ $json.home_stats.PP }}\n    Partidos Empatados: {{ $json.home_stats.PE }}\n\n- Visitante: Pos {{ $json.away_pos }}º ({{ $json.away_stats.Pts }} pts)\n    Partidos Jugados: {{ $json.away_stats.PJ }}\n    Partidos Ganados: {{ $json.away_stats.PG }}\n    Partidos Perdidos: {{ $json.away_stats.PP }}\n    Partidos Empatados: {{ $json.away_stats.PE }}\n\nCUOTAS DISPONIBLES:\n{{ $json.full_market_dump }}\n\nOBJETIVO PRINCIPAL:\nSeleccionar el mercado con mayor valor esperado ajustado por riesgo, evitando picks frágiles o sobreajustados.\n\nMETODOLOGÍA:\n1. Evalúa fortaleza relativa usando:\n   - Posición en liga.\n   - Puntos por partido.\n   - Ratio de victorias/empates/derrotas.\n   - Rendimiento local del equipo local.\n   - Rendimiento visitante del equipo visitante.\n2. Estima una probabilidad realista para cada mercado relevante.\n3. Compara esa probabilidad con la probabilidad implícita de la cuota.\n4. Solo recomienda si existe edge suficiente.\n5. Penaliza mercados con poca estabilidad o margen bajo.\n\nREGLAS ESTRICTAS:\n- Usa únicamente la información recibida.\n- No inventes estadísticas extra.\n- Si no hay suficiente ventaja, no recomendar.\n- Sé conservador: mejor no apostar que forzar un pick.\n- La confianza debe subir solo cuando haya coherencia fuerte entre datos y cuota.\n- El razonamiento debe ser técnico, breve y directo.\n\nGenera el pick de valor siguiendo el formato JSON ahora. En el campo \"match\" escribe exactamente lo que dice en ID_PARTIDO.\n\nNecesito tambien las STATS de arriba en ese JSON. \n\nIMPORTANTE: Formato Obligatorio de Estadísticas Debes incluir la información estadística exactamente bajo estos nombres de campos (sin carpetas anidadas raras):\n\nstats_local: Objeto con campos posicion, puntos, pj, pg, pe, pp.\nstats_visitante: Objeto con campos posicion, puntos, pj, pg, pe, pp.\nEjemplo de JSON esperado: \"stats_local\": { \"posicion\": \"18º\", \"puntos\": 32, \"pj\": 31, \"pg\": 7, \"pe\": 11, \"pp\": 13 }, \"stats_visitante\": { \"posicion\": \"2º\", \"puntos\": 70, \"pj\": 31, \"pg\": 22, \"pe\": 4, \"pp\": 5 }\n\nREGLA FINAL:\n- Si el valor esperado no es claramente positivo, devuelve recommendar false.\n- Si hay empate entre opciones, prioriza el mercado más estable y menos volátil.\n- Si la cuota de mercado está muy ajustada, eleva el umbral de exigencia."
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        1280,
+        -416
+      ],
+      "id": "c3cc2e02-1834-47ac-b7e7-3b9a9a246608",
+      "name": "Message a model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0B9JwCkf4oFJZq0s",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cruzar con Excel": {
+      "main": [
+        [
+          {
+            "node": "Filtro Pre-LLM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtro Pre-LLM": {
+      "main": [
+        [
+          {
+            "node": "Limit 6 Partidos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear Gemini y Stake": {
+      "main": [
+        [
+          {
+            "node": "Filtro Calidad Final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtro Calidad Final": {
+      "main": [
+        [
+          {
+            "node": "Formatear Telegram",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Build Pick Web",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatear Telegram": {
+      "main": [
+        [
+          {
+            "node": "Enviar Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Pick Web": {
+      "main": [
+        [
+          {
+            "node": "Publicar en Web",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener Eventos OddsApi": {
+      "main": [
+        [
+          {
+            "node": "Filtrar y Parsear Cuotas (Odds-API.io)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar y Parsear Cuotas (Odds-API.io)": {
+      "main": [
+        [
+          {
+            "node": "Obtener Cuotas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener Cuotas": {
+      "main": [
+        [
+          {
+            "node": "Mapear Datos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit 6 Partidos": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mapear Datos": {
+      "main": [
+        [
+          {
+            "node": "Cruzar con Excel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Agrupar Excel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agrupar Excel": {
+      "main": [
+        [
+          {
+            "node": "Obtener Eventos OddsApi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Parsear Gemini y Stake",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "Europe/Madrid",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "5bff15ab-ea81-4ead-9429-81abe4278ef1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "51329d20bb80350250f8daf63ccbc18bb069669cdf5828f7cc7c1caad1fde496"
+  },
+  "id": "6yUityiL9gbnnftk",
+  "tags": []
+}
