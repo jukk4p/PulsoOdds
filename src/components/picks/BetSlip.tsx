@@ -33,7 +33,7 @@
          className="flex items-center justify-between p-3 cursor-pointer"
        >
          <div className="flex flex-col gap-0.5 flex-1 min-w-0">
-           <span className="text-[10px] text-white/40 font-bold uppercase truncate pr-4">{pick.match}</span>
+           <span className="text-[10px] text-white/40 font-bold tracking-widest truncate pr-4">{pick.match}</span>
            <div className="flex items-center gap-2">
              <span className="text-xs font-black text-white italic truncate max-w-[150px]">{translateBettingTerm(pick.pick)}</span>
              <span className="text-xs font-black text-neon-green">@{pick.odds.toFixed(2)}</span>
@@ -60,11 +60,11 @@
           <div className="pt-2 border-t border-white/5 space-y-2">
              <div className="flex items-center justify-between">
                 <span className="text-[8px] text-white/30 font-black uppercase tracking-widest">Mercado</span>
-                <span className="text-[9px] text-neon-green/60 font-black uppercase italic tracking-wider">{translateBettingTerm(pick.market || "")}</span>
+                <span className="text-[9px] text-neon-green/60 font-black italic tracking-wider">{translateBettingTerm(pick.market || "")}</span>
              </div>
              <div className="flex items-center justify-between">
                 <span className="text-[8px] text-white/30 font-black uppercase tracking-widest">Selección</span>
-                <span className="text-[10px] text-white/90 font-black uppercase italic">{translateBettingTerm(pick.pick)}</span>
+                <span className="text-[10px] text-white/90 font-black italic">{translateBettingTerm(pick.pick)}</span>
              </div>
           </div>
        </div>
@@ -103,7 +103,7 @@
                </div>
              </div>
              <div>
-               <h3 className="text-white font-black text-[10px] uppercase tracking-[0.2em]">Combinada</h3>
+               <h3 className="text-white font-black text-[10px] tracking-[0.2em]">Combinada</h3>
                <p className="text-neon-green text-[10px] font-black italic">Total @{totalOdds.toFixed(2)}</p>
              </div>
            </div>
@@ -128,7 +128,7 @@
          <div className="px-6 pb-6 space-y-6 overflow-y-auto max-h-[400px] no-scrollbar">
            {/* Picks List */}
            <div className="space-y-2">
-             <span className="text-[9px] text-white/10 font-black uppercase tracking-[0.4em] block border-b border-white/5 pb-2">Selecciones</span>
+             <span className="text-[9px] text-white/10 font-black tracking-[0.4em] block border-b border-white/5 pb-2">Selecciones</span>
              {picks.map((pick) => (
                 <BetSlipItem key={pick.id} pick={pick} onRemove={onRemove} />
              ))}
@@ -139,7 +139,7 @@
              <div className="flex items-center justify-between">
                <div className="flex items-center gap-2">
                  <Calculator size={14} className="text-white/20" />
-                 <span className="text-[10px] text-white/40 font-black uppercase tracking-widest">Inversión</span>
+                 <span className="text-[10px] text-white/40 font-black tracking-widest">Inversión</span>
                </div>
                <div className="flex items-center gap-2 bg-black/40 rounded-lg border border-white/5 px-2 py-1">
                  <input 
@@ -156,7 +156,7 @@
  
              <div className="flex items-center justify-between">
                <div className="flex flex-col">
-                 <span className="text-[10px] text-white/40 font-black uppercase tracking-widest">Beneficio</span>
+                 <span className="text-[10px] text-white/40 font-black tracking-widest">Beneficio</span>
                  <span className="text-lg font-black text-neon-green italic leading-none mt-1">+{Number(potentialProfit.toFixed(2))}</span>
                </div>
                <div className="h-10 w-10 rounded-full bg-neon-green/10 border border-neon-green/20 flex items-center justify-center text-neon-green">

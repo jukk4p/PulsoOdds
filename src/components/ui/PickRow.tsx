@@ -163,15 +163,15 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
           <div className="w-[200px] flex flex-col justify-center gap-4 h-full shrink-0">
             <div className="flex items-center gap-2 opacity-50">
               <Calendar size={12} className="text-neon-green" />
-              <span className="text-[10px] font-black uppercase tracking-widest text-white italic">{formattedDay}</span>
+              <span className="text-[10px] font-black tracking-widest text-white italic">{formattedDay}</span>
             </div>
             <div className="flex items-center gap-3">
               <div className="h-9 w-9 flex items-center justify-center bg-white rounded-lg border border-white/20 overflow-hidden shadow-lg">
                 <img src={getLocalLogoPath(pick.league_logo, 'leagues') || pick.league_logo || GENERIC_LEAGUE} alt="" className="h-6 w-6 object-contain" />
               </div>
               <div className="flex flex-col min-w-0">
-                <span className="text-[10px] text-white/50 font-black uppercase tracking-tight leading-tight">{pick.competition || "Premier League"}</span>
-                <span className="text-[8px] text-neon-green/60 font-black uppercase tracking-widest italic">Verified</span>
+                <span className="text-[10px] text-white/50 font-black tracking-tight leading-tight">{pick.competition || "Premier League"}</span>
+                <span className="text-[8px] text-neon-green/60 font-black tracking-widest italic">Verificado</span>
               </div>
             </div>
           </div>
@@ -182,7 +182,7 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
               
               {/* Equipo Local */}
               <div className="flex flex-col items-center gap-3 flex-1 min-w-0">
-                <span className="text-[11px] font-black text-white/90 uppercase tracking-widest leading-none truncate w-full text-center">{homeName}</span>
+                <span className="text-[11px] font-black text-white/90 tracking-widest leading-none truncate w-full text-center">{homeName}</span>
                 <div className="shrink-0 h-11 w-11 flex items-center justify-center bg-white rounded-xl border-2 border-white/20 overflow-hidden p-1.5 shadow-[0_0_20px_rgba(255,255,255,0.05)] transform hover:scale-110 transition-transform">
                   <img src={getLocalLogoPath(pick.home_logo, 'teams') || pick.home_logo || GENERIC_SHIELD} alt="" className="h-full w-full object-contain" />
                 </div>
@@ -194,14 +194,14 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
                    <span className="text-[8px] font-black italic text-neon-green/40 px-2 py-0.5 rounded border border-neon-green/10">VS</span>
                 </div>
                 <div className="flex flex-col items-center py-1.5 px-6 min-w-[200px]">
-                   <span className="text-[7px] text-white/30 uppercase font-black tracking-[0.2em] mb-0.5">{translateBettingTerm(pick.market || "Hándicap")}</span>
-                   <span className="text-[11px] font-black uppercase text-neon-green italic leading-tight tracking-widest text-center">{translateBettingTerm(pick.pick)}</span>
+                   <span className="text-[7px] text-white/30 font-black tracking-[0.2em] mb-0.5">{translateBettingTerm(pick.market || "Hándicap")}</span>
+                   <span className="text-[11px] font-black text-neon-green italic leading-tight tracking-widest text-center">{translateBettingTerm(pick.pick)}</span>
                 </div>
               </div>
 
               {/* Equipo Visitante */}
               <div className="flex flex-col items-center gap-3 flex-1 min-w-0">
-                <span className="text-[11px] font-black text-white/90 uppercase tracking-widest leading-none truncate w-full text-center">{awayName}</span>
+                <span className="text-[11px] font-black text-white/90 tracking-widest leading-none truncate w-full text-center">{awayName}</span>
                 <div className="shrink-0 h-11 w-11 flex items-center justify-center bg-white rounded-xl border-2 border-white/20 overflow-hidden p-1.5 shadow-[0_0_20px_rgba(255,255,255,0.05)] transform hover:scale-110 transition-transform">
                   <img src={getLocalLogoPath(pick.away_logo, 'teams') || pick.away_logo || GENERIC_SHIELD} alt="" className="h-full w-full object-contain" />
                 </div>
@@ -216,11 +216,11 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
                 {/* Eje de Cuota + Estado */}
                 <div className="flex flex-col items-center gap-2">
                    <div className={cn("h-5 min-w-[75px] flex items-center justify-center rounded-md border px-2 shadow-sm mb-0.5", pick.status === 'pending' ? "text-slate-900 bg-[#c9a84c] border-[#c9a84c]" : statusStyles[pick.status as keyof typeof statusStyles])}>
-                      <span className="text-[7px] font-black uppercase tracking-[0.3em]">{statusLabels[pick.status as keyof typeof statusLabels]}</span>
+                      <span className="text-[7px] font-black tracking-[0.3em]">{statusLabels[pick.status as keyof typeof statusLabels]}</span>
                    </div>
                    <button onClick={(e) => { e.stopPropagation(); onToggle?.(); }} className={cn("flex flex-col items-center justify-center py-2 px-6 rounded-[18px] border transition-all duration-300 relative group", isSelected ? "bg-neon-green border-neon-green text-[#0a0f16] shadow-[0_0_20px_rgba(0,230,118,0.3)] scale-105" : "bg-white/[0.03] border-white/10 text-white/40 hover:border-neon-green/30 hover:bg-white/[0.06]")}>
                       <div className="flex flex-col items-center relative z-10">
-                         <span className={cn("text-[7px] font-bold uppercase tracking-[0.2em] mb-0.5", isSelected ? "text-[#0a0f16]/60" : "text-white/20")}>Cuota</span>
+                         <span className={cn("text-[7px] font-bold tracking-[0.2em] mb-0.5", isSelected ? "text-[#0a0f16]/60" : "text-white/20")}>Cuota</span>
                          <span className={cn("text-xl font-black tracking-tighter leading-none", isSelected ? "text-[#0a0f16]" : "text-white/90 group-hover:text-neon-green")}>{normalizeOdds(pick.odds).toFixed(2)}</span>
                       </div>
                    </button>
