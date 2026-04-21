@@ -31,8 +31,8 @@ export async function POST(req: NextRequest) {
       .from('picks')
       .select('id')
       .eq('match', body.match)
-      .eq('pick', body.pick)
-      .eq('match_date', body.match_date)
+      .eq('market', translateBettingTerm(body.market))
+      .eq('pick', translateBettingTerm(body.pick))
       .maybeSingle();
 
     if (existingPick) {
