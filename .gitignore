@@ -44,3 +44,13 @@ next-env.d.ts
 .atl/
 AGENTS.md
 CLAUDE.md
+
+# local data and master guides
+api-response.json
+diccionario_maestro_mercados.md
+diccionario_maestro_trinidad.md
+guia_maestra_equipos.md
+ligas_automatico_v5 - n8n_Consolidado.csv
+mercado_cuotas.json
+pick.json
+PulsoOdds v2 — ODDS-API.IO + Excel + Gemini (1).json
