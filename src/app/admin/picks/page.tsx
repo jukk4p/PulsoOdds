@@ -369,6 +369,11 @@ export default function AdminPicksPage() {
                     <div className="text-right flex flex-col items-end gap-1">
                       <span className="text-lg font-mono text-neon-green leading-none">@{pick.odds.toFixed(2)}</span>
                       <span className="text-xs text-white/20 font-bold">Stake {pick.stake}/5</span>
+                      {pick.published_at && (
+                        <span className="text-[8px] text-neon-green/30 font-black uppercase mt-1">
+                          Reg: {new Date(pick.published_at).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      )}
                     </div>
                     {/* Checkbox Móvil */}
                     <div className={cn(
@@ -531,6 +536,11 @@ export default function AdminPicksPage() {
                           {pick.is_verified && <ShieldCheck className="h-3.5 w-3.5 text-blue-400" />}
                         </div>
                         <p className="text-[10px] text-white/20 font-bold uppercase whitespace-nowrap">Stake {pick.stake}</p>
+                        {pick.published_at && (
+                          <p className="text-[8px] text-neon-green/30 font-black uppercase mt-1 truncate max-w-[100px]">
+                            {new Date(pick.published_at).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                          </p>
+                        )}
                       </div>
                     </td>
                     <td className="px-6 py-4">

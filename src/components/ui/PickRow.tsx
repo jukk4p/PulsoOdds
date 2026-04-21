@@ -27,7 +27,6 @@ interface PickRowProps {
     home_logo?: string;
     away_logo?: string;
     league_logo?: string;
-    published_at?: string;
   };
   isSelected?: boolean;
   onToggle?: () => void;
@@ -41,12 +40,6 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
   const dayMonth = matchDate.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }).replace('.', '');
   const formattedDay = `${dayName.charAt(0).toUpperCase() + dayName.slice(1)}, ${dayMonth}`;
   const formattedTime = pick.kickoff || matchDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false });
-  
-  // Nuevo formateo para la fecha de publicación
-  const publishedAtDate = pick.published_at ? new Date(pick.published_at) : null;
-  const formattedPublishedAt = publishedAtDate 
-    ? `Publicado: ${publishedAtDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`
-    : null;
   
   const [homeRaw, awayRaw] = (pick.match || "").split(/\s+vs\s+/i);
   const homeName = formatTeamName(homeRaw || "Local");
@@ -114,9 +107,6 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
                  <div className="flex flex-col">
                     <span className="text-[10px] font-black text-white/50 uppercase tracking-widest truncate">{pick.competition}</span>
                     <span className="text-[8px] font-bold text-white/20 uppercase">{formattedDay} @ {formattedTime}</span>
-                    {formattedPublishedAt && (
-                      <span className="text-[7px] font-medium text-neon-green/40 uppercase mt-0.5">{formattedPublishedAt}</span>
-                    )}
                  </div>
               </div>
               <div className={cn("px-2 py-0.5 rounded-md border text-[8px] font-black uppercase", pick.status === 'pending' ? "text-slate-900 bg-[#c9a84c] border-[#c9a84c]" : statusStyles[pick.status as keyof typeof statusStyles])}>
@@ -180,14 +170,9 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
                 <Calendar size={12} className="text-neon-green/80" />
                 <span className="text-[10px] font-black tracking-widest text-white italic leading-none">{formattedDay}</span>
               </div>
-               <div className="flex flex-col">
-                 <div className="flex items-center gap-2">
-                   <Clock size={11} className="text-white/20" />
-                   <span className="text-[9px] font-black text-white/30 tracking-[0.1em] leading-none">{formattedTime}</span>
-                 </div>
-                 {formattedPublishedAt && (
-                   <span className="text-[7px] font-bold text-neon-green/30 uppercase mt-1 tracking-tighter">{formattedPublishedAt}</span>
-                 )}
+               <div className="flex items-center gap-2">
+                 <Clock size={11} className="text-white/20" />
+                 <span className="text-[9px] font-black text-white/30 tracking-[0.1em] leading-none">{formattedTime}</span>
                </div>
              </div>
             <div className="flex items-center gap-3">
