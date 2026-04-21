@@ -179,7 +179,7 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
               <div className="h-9 w-9 flex items-center justify-center bg-white rounded-lg border border-white/20 overflow-hidden shadow-lg">
                 <img src={getLocalLogoPath(pick.league_logo, 'leagues') || pick.league_logo || GENERIC_LEAGUE} alt="" className="h-6 w-6 object-contain" />
               </div>
-                <span className="text-[10px] text-white/50 font-black tracking-tight leading-tight">{translateLeagueName(pick.competition) || "Premier League"}</span>
+                <span className="text-[10px] text-white/50 font-black tracking-widest leading-tight uppercase">{translateLeagueName(pick.competition) || "PREMIER LEAGUE"}</span>
             </div>
           </div>
 
