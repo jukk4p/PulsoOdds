@@ -199,8 +199,8 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
                    <span className="text-[8px] font-black italic text-neon-green/40 px-2 py-0.5 rounded border border-neon-green/10">VS</span>
                 </div>
                 <div className="flex flex-col items-center py-1.5 px-6 min-w-[200px]">
-                   <span className="text-[7px] text-white/30 font-black tracking-[0.2em] mb-0.5">{translateBettingTerm(pick.market || "Hándicap")}</span>
-                   <span className="text-[11px] font-black text-neon-green italic leading-tight tracking-widest text-center">{translateBettingTerm(pick.pick)}</span>
+                   <span className="text-[8.5px] text-white/30 font-black tracking-[0.2em] mb-0.5 leading-none">{translateBettingTerm(pick.market || "Hándicap")}</span>
+                   <span className="text-[13px] font-black text-neon-green italic leading-tight tracking-widest text-center">{translateBettingTerm(pick.pick)}</span>
                 </div>
               </div>
 
