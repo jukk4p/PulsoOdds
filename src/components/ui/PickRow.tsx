@@ -161,12 +161,12 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
         <div className="hidden md:flex items-center h-[110px] px-8 py-3 group relative gap-10">
           {/* Col 1: Contexto de Tiempo y Liga (w-200) - NO TRUNCATE */}
           <div className="w-[200px] flex flex-col justify-center gap-4 h-full shrink-0">
-            <div className="flex flex-col gap-1.5 opacity-60">
-              <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-4 opacity-60 whitespace-nowrap">
+              <div className="flex items-center gap-2">
                 <Calendar size={12} className="text-neon-green/80" />
                 <span className="text-[10px] font-black tracking-widest text-white italic leading-none">{formattedDay}</span>
               </div>
-              <div className="flex items-center gap-2.5 pl-0.5">
+              <div className="flex items-center gap-2">
                 <Clock size={11} className="text-white/20" />
                 <span className="text-[9px] font-black text-white/30 tracking-[0.1em] leading-none">{formattedTime}</span>
               </div>
