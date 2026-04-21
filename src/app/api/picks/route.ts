@@ -60,7 +60,6 @@ export async function POST(req: NextRequest) {
       factores: body.factores || '',
       ev: parseFloat(body.ev) || 0,
       confianza: parseInt(body.confianza) || 70,
-      is_verified: body.is_verified || false,
       home_stats: body.home_stats || {},
       away_stats: body.away_stats || {},
       home_logo: body.home_logo || '',
