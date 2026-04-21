@@ -18,24 +18,30 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     
-    // Validate required fields
-    const requiredFields = ['sport', 'competition', 'match', 'market', 'pick', 'odds', 'stake', 'match_date'];
-    for (const field of requiredFields) {
-      if (!body[field]) {
-        return NextResponse.json({ error: `Missing field: ${field}` }, { status: 400 });
-      }
+    // Mapeo flexible de campos (n8n vs DB)
+    const sport = body.sport || 'football';
+    const competition = body.competition;
+    const match = body.match;
+    const match_date = body.match_date || body.date;
+    const market = body.market || body.mercado;
+    const pick = body.pick || body.seleccion;
+    const odds = body.cuota || body.odds;
+    const stake = body.stake;
+
+    // Validate minimum required fields
+    if (!match || !market || !pick || !odds || !stake) {
+      return NextResponse.json({ error: 'Missing required betting fields (match, market, pick, odds, stake)' }, { status: 400 });
     }
 
     // --- PREVENCIÓN DE DUPLICADOS REFORZADA ---
-    // Normalizamos los términos antes de comparar para detectar duplicados semánticos
-    const normalizedMarket = translateBettingTerm(body.market);
-    const normalizedPick = normalizeBettingPick(body.pick);
+    const normalizedMarket = translateBettingTerm(market);
+    const normalizedPick = normalizeBettingPick(pick);
 
     const { data: existingPick } = await supabaseAdmin
       .from('picks')
       .select('id')
-      .eq('match', body.match)
-      .eq('match_date', body.match_date)
+      .eq('match', match)
+      .eq('match_date', match_date)
       .eq('market', normalizedMarket)
       .eq('pick', normalizedPick)
       .maybeSingle();
@@ -43,28 +49,31 @@ export async function POST(req: NextRequest) {
     if (existingPick) {
       return NextResponse.json({ 
         success: true, 
-        message: `El pick para [${body.match}] ya existe con este mercado y selección.`, 
+        message: `El pick para [${match}] ya existe.`, 
         pick_id: existingPick.id 
       });
     }
     // ------------------------------------------
 
-    // 🏁 DB PAYLOAD CORREGIDO: Usamos los valores normalizados
+    // 🏁 DB PAYLOAD CORREGIDO
     const dbPayload = {
-      sport: body.sport || 'football',
-      competition: translateLeagueName(body.competition),
-      match: body.match,
+      sport: sport,
+      competition: translateLeagueName(competition || 'Varios'),
+      match: match,
       market: normalizedMarket,
       pick: normalizedPick,
-      odds: parseFloat(body.odds),
-      stake: parseInt(body.stake),
-      match_date: body.match_date,
+      odds: parseFloat(odds),
+      stake: parseInt(stake),
+      match_date: match_date,
       kickoff: body.kickoff || '',
       razonamiento: body.razonamiento || '', 
       alertas: body.alertas || '',
       factores: body.factores || '',
       ev: parseFloat(body.ev) || 0,
       confianza: parseInt(body.confianza) || 70,
+      prob_estimada: parseFloat(body.prob_estimada) || null,
+      prob_implicita: parseFloat(body.prob_implicita) || null,
+      bookmaker: body.bookmaker || '',
       home_stats: body.home_stats || {},
       away_stats: body.away_stats || {},
       home_logo: body.home_logo || '',
