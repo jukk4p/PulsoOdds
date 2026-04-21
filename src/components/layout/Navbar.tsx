@@ -24,6 +24,18 @@ export function Navbar() {
     setIsOpen(false);
   }, [pathname]);
 
+  // Bloquear scroll del body al abrir el menú
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
+
   const navLinks = [
     { name: "Inicio", href: "/", icon: Zap },
     { name: "Pronósticos", href: "/picks", icon: Trophy },
@@ -85,7 +97,7 @@ export function Navbar() {
       {/* Mobile Menu Overlay */}
       <div
         className={cn(
-          "fixed inset-0 bg-black/98 backdrop-blur-2xl z-40 md:hidden transition-all duration-300 ease-in-out px-8 pt-24 pb-12 flex flex-col justify-between",
+          "fixed inset-0 bg-black z-40 md:hidden transition-all duration-300 ease-in-out px-8 pt-24 pb-12 flex flex-col justify-between",
           isOpen ? "opacity-100 translate-x-0" : "opacity-0 translate-x-full pointer-events-none"
         )}
       >
