@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { translateBettingTerm } from '@/lib/utils';
+import { translateBettingTerm, normalizeBettingPick, translateLeagueName } from '@/lib/utils';
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || '',
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
     // 🏁 DB PAYLOAD CORREGIDO: Usamos los valores normalizados
     const dbPayload = {
       sport: body.sport || 'football',
-      competition: body.competition,
+      competition: translateLeagueName(body.competition),
       match: body.match,
       market: normalizedMarket,
       pick: normalizedPick,

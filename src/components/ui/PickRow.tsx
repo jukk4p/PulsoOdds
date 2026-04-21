@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { cn, translateBettingTerm, formatTeamName, normalizeOdds, normalizeBettingPick } from "@/lib/utils";
+import { cn, translateBettingTerm, formatTeamName, normalizeOdds, normalizeBettingPick, translateLeagueName } from "@/lib/utils";
 import { ChevronDown, ChevronUp, Zap, List, AlertTriangle, TrendingUp, CheckCircle2, XCircle, Clock, MinusCircle, ShieldCheck, Calendar } from "lucide-react";
 
 interface PickRowProps {
@@ -105,7 +105,7 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
                    <img src={getLocalLogoPath(pick.league_logo, 'leagues') || pick.league_logo || GENERIC_LEAGUE} alt="" className="h-5 w-5 object-contain" />
                 </div>
                  <div className="flex flex-col">
-                    <span className="text-[10px] font-black text-white/50 uppercase tracking-widest truncate">{pick.competition}</span>
+                    <span className="text-[10px] font-black text-white/50 uppercase tracking-widest truncate">{translateLeagueName(pick.competition)}</span>
                     <span className="text-[8px] font-bold text-white/20 uppercase">{formattedDay} @ {formattedTime}</span>
                  </div>
               </div>
@@ -179,9 +179,7 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
               <div className="h-9 w-9 flex items-center justify-center bg-white rounded-lg border border-white/20 overflow-hidden shadow-lg">
                 <img src={getLocalLogoPath(pick.league_logo, 'leagues') || pick.league_logo || GENERIC_LEAGUE} alt="" className="h-6 w-6 object-contain" />
               </div>
-              <div className="flex flex-col min-w-0">
-                <span className="text-[10px] text-white/50 font-black tracking-tight leading-tight">{pick.competition || "Premier League"}</span>
-              </div>
+                <span className="text-[10px] text-white/50 font-black tracking-tight leading-tight">{translateLeagueName(pick.competition) || "Premier League"}</span>
             </div>
           </div>
 

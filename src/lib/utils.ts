@@ -126,6 +126,63 @@ export function translateBettingTerm(term: string): string {
   return translated;
 }
 
+/**
+ * Diccionario maestro para la traducción de Países y Ligas
+ */
+const leagueDictionary: Record<string, string> = {
+  // Países
+  'England': 'Inglaterra',
+  'Spain': 'España',
+  'Italy': 'Italia',
+  'Germany': 'Alemania',
+  'France': 'Francia',
+  'Portugal': 'Portugal',
+  'Netherlands': 'Países Bajos',
+  'Belgium': 'Bélgica',
+  'Brazil': 'Brasil',
+  'Argentina': 'Argentina',
+  'USA': 'Estados Unidos',
+  'Turkey': 'Turquía',
+  'Greece': 'Grecia',
+  'Mexico': 'México',
+  'Saudi Arabia': 'Arabia Saudí',
+  'World': 'Internacional',
+  // Competiciones
+  'UEFA Champions League': 'Champions League',
+  'UEFA Europa League': 'Europa League',
+  'UEFA Europa Conference League': 'Conference League',
+  'World Cup': 'Copa del Mundo',
+  'Euro Championship': 'Eurocopa',
+  'Copa America': 'Copa América',
+  'Friendlies': 'Amistosos',
+  'Club Friendlies': 'Amistosos de Clubes',
+  'La Liga': 'LaLiga',
+  'Premier League': 'Premier League',
+  'Serie A': 'Serie A',
+  'Bundesliga': 'Bundesliga',
+  'Ligue 1': 'Ligue 1',
+  'MLS': 'MLS',
+};
+
+/**
+ * Traduce y normaliza nombres de ligas y competiciones.
+ * Maneja formatos simples ("England") y compuestos ("England - Premier League").
+ */
+export function translateLeagueName(leagueName: string | undefined): string {
+  if (!leagueName) return "";
+  
+  // Si el nombre contiene el separador " - ", traducimos cada parte
+  if (leagueName.includes(' - ')) {
+    const [country, competition] = leagueName.split(' - ');
+    const translatedCountry = leagueDictionary[country.trim()] || country.trim();
+    const translatedComp = leagueDictionary[competition.trim()] || competition.trim();
+    return `${translatedCountry} - ${translatedComp}`;
+  }
+
+  // Traducción directa
+  return leagueDictionary[leagueName.trim()] || leagueName.trim();
+}
+
 export interface PickStats {
   totalStake: number;
   totalProfit: number;

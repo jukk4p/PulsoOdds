@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Trash2, CheckCircle, XCircle, MinusCircle, Plus, Search, ShieldCheck } from 'lucide-react';
-import { cn, normalizeBettingPick, translateBettingTerm, substituteTeamNames } from '@/lib/utils';
+import { cn, normalizeBettingPick, translateBettingTerm, substituteTeamNames, translateLeagueName } from '@/lib/utils';
 
 export default function AdminPicksPage() {
   const [picks, setPicks] = useState<any[]>([]);
@@ -195,7 +195,7 @@ export default function AdminPicksPage() {
   };
 
   const handleTranslateAudit = async () => {
-    if (!confirm('Esta herramienta buscará picks con términos en inglés o técnicos y los actualizará automáticamente al español pro. ¿Deseas continuar?')) return;
+    if (!confirm('Esta herramienta buscará picks con términos en inglés o técnicos (mercados, selecciones y ligas) y los actualizará automáticamente al español pro. ¿Deseas continuar?')) return;
     
     setLoading(true);
     let updatedCount = 0;
@@ -203,31 +203,33 @@ export default function AdminPicksPage() {
     try {
       const { data: allPicks, error } = await supabase.from('picks').select('*');
       if (error) throw error;
-
+ 
       const updates = allPicks.filter(p => {
         const newMarket = translateBettingTerm(p.market);
         const newPick = translateBettingTerm(p.pick);
-        return newMarket !== p.market || newPick !== p.pick;
+        const newLeague = translateLeagueName(p.competition);
+        return newMarket !== p.market || newPick !== p.pick || newLeague !== p.competition;
       });
-
+ 
       if (updates.length === 0) {
-        alert('✅ ¡Limpieza total! No se encontraron mercados por traducir.');
+        alert('✅ ¡Limpieza total! Todos los términos ya están normalizados.');
         return;
       }
-
+ 
       for (const p of updates) {
         const { error: upError } = await supabase
           .from('picks')
           .update({
             market: translateBettingTerm(p.market),
-            pick: translateBettingTerm(p.pick)
+            pick: translateBettingTerm(p.pick),
+            competition: translateLeagueName(p.competition)
           })
           .eq('id', p.id);
         
         if (!upError) updatedCount++;
       }
-
-      alert(`🚀 ¡Auditoría completada!\n\nSe han corregido y traducido ${updatedCount} términos de mercados/selecciones en tu histórico.`);
+ 
+      alert(`🚀 ¡Auditoría completada!\n\nSe han corregido y traducido ${updatedCount} registros (mercados y ligas) en tu histórico.`);
       fetchPicks();
     } catch (err) {
       alert("Error durante la auditoría de traducciones.");
@@ -240,6 +242,7 @@ export default function AdminPicksPage() {
     p.match.toLowerCase().includes(searchQuery.toLowerCase()) ||
     p.market.toLowerCase().includes(searchQuery.toLowerCase()) ||
     p.competition.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    translateLeagueName(p.competition).toLowerCase().includes(searchQuery.toLowerCase()) ||
     p.sport.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -363,7 +366,7 @@ export default function AdminPicksPage() {
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
                     <p className="text-white font-black leading-tight mb-1">{pick.match}</p>
-                    <p className="text-[10px] text-white/40 uppercase font-black tracking-widest">{pick.sport} • {pick.competition}</p>
+                    <p className="text-[10px] text-white/40 uppercase font-black tracking-widest">{pick.sport} • {translateLeagueName(pick.competition)}</p>
                   </div>
                   <div className="flex items-start gap-3">
                     <div className="text-right flex flex-col items-end gap-1">
@@ -503,7 +506,7 @@ export default function AdminPicksPage() {
                     </td>
                     <td className="px-6 py-6 border-b border-white/5">
                       <p className="text-white font-bold leading-none mb-1.5 whitespace-nowrap">{pick.match}</p>
-                      <p className="text-[10px] text-white/30 uppercase font-black tracking-widest whitespace-nowrap">{pick.sport} • {pick.competition}</p>
+                      <p className="text-[10px] text-white/30 uppercase font-black tracking-widest whitespace-nowrap">{pick.sport} • {translateLeagueName(pick.competition)}</p>
                     </td>
                     <td className="px-6 py-6 border-b border-white/5">
                       {(() => {
