@@ -146,7 +146,7 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
           <div className="flex items-center gap-3 pt-2">
             <div className="flex-1 bg-slate-900/60 border border-white/10 rounded-2xl p-3 flex flex-col justify-center items-center text-center h-[60px]">
                <span className="text-[8px] text-white/30 uppercase font-bold tracking-widest mb-1">{translateBettingTerm(pick.market || "Hándicap")}</span>
-               <span className="text-[12px] font-black uppercase text-[#00e676] italic">{translateBettingTerm(pick.pick)}</span>
+               <span className="text-[12px] font-black uppercase text-[#00e676] italic">{normalizeBettingPick(pick.pick)}</span>
             </div>
             <button onClick={(e) => { e.stopPropagation(); onToggle?.(); }} className={cn("w-[75px] h-[60px] rounded-2xl border transition-all flex flex-col items-center justify-center", isSelected ? "bg-[#00e676] border-[#00e676] text-[#0a0f16]" : "bg-neon-green/5 border-neon-green/20 text-[#00e676]")}>
                <span className={cn("text-[8px] font-bold uppercase opacity-30", isSelected ? "text-[#0a0f16]" : "text-white")}>Cuota</span>
@@ -204,7 +204,7 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
                 </div>
                 <div className="flex flex-col items-center py-1.5 px-6 min-w-[200px]">
                    <span className="text-[8.5px] text-white/30 font-black tracking-[0.2em] mb-0.5 leading-none">{translateBettingTerm(pick.market || "Hándicap")}</span>
-                   <span className="text-[13px] font-black text-neon-green italic leading-tight tracking-widest text-center">{translateBettingTerm(pick.pick)}</span>
+                   <span className="text-[13px] font-black text-neon-green italic leading-tight tracking-widest text-center">{normalizeBettingPick(pick.pick)}</span>
                 </div>
               </div>
 

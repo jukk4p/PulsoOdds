@@ -265,10 +265,12 @@ export function normalizeBettingPick(text: string): string {
   // 1. Traducir/Normalizar frases completas primero (usando nuestro diccionario pro)
   let normalized = translateBettingTerm(text);
   
-  // 2. Limpieza de hándicaps feos: "LOCAL (HDP -1.75)" -> "LOCAL -1.75"
-  normalized = normalized.replace(/\(HDP\s*([+-]?[\d.]+)\)/gi, '$1');
-  normalized = normalized.replace(/\(HÁNDICAP\s*([+-]?[\d.]+)\)/gi, '$1');
-  normalized = normalized.replace(/\(HDP\)/gi, ''); // Por si viene vacío
+  // 2. Limpieza de hándicaps feos: "LOCAL (HDP -1.75)" o "LOCAL (-1.75)" -> "LOCAL -1.75"
+  // Esta regex es más robusta: captura (HDP -2), (Hdp -2), (Hándicap -2) y (-2)
+  normalized = normalized.replace(/\((?:HDP|H\u00C1NDICAP|HANDICAP|H\u00C1ND)?\s*([+-]?[\d.]+)\)/gi, '$1');
+  
+  // Limpieza de espacios dobles que puedan quedar
+  normalized = normalized.replace(/\s+/g, ' ').trim();
   
   // 3. Si sigue siendo muy largo, limpiar ruido residual
   const noise = [
