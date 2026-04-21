@@ -27,14 +27,17 @@ export async function POST(req: NextRequest) {
     }
 
     // --- PREVENCIÓN DE DUPLICADOS REFORZADA ---
-    // Ahora validamos por Partido + Fecha + Mercado + Selección
+    // Normalizamos los términos antes de comparar para detectar duplicados semánticos
+    const normalizedMarket = translateBettingTerm(body.market);
+    const normalizedPick = normalizeBettingPick(body.pick);
+
     const { data: existingPick } = await supabaseAdmin
       .from('picks')
       .select('id')
       .eq('match', body.match)
       .eq('match_date', body.match_date)
-      .eq('market', translateBettingTerm(body.market))
-      .eq('pick', translateBettingTerm(body.pick))
+      .eq('market', normalizedMarket)
+      .eq('pick', normalizedPick)
       .maybeSingle();
 
     if (existingPick) {
@@ -45,15 +48,14 @@ export async function POST(req: NextRequest) {
       });
     }
     // ------------------------------------------
-    // --------------------------------
 
-    // 🏁 DB PAYLOAD CORREGIDO: Nombres exactos para la Web
+    // 🏁 DB PAYLOAD CORREGIDO: Usamos los valores normalizados
     const dbPayload = {
       sport: body.sport || 'football',
       competition: body.competition,
       match: body.match,
-      market: translateBettingTerm(body.market),
-      pick: translateBettingTerm(body.pick),
+      market: normalizedMarket,
+      pick: normalizedPick,
       odds: parseFloat(body.odds),
       stake: parseInt(body.stake),
       match_date: body.match_date,
