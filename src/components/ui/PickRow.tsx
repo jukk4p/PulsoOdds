@@ -118,26 +118,26 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
           <div className="flex flex-col items-center justify-center gap-2 py-2">
             <div className="flex flex-col items-center gap-2 w-full">
               {/* Home */}
-              <div className="flex items-center justify-center gap-3 w-full">
-                <span className="text-xs font-bold text-white uppercase tracking-tight text-center flex-1">{homeName}</span>
+              <div className="flex items-center justify-between gap-3 w-full">
+                <span className="text-xs font-black text-white uppercase tracking-tight text-left flex-1">{homeName}</span>
                 <div className="shrink-0 h-8 w-8 flex items-center justify-center bg-white rounded-lg border border-white/20 overflow-hidden p-1 shadow-sm">
                   <img src={getLocalLogoPath(pick.home_logo, 'teams') || pick.home_logo || GENERIC_SHIELD} alt="" className="h-6 w-6 object-contain" />
                 </div>
               </div>
               
               {/* VS */}
-              <div className="flex items-center gap-3 w-full">
-                <div className="flex-1 h-[1px] bg-white/5" />
-                <span className="text-[9px] font-black italic text-neon-green/40 uppercase">VS</span>
-                <div className="flex-1 h-[1px] bg-white/5" />
+              <div className="flex items-center gap-3 w-full opacity-40">
+                <div className="flex-1 h-[1px] bg-white/20" />
+                <span className="text-[10px] font-black italic text-neon-green uppercase tracking-tighter">VS</span>
+                <div className="flex-1 h-[1px] bg-white/20" />
               </div>
 
               {/* Away */}
-              <div className="flex items-center justify-center gap-3 w-full">
+              <div className="flex items-center justify-between gap-3 w-full">
                 <div className="shrink-0 h-8 w-8 flex items-center justify-center bg-white rounded-lg border border-white/20 overflow-hidden p-1 shadow-sm">
                   <img src={getLocalLogoPath(pick.away_logo, 'teams') || pick.away_logo || GENERIC_SHIELD} alt="" className="h-6 w-6 object-contain" />
                 </div>
-                <span className="text-xs font-bold text-white uppercase tracking-tight text-center flex-1">{awayName}</span>
+                <span className="text-xs font-black text-white uppercase tracking-tight text-right flex-1">{awayName}</span>
               </div>
             </div>
           </div>
