@@ -2,7 +2,8 @@
 
 Plataforma de gestión y análisis de pronósticos deportivos. PulsoOdds combina una interfaz moderna para la visualización de datos con un backend robusto basado en Supabase para el seguimiento de picks y estadísticas.
 
-![Next.js](https://img.shields.io/badge/Next.js-15-000000?style=flat-square&logo=next.js)
+![Next.js](https://img.shields.io/badge/Next.js-16.2-000000?style=flat-square&logo=next.js)
+![React](https://img.shields.io/badge/React-19.2-61DAFB?style=flat-square&logo=react)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC?style=flat-square&logo=tailwind-css)
 ![Supabase](https://img.shields.io/badge/Supabase-Database-3ECF8E?style=flat-square&logo=supabase)
 
@@ -18,7 +19,7 @@ Plataforma de gestión y análisis de pronósticos deportivos. PulsoOdds combina
 
 ## 🛠️ Stack Tecnológico
 
-- **Frontend**: Next.js 15 (App Router) y React 19.
+- **Frontend**: Next.js 16.2 (App Router) y React 19.
 - **Estilos**: Tailwind CSS 4.0 con sistema de diseño oscuro y tokens personalizados.
 - **Base de Datos & Auth**: Supabase (PostgreSQL) con políticas de seguridad (RLS).
 - **Iconografía**: Lucide React.
@@ -33,7 +34,7 @@ Plataforma de gestión y análisis de pronósticos deportivos. PulsoOdds combina
 ### 2. Pasos de Instalación
 ```bash
 # Clonar el repositorio
-git clone https://github.com/tu-usuario/PulsoOdds.git
+git clone https://github.com/jukk4p/PulsoOdds.git
 
 # Instalar dependencias
 npm install
