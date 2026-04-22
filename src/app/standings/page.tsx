@@ -152,7 +152,7 @@ export default function StandingsPage() {
                       </td>
                       <td className="py-4 px-6 hidden md:table-cell">
                         <div className="flex items-center justify-center gap-1.5">
-                          {(team.form || "").split('').map((res, i) => (
+                          {(team.form || "").split('').map((res: string, i: number) => (
                             <div 
                               key={i}
                               className={cn(
