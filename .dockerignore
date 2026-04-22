@@ -1,0 +1,17 @@
+node_modules
+.next
+.git
+.gitignore
+.env*
+scripts
+actualizar_ligas.bat
+*.csv
+*.json
+!package.json
+!package-lock.json
+*.md
+Dockerfile
+README.md
+scratch
+.atl
+.gemini
