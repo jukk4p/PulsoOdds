@@ -16,9 +16,9 @@ export function translateBettingTerm(term: string): string {
   // 1. Diccionario de frases exactas (Prioridad absoluta)
   const dictionary: Record<string, string> = {
     // Mercados Principales
-    "ML": "Ganador del Partido (1X2)",
-    "MONEY LINE": "Ganador del Partido (1X2)",
-    "MATCH RESULT": "Ganador del Partido (1X2)",
+    "ML": "Ganador del Partido",
+    "MONEY LINE": "Ganador del Partido",
+    "MATCH RESULT": "Ganador del Partido",
     "1X2": "Ganador del Partido",
     "DOUBLE CHANCE": "Doble Oportunidad",
     "DRAW NO BET": "Empate Apuesta No Válida",
@@ -162,6 +162,21 @@ const leagueDictionary: Record<string, string> = {
   'Bundesliga': 'Bundesliga',
   'Ligue 1': 'Ligue 1',
   'MLS': 'MLS',
+};
+
+/**
+ * Mapa de logos de ligas para forzar el uso de logos locales si la API manda basura
+ */
+export const leagueLogoMap: Record<string, string> = {
+  "ESPAÑA - LALIGA": "/logos/leagues/laliga.png",
+  "ESPAÑA - LALIGA HYPERMOTION": "/logos/leagues/laliga_2.png",
+  "INGLATERRA - PREMIER LEAGUE": "/logos/leagues/premier.png",
+  "ITALIA - SERIE A": "/logos/leagues/serie_a.png",
+  "ALEMANIA - BUNDESLIGA": "/logos/leagues/bundesliga.png",
+  "FRANCIA - LIGUE 1": "/logos/leagues/ligue_1.png",
+  "CHAMPIONS LEAGUE": "/logos/leagues/champions.png",
+  "EUROPA LEAGUE": "/logos/leagues/europa_league.png",
+  "CONFERENCE LEAGUE": "/logos/leagues/conference.png",
 };
 
 /**
@@ -329,7 +344,7 @@ const teamDictionary: Record<string, string> = {
   'Strasbourg Alsace (1659)': 'RC Estrasburgo',
   'FC Lorient (864171)': 'FC Lorient',
   'Toulouse FC (441708)': 'Toulouse FC',
-  'Stade Brest 29 (1715)': 'Stade Brest 29',
+  'Stade Brest 29 (1715)': 'Stade Brest',
   'Paris FC (308650)': 'Paris FC',
   'Angers SCO (453075)': 'Angers SCO',
   'Le Havre AC (1662)': 'Le Havre AC',
@@ -337,6 +352,15 @@ const teamDictionary: Record<string, string> = {
   'AJ Auxerre (1271688)': 'AJ Auxerre',
   'FC Nantes (1647)': 'FC Nantes',
   'FC Metz (495636)': 'FC Metz',
+  // Ligue 2 & Otros Francia
+  'Paris': 'Paris FC',
+  'Laval (1671)': 'Stade Lavallois',
+  'Grenoble (1675)': 'Grenoble Foot 38',
+  'Amiens (1677)': 'Amiens SC',
+  'Guingamp (1645)': 'EA Guingamp',
+  'Caen (1653)': 'SM Caen',
+  'Troyes (1655)': 'ESTAC Troyes',
+  'Bordeaux (1649)': 'Girondins de Burdeos',
   // Segunda División
   'UD Almeria (516740)': 'UD Almería',
   'Racing Santander (2835)': 'Racing de Santander',
@@ -356,6 +380,13 @@ const teamDictionary: Record<string, string> = {
   'FC Cartagena (24329)': 'FC Cartagena',
   'Club Deportivo Eldense (47321)': 'CE Eldense',
   'SD Amorebieta (54103)': 'SD Amorebieta',
+  // Variaciones detectadas en API/Screenshot
+  'Real Betis Seville': 'Real Betis',
+  'Racing Club De Lens': 'RC Lens',
+  'Racing Club de Lens': 'RC Lens',
+  'Olympique Marseille': 'Olympique de Marsella',
+  'Olympique Lyon': 'Olympique de Lyon',
+  'Stade Rennais': 'Stade Rennais',
   'Andorra (4818)': 'FC Andorra'
 };
 
@@ -376,7 +407,8 @@ export function formatTeamName(name: string): string {
   const noise = [
     /\bFC\b/gi, /\bCF\b/gi, /\bSSC\b/gi, /\bAC\b/gi, /\bAS\b/gi, /\bUD\b/gi, 
     /\bCD\b/gi, /\bRC\b/gi, /\b1\.\s/g, /\bSC\b/gi, /\bAFC\b/gi, /\bCLUB\b/gi, /\bDE\b/gi,
-    /\d+$/g // Quitar números al final
+    /\bSEVILLE\b/gi, /\bBALOMPIE\b/gi,
+    /\s*\d+$/g // Quitar números al final (Brest 29 -> Brest)
   ];
   
   noise.forEach(pattern => {
@@ -443,13 +475,11 @@ export function normalizeBettingPick(text: string): string {
   // Limpieza de espacios dobles que puedan quedar
   normalized = normalized.replace(/\s+/g, ' ').trim();
   
-  // 3. Si sigue siendo muy largo, limpiar ruido residual
+  // 3. Si sigue siendo muy largo, limpiar ruido residual (Solo frases muy específicas)
   const noise = [
     /\bEN EL PARTIDO\b/gi,
     /\bEL PARTIDO TENDRÁ\b/gi,
     /\bANOTARÁN EN EL PARTIDO\b/gi,
-    /\bGOLES\b/gi,
-    /\bPARTIDO\b/gi,
     /\bEL$/gi, // "EL" suelto al final
     /\.+$/g    // Puntos al final
   ];

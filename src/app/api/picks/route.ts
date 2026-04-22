@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { translateBettingTerm, normalizeBettingPick, translateLeagueName } from '@/lib/utils';
+import { translateBettingTerm, normalizeBettingPick, translateLeagueName, formatMatchName } from '@/lib/utils';
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || '',
@@ -33,14 +33,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required betting fields (match, market, pick, odds, stake)' }, { status: 400 });
     }
 
-    // --- PREVENCIÓN DE DUPLICADOS REFORZADA ---
+    // --- NORMALIZACIÓN Y PREVENCIÓN DE DUPLICADOS REFORZADA ---
+    const normalizedMatch = formatMatchName(match);
     const normalizedMarket = translateBettingTerm(market);
-    const normalizedPick = normalizeBettingPick(pick);
+    // Aplicamos limpieza de ruido y luego traducción profesional al pick
+    const normalizedPick = translateBettingTerm(normalizeBettingPick(pick));
 
     const { data: existingPick } = await supabaseAdmin
       .from('picks')
       .select('id')
-      .eq('match', match)
+      .eq('match', normalizedMatch)
       .eq('match_date', match_date)
       .eq('market', normalizedMarket)
       .eq('pick', normalizedPick)
@@ -49,7 +51,7 @@ export async function POST(req: NextRequest) {
     if (existingPick) {
       return NextResponse.json({ 
         success: true, 
-        message: `El pick para [${match}] ya existe.`, 
+        message: `El pick para [${normalizedMatch}] ya existe.`, 
         pick_id: existingPick.id 
       });
     }
@@ -59,7 +61,7 @@ export async function POST(req: NextRequest) {
     const dbPayload = {
       sport: sport,
       competition: translateLeagueName(competition || 'Varios'),
-      match: match,
+      match: normalizedMatch,
       market: normalizedMarket,
       pick: normalizedPick,
       odds: parseFloat(odds),

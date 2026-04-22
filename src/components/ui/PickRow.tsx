@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { cn, translateBettingTerm, formatTeamName, normalizeOdds, normalizeBettingPick, translateLeagueName } from "@/lib/utils";
+import { cn, translateBettingTerm, formatTeamName, normalizeOdds, normalizeBettingPick, translateLeagueName, leagueLogoMap } from "@/lib/utils";
 import { ChevronDown, ChevronUp, Zap, List, AlertTriangle, TrendingUp, CheckCircle2, XCircle, Clock, MinusCircle, ShieldCheck, Calendar } from "lucide-react";
 
 interface PickRowProps {
@@ -102,7 +102,7 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
           <div className="flex items-center justify-between border-b border-white/5 pb-3">
              <div className="flex items-center gap-3">
                 <div className="h-7 w-7 flex items-center justify-center bg-white rounded-lg p-1.5 shadow-sm">
-                   <img src={getLocalLogoPath(pick.league_logo, 'leagues') || pick.league_logo || GENERIC_LEAGUE} alt="" className="h-5 w-5 object-contain" />
+                   <img src={leagueLogoMap[translateLeagueName(pick.competition)] || getLocalLogoPath(pick.league_logo, 'leagues') || pick.league_logo || GENERIC_LEAGUE} alt="" className="h-5 w-5 object-contain" />
                 </div>
                  <div className="flex flex-col">
                     <span className="text-[10px] font-black text-white/50 uppercase tracking-widest truncate">{translateLeagueName(pick.competition)}</span>
@@ -128,7 +128,7 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
               {/* VS */}
               <div className="flex items-center gap-3 w-full opacity-40">
                 <div className="flex-1 h-[1px] bg-white/20" />
-                <span className="text-[10px] font-black italic text-neon-green uppercase tracking-tighter">VS</span>
+                <span className="text-[10px] font-black italic text-neon-green uppercase tracking-tighter">vs</span>
                 <div className="flex-1 h-[1px] bg-white/20" />
               </div>
 
@@ -177,7 +177,7 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
              </div>
             <div className="flex items-center gap-3">
               <div className="h-9 w-9 flex items-center justify-center bg-white rounded-lg border border-white/20 overflow-hidden shadow-lg">
-                <img src={getLocalLogoPath(pick.league_logo, 'leagues') || pick.league_logo || GENERIC_LEAGUE} alt="" className="h-6 w-6 object-contain" />
+                <img src={leagueLogoMap[translateLeagueName(pick.competition)] || getLocalLogoPath(pick.league_logo, 'leagues') || pick.league_logo || GENERIC_LEAGUE} alt="" className="h-6 w-6 object-contain" />
               </div>
                 <span className="text-[10px] text-white/50 font-black tracking-widest leading-tight uppercase">{translateLeagueName(pick.competition) || "PREMIER LEAGUE"}</span>
             </div>
@@ -189,7 +189,7 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
               
               {/* Equipo Local */}
               <div className="flex flex-col items-center gap-3 flex-1 min-w-0">
-                <span className="text-[11px] font-black text-white/90 tracking-widest leading-none truncate w-full text-center">{homeName}</span>
+                <span className="text-[11px] font-black text-white/90 tracking-widest leading-none w-full text-center">{homeName}</span>
                 <div className="shrink-0 h-11 w-11 flex items-center justify-center bg-white rounded-xl border-2 border-white/20 overflow-hidden p-1.5 shadow-[0_0_20px_rgba(255,255,255,0.05)] transform hover:scale-110 transition-transform">
                   <img src={getLocalLogoPath(pick.home_logo, 'teams') || pick.home_logo || GENERIC_SHIELD} alt="" className="h-full w-full object-contain" />
                 </div>
@@ -198,17 +198,17 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
               {/* Centro de Acción - STRIPPED MINIMALISM */}
               <div className="flex flex-col items-center gap-2 shrink-0 px-2 pt-1">
                 <div className="flex items-center justify-center h-5">
-                   <span className="text-[8px] font-black italic text-neon-green/40 px-2 py-0.5 rounded border border-neon-green/10">VS</span>
+                   <span className="text-[8px] font-black italic text-neon-green/40 px-2 py-0.5 rounded border border-neon-green/10">vs</span>
                 </div>
                 <div className="flex flex-col items-center py-1.5 px-6 min-w-[200px]">
-                   <span className="text-[8.5px] text-white/30 font-black tracking-[0.2em] mb-0.5 leading-none">{translateBettingTerm(pick.market || "Hándicap")}</span>
-                   <span className="text-[13px] font-black text-neon-green italic leading-tight tracking-widest text-center">{normalizeBettingPick(pick.pick)}</span>
+                   <span className="text-[8.5px] text-white/30 font-black tracking-[0.2em] mb-0.5 leading-none uppercase">{translateBettingTerm(pick.market || "Hándicap")}</span>
+                   <span className="text-[13px] font-black text-neon-green italic leading-tight tracking-widest text-center uppercase">{normalizeBettingPick(pick.pick)}</span>
                 </div>
               </div>
 
               {/* Equipo Visitante */}
               <div className="flex flex-col items-center gap-3 flex-1 min-w-0">
-                <span className="text-[11px] font-black text-white/90 tracking-widest leading-none truncate w-full text-center">{awayName}</span>
+                <span className="text-[11px] font-black text-white/90 tracking-widest leading-none w-full text-center">{awayName}</span>
                 <div className="shrink-0 h-11 w-11 flex items-center justify-center bg-white rounded-xl border-2 border-white/20 overflow-hidden p-1.5 shadow-[0_0_20px_rgba(255,255,255,0.05)] transform hover:scale-110 transition-transform">
                   <img src={getLocalLogoPath(pick.away_logo, 'teams') || pick.away_logo || GENERIC_SHIELD} alt="" className="h-full w-full object-contain" />
                 </div>

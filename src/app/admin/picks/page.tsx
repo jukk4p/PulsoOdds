@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Trash2, CheckCircle, XCircle, MinusCircle, Plus, Search, ShieldCheck } from 'lucide-react';
+import { Trash2, CheckCircle, XCircle, MinusCircle, Plus, Search, ShieldCheck, TrendingUp } from 'lucide-react';
 import { cn, normalizeBettingPick, translateBettingTerm, substituteTeamNames, translateLeagueName, formatMatchName } from '@/lib/utils';
 
 export default function AdminPicksPage() {
@@ -172,9 +172,10 @@ export default function AdminPicksPage() {
     const GENERIC_SHIELD = "https://img.icons8.com/ios-filled/100/ffffff/shield.png";
     const GENERIC_LEAGUE = "https://img.icons8.com/ios-filled/100/ffffff/trophy.png";
 
-    const missingHome = picks.filter(p => !p.home_logo || p.home_logo.includes('shield.png'));
-    const missingAway = picks.filter(p => !p.away_logo || p.away_logo.includes('shield.png'));
-    const missingLeague = picks.filter(p => !p.league_logo || p.league_logo.includes('trophy.png'));
+    const pendingPicks = picks.filter(p => p.status === 'pending');
+    const missingHome = pendingPicks.filter(p => !p.home_logo || p.home_logo.includes('shield.png'));
+    const missingAway = pendingPicks.filter(p => !p.away_logo || p.away_logo.includes('shield.png'));
+    const missingLeague = pendingPicks.filter(p => !p.league_logo || p.league_logo.includes('trophy.png'));
     
     const uniqueTeams = Array.from(new Set([
       ...missingHome.map(p => p.match.split(/\s+vs\s+/i)[0]),
@@ -201,7 +202,7 @@ export default function AdminPicksPage() {
     let updatedCount = 0;
     
     try {
-      const { data: allPicks, error } = await supabase.from('picks').select('*');
+      const { data: allPicks, error } = await supabase.from('picks').select('*').eq('status', 'pending');
       if (error) throw error;
  
       const updates = allPicks.filter(p => {
@@ -333,9 +334,9 @@ export default function AdminPicksPage() {
             </button>
             <button 
               onClick={handleTranslateAudit}
-              className="flex-1 md:flex-none bg-purple-500/10 text-purple-400 border border-purple-500/20 font-black px-4 py-3.5 rounded-xl flex items-center justify-center gap-2 hover:bg-purple-500/20 transition-all active:scale-95 text-[10px] tracking-tighter uppercase"
+              className="flex-1 md:flex-none bg-purple-600/20 text-purple-400 border-2 border-purple-500/30 font-black px-6 py-3.5 rounded-xl flex items-center justify-center gap-3 hover:bg-purple-600 hover:text-white transition-all active:scale-95 text-[10px] tracking-widest uppercase shadow-[0_0_20px_rgba(168,85,247,0.15)] group"
             >
-              <Search className="h-4 w-4" /> Mercados
+              <TrendingUp className="h-5 w-5 group-hover:scale-125 transition-transform" /> Normalizar Historial
             </button>
             <button 
               onClick={handleNewPick}
@@ -367,7 +368,7 @@ export default function AdminPicksPage() {
               >
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
-                    <p className="text-white font-black leading-tight mb-1">{pick.match}</p>
+                    <p className="text-white font-black leading-tight mb-1">{formatMatchName(pick.match)}</p>
                     <p className="text-[10px] text-white/40 uppercase font-black tracking-widest">{pick.sport} • {translateLeagueName(pick.competition)}</p>
                   </div>
                   <div className="flex items-start gap-3">
@@ -507,7 +508,7 @@ export default function AdminPicksPage() {
                       </button>
                     </td>
                     <td className="px-6 py-6 border-b border-white/5">
-                      <p className="text-white font-bold leading-none mb-1.5 whitespace-nowrap">{pick.match}</p>
+                      <p className="text-white font-bold leading-none mb-1.5 whitespace-nowrap">{formatMatchName(pick.match)}</p>
                       <p className="text-[10px] text-white/30 uppercase font-black tracking-widest whitespace-nowrap">{pick.sport} • {translateLeagueName(pick.competition)}</p>
                     </td>
                     <td className="px-6 py-6 border-b border-white/5">
