@@ -24,6 +24,11 @@ interface PickRowProps {
     bookmaker?: string;
     prob_estimada?: number;
     prob_implicita?: number;
+    kickoff?: string;
+    confianza?: number;
+    ev?: number;
+    home_logo?: string;
+    away_logo?: string;
   };
   isSelected?: boolean;
   onToggle?: () => void;
