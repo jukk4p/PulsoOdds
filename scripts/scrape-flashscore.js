@@ -1,195 +1,282 @@
 const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
-const axios = require('axios');
 require('dotenv').config({ path: path.join(__dirname, '../.env.local') });
 
 /**
  * CONFIGURACIÓN
  */
 const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL;
+const BASE_URL = "https://www.flashscore.es/futbol";
 
 const LEAGUES = [
-  { name: "La Liga", slug: "espana/laliga-ea-sports", id: "140" },
+  { name: "LaLiga EA Sports", slug: "espana/laliga-ea-sports", id: "140" },
   { name: "Premier League", slug: "inglaterra/premier-league", id: "39" },
   { name: "Bundesliga", slug: "alemania/bundesliga", id: "78" },
   { name: "Serie A", slug: "italia/serie-a", id: "135" },
   { name: "Ligue 1", slug: "francia/ligue-1", id: "61" },
   { name: "Eredivisie", slug: "paises-bajos/eredivisie", id: "88" },
-  { name: "Segunda División", slug: "espana/laliga-hypermotion", id: "141" },
+  { name: "LaLiga Hypermotion", slug: "espana/laliga-hypermotion", id: "141" },
   { name: "Championship", slug: "inglaterra/championship", id: "40" },
   { name: "2. Bundesliga", slug: "alemania/2-bundesliga", id: "79" },
   { name: "Serie B", slug: "italia/serie-b", id: "136" },
   { name: "Ligue 2", slug: "francia/ligue-2", id: "62" }
 ];
 
-const TEAM_IDS = {
-  // España - LaLiga
-  "Barcelona": "529", "Real Madrid": "541", "Villarreal": "533", "Atlético de Madrid": "530",
-  "Real Betis": "543", "Celta de Vigo": "538", "Real Sociedad": "548", "Getafe": "546",
-  "Osasuna": "727", "Espanyol": "532", "Athletic Club": "531", "Girona": "547",
-  "Rayo Vallecano": "728", "Valencia": "532", "Mallorca": "798", "Sevilla": "536",
-  "Alavés": "542", "Elche": "797", "Levante": "168", "Real Oviedo": "718",
-  // Inglaterra - Premier
-  "Arsenal": "42", "Manchester City": "50", "Manchester Utd": "33", "Aston Villa": "66",
-  "Liverpool": "40", "Chelsea": "49", "Brentford": "55", "Bournemouth": "35",
-  "Brighton": "51", "Everton": "45", "Sunderland": "60", "Fulham": "36",
-  "Crystal Palace": "52", "Newcastle": "34", "Leeds": "63", "Nottingham": "65",
-  "West Ham": "48", "Tottenham": "47", "Burnley": "44", "Wolverhampton": "39",
-  // Alemania - Bundesliga
-  "Bayern": "157", "Dortmund": "165", "RB Leipzig": "173", "Stuttgart": "172",
-  "Hoffenheim": "167", "Bayer Leverkusen": "168", "Eintracht Frankfurt": "169", "Friburgo": "160",
-  "Augsburgo": "170", "Mainz": "164", "Unión Berlín": "182", "Colonia": "163",
-  "Hamburgo": "180", "Werder Bremen": "162", "B. Mönchengladbach": "163", "St. Pauli": "186",
-  "Wolfsburgo": "161", "Heidenheim": "180",
-  // Italia - Serie A
-  "Inter": "505", "Nápoles": "492", "AC Milan": "489", "Juventus": "496",
-  "Como": "981", "AS Roma": "497", "Atalanta": "499", "Bolonia": "500",
-  "Lazio": "487", "Sassuolo": "490", "Udinese": "494", "Torino": "503",
-  "Parma": "109", "Génova": "495", "Fiorentina": "502", "Cagliari": "488",
-  "Cremonese": "517", "Lecce": "507", "Verona": "504", "Pisa": "519",
-  // Francia - Ligue 1
-  "PSG": "85", "Lens": "116", "Lille": "79", "Marsella": "81",
-  "Lyon": "80", "Rennes": "111", "Mónaco": "91", "Estrasburgo": "95",
-  "Lorient": "101", "Toulouse": "96", "Brest": "130", "Paris FC": "109",
-  "Angers": "84", "Le Havre": "113", "Niza": "108", "Auxerre": "778",
-  "Nantes": "83",  "Metz": "114",
-  // Países Bajos - Eredivisie
-  "Ajax": "194", "PSV": "197", "Feyenoord": "196", "AZ Alkmaar": "201",
-  "Twente": "198", "Utrecht": "199", "Sparta Rotterdam": "205"
-};
+// Mapeo dinámico desde el diccionario maestro
+const TEAM_MAP = {};
+const LEAGUE_MAP = {};
 
-const BASE_URL = "https://www.flashscore.es/futbol";
+function normalize(str) {
+  if (!str) return '';
+  return str.toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]/g, "")
+    .trim();
+}
 
-async function scrapeStandings() {
+function loadTeamDictionary() {
+  try {
+    const dictPath = path.join(__dirname, '../diccionario_maestro_equipos.md');
+    if (!fs.existsSync(dictPath)) {
+        console.warn("⚠️ Diccionario maestro no encontrado.");
+        return;
+    }
+
+    const content = fs.readFileSync(dictPath, 'utf8');
+    
+    // 1. Extraer logos de ligas (están sobre los ###)
+    const leagueRegex = /### (.*?)\n!\[Logo .*?\]\((.*?)\)/g;
+    let match;
+    while ((match = leagueRegex.exec(content)) !== null) {
+        const name = match[1].trim();
+        const logo = match[2].trim();
+        // Mapeamos el nombre de la liga (limpio) al logo
+        LEAGUE_MAP[normalize(name)] = logo;
+        // También por si acaso el nombre exacto
+        if (name === "LaLiga EA Sports") LEAGUE_MAP[normalize("La Liga")] = logo;
+        if (name === "LaLiga Hypermotion") LEAGUE_MAP[normalize("Segunda División")] = logo;
+    }
+
+    // 2. Extraer mapeo de equipos
+    const lines = content.split('\n');
+    lines.forEach(line => {
+      if (line.includes('|') && !line.includes('---') && !line.includes('Origen Sheets')) {
+        const parts = line.split('|').map(p => p.trim()).filter(p => p !== '');
+        if (parts.length >= 4) {
+          const sheetName = parts[0]; // Origen Sheets
+          let apiFull = parts[1];      // Puente API (ID)
+          const publicName = parts[2].replace(/\*\*/g, ''); // Nombre Público
+          const logoPart = parts[3];   // Logo: ![Logo](url)
+          
+          const logoMatch = logoPart.match(/\((.*?)\)/);
+          const logoUrl = logoMatch ? logoMatch[1] : "";
+
+          const apiName = (apiFull && apiFull !== '-') 
+            ? apiFull.replace(/\s*\(\d+\)\s*$/, '').trim()
+            : sheetName;
+            
+          const data = { apiName, publicName, logo: logoUrl };
+          
+          TEAM_MAP[normalize(sheetName)] = data;
+          TEAM_MAP[normalize(publicName)] = data;
+        }
+      }
+    });
+    console.log(`✅ Diccionario cargado: ${Object.keys(TEAM_MAP).length} equipos y ${Object.keys(LEAGUE_MAP).length} ligas.`);
+  } catch (err) {
+    console.error("❌ Error cargando diccionario:", err.message);
+  }
+}
+
+function getTeamData(name) {
+  const norm = normalize(name);
+  if (TEAM_MAP[norm]) return TEAM_MAP[norm];
+  
+  for (const variant in TEAM_MAP) {
+      if (variant.includes(norm) || norm.includes(variant)) {
+          return TEAM_MAP[variant];
+      }
+  }
+  return { apiName: name, publicName: name, logo: "" };
+}
+
+async function scrapeLeague(context, league) {
+  const page = await context.newPage();
+  const url = `${BASE_URL}/${league.slug}/clasificacion/`;
+  
+  console.log(`📡 Procesando: ${league.name}...`);
+  
+  try {
+    await page.goto(url, { waitUntil: 'networkidle', timeout: 45000 });
+    
+    // Intentar esperar a la tabla con varios selectores posibles
+    await Promise.race([
+        page.waitForSelector('.ui-table__row', { timeout: 15000 }),
+        page.waitForSelector('.table__row', { timeout: 15000 })
+    ]);
+
+    const data = await page.evaluate(() => {
+      const rows = Array.from(document.querySelectorAll('.ui-table__row, .table__row'));
+      return rows.map(row => {
+        // Selectores modernos de Flashscore
+        const rankEl = row.querySelector('.ui-table__cell--rank, .tableCellRank');
+        const teamEl = row.querySelector('.ui-table__cell--team, .tableCellParticipant__name');
+        
+        const cells = Array.from(row.querySelectorAll('.ui-table__cell, .table__cell'));
+        
+        // Mapeo de celdas por posición típica
+        // 0: rank, 1: team, 2: pj, 3: pg, 4: pe, 5: pp, 6: goles, 7: diff, 8: pts, 9: forma
+        
+        // Extraer racha (Forma)
+        const formCell = row.querySelector('.ui-table__cell--form, .table__cell--form');
+        let form = "";
+        if (formCell) {
+            const dots = formCell.querySelectorAll('.ui-table__cell--form-dot, a > div');
+            dots.forEach(dot => {
+                const text = dot.innerText.trim();
+                if (text === 'W' || text === 'G') form += 'G';
+                else if (text === 'D' || text === 'E') form += 'E';
+                else if (text === 'L' || text === 'P') form += 'P';
+            });
+        }
+
+        return {
+          pos: rankEl?.innerText.replace('.', '').trim() || "0",
+          team: teamEl?.innerText.trim() || "Unknown",
+          pj: cells[2]?.innerText.trim() || "0",
+          g: cells[3]?.innerText.trim() || "0",
+          e: cells[4]?.innerText.trim() || "0",
+          p: cells[5]?.innerText.trim() || "0",
+          goals: cells[6]?.innerText.trim() || "0:0",
+          pts: cells[8]?.innerText.trim() || "0",
+          form: form
+        };
+      });
+    });
+
+    await page.close();
+    
+    return data.map(r => {
+      const teamData = getTeamData(r.team);
+      return {
+        ...r,
+        team: teamData.apiName,
+        publicName: teamData.publicName,
+        teamLogo: teamData.logo,
+        league: league.name
+      };
+    });
+
+  } catch (error) {
+    console.error(`❌ Error en ${league.name}:`, error.message);
+    await page.close();
+    return [];
+  }
+}
+
+function slugify(text) {
+  return text.toString().toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+async function run() {
   console.log("\n========================================");
   console.log("🚀 INICIANDO ACTUALIZACIÓN DE CLASIFICACIONES");
   console.log("========================================\n");
+
+  loadTeamDictionary();
   
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({
-    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
   });
 
-  const csvRows = [];
-  // Cabecera con comillas para que n8n no se confunda
-  csvRows.push('"Liga","Pos","Equipo","PJ","PG","PE","PP","Goles","Pts","Forma","Logo Liga","Logo Equipo"');
+  let allData = [];
 
   for (const league of LEAGUES) {
-    process.stdout.write(`📡 Procesando ${league.name}... `);
-    const page = await context.newPage();
-    
-    try {
-      await page.goto(`${BASE_URL}/${league.slug}/clasificacion/`, { waitUntil: 'networkidle', timeout: 30000 });
-      await page.waitForSelector('.ui-table__row', { timeout: 10000 });
-
-      const standings = await page.evaluate((leagueName) => {
-        const rows = Array.from(document.querySelectorAll('.ui-table__row'));
-        return rows.map(row => {
-          const cells = Array.from(row.querySelectorAll('.table__cell'));
-          
-          // Extraer racha (Forma)
-          const formCell = cells[9];
-          const racha = formCell ? Array.from(formCell.querySelectorAll('div'))
-            .map(el => el.innerText.trim())
-            .filter(t => t && t.length === 1) // Solo letras G, E, P individuales
-            .join('') : "";
-          
-          return {
-            rank: row.querySelector('.tableCellRank')?.innerText.replace('.', '').trim(),
-            team: row.querySelector('.tableCellParticipant__name')?.innerText.trim(),
-            pj: cells[2]?.innerText.trim() || "0",
-            pg: cells[3]?.innerText.trim() || "0",
-            pe: cells[4]?.innerText.trim() || "0",
-            pp: cells[5]?.innerText.trim() || "0",
-            goles: cells[6]?.innerText.trim() || "0:0",
-            pts: cells[8]?.innerText.trim() || "0",
-            forma: racha,
-            logo: row.querySelector('img')?.src || ""
-          };
-        });
-      });
-
-      // Mapeo de logos de liga (api-sports style como en tu imagen)
-      const leagueLogos = {
-        "La Liga": "https://media.api-sports.io/football/leagues/140.png",
-        "Premier League": "https://media.api-sports.io/football/leagues/39.png",
-        "Bundesliga": "https://media.api-sports.io/football/leagues/78.png",
-        "Serie A": "https://media.api-sports.io/football/leagues/135.png",
-        "Ligue 1": "https://media.api-sports.io/football/leagues/61.png",
-        "Eredivisie": "https://media.api-sports.io/football/leagues/88.png"
-      };
-      const leagueLogo = leagueLogos[league.name] || "";
-
-      for (const row of standings) {
-        // Envolvemos TODO en comillas para que n8n no se confunda jamás
-        const csvRow = [
-          `"${league.name}"`,
-          `"${row.rank || ""}"`,
-          `"${row.team || ""}"`,
-          `"${row.pj || "0"}"`,
-          `"${row.pg || "0"}"`,
-          `"${row.pe || "0"}"`,
-          `"${row.pp || "0"}"`,
-          `"${row.goles || "0:0"}"`,
-          `"${row.pts || "0"}"`,
-          `"${row.forma || ""}"`,
-          `"${leagueLogo || ""}"`,
-          `"${row.logo || ""}"`
-        ];
-        csvRows.push(csvRow.join(','));
-      }
-      
-      console.log(`✅ (${standings.length} equipos)`);
-      
-    } catch (error) {
-      console.log(`❌ Error: ${error.message}`);
-    } finally {
-      await page.close();
+    const data = await scrapeLeague(context, league);
+    if (data.length > 0) {
+        console.log(`✅ ${league.name}: ${data.length} equipos.`);
+        allData = allData.concat(data);
     }
   }
 
-  const fullCsv = csvRows.join('\n');
+  await browser.close();
 
-  // Guardar archivo local
-  const outputPath = path.join(__dirname, '../flashscore_standings.csv');
-  fs.writeFileSync(outputPath, fullCsv, 'utf8');
-  console.log(`\n📂 Archivo local actualizado en: ${outputPath}`);
+  if (allData.length > 0) {
+    // Generar CSV
+    // A:Liga, B:Pos, C:Equipo, D:PJ, E:PG, F:PE, G:PP, H:Goles, I:Pts, J:Forma, K:Logo Liga, L:Logo Equipo, M:Nombre Público
+    const header = '"Liga","Pos","Equipo","PJ","PG","PE","PP","Goles","Pts","Forma","Logo Liga","Logo Equipo","Nombre Público"\n';
+    const csvRows = allData.map(r => {
+      const leagueNorm = normalize(r.league);
+      const leagueLogo = LEAGUE_MAP[leagueNorm] || "";
+      
+      // r.g, r.e, r.p son PG, PE, PP
+      return `"${r.league}","${r.pos}","${r.team}","${r.pj}","${r.g}","${r.e}","${r.p}","${r.goals}","${r.pts}","${r.form}","${leagueLogo}","${r.teamLogo}","${r.publicName}"`;
+    }).join('\n');
 
-  // ENVIAR A N8N
-  try {
-    const webhookUrl = process.env.N8N_WEBHOOK_URL;
-    if (!webhookUrl) {
-      throw new Error("N8N_WEBHOOK_URL no está definida en .env.local");
-    }
+    const csvContent = header + csvRows;
+    const filePath = path.join(__dirname, '../flashscore_standings.csv');
+    fs.writeFileSync(filePath, csvContent, 'utf8');
+    console.log(`\n📂 Archivo CSV actualizado en: ${filePath}`);
 
-    console.log(`📤 Enviando archivo a n8n (${webhookUrl})...`);
-    
-    // Usamos FormData nativo de Node 24
-    const formData = new FormData();
-    const blob = new Blob([fullCsv], { type: 'text/csv' });
-    formData.append('data', blob, 'standings.csv');
-
-    const response = await fetch(webhookUrl, {
-      method: 'POST',
-      body: formData
+    // --- GENERAR JSON PARA LA WEB ---
+    const webData = allData.map(r => {
+        const leagueNorm = normalize(r.league);
+        const leagueLogo = LEAGUE_MAP[leagueNorm] || "";
+        return {
+            liga: r.league,
+            pos: parseInt(r.pos),
+            equipo: r.publicName, // Nombre público para la web
+            pj: parseInt(r.pj),
+            pg: parseInt(r.g),
+            pe: parseInt(r.e),
+            pp: parseInt(r.p),
+            goles: r.goals,
+            pts: parseInt(r.pts),
+            forma: r.form,
+            logo_liga: leagueLogo,
+            logo_equipo: r.teamLogo
+        };
     });
-    
-    if (response.ok) {
-      console.log(`✅ Respuesta de n8n: ${response.status}`);
-      console.log("✨ ¡Sincronización enviada y recibida como archivo!");
-    } else {
-      console.log(`❌ Error en n8n: ${response.status} ${await response.text()}`);
-    }
-  } catch (error) {
-    console.log(`⚠️ No se pudo enviar a n8n: ${error.message}`);
-  }
 
+    const jsonPath = path.join(__dirname, '../public/standings.json');
+    fs.writeFileSync(jsonPath, JSON.stringify(webData, null, 2), 'utf8');
+    console.log(`🌐 Archivo JSON para la WEB generado en: ${jsonPath}`);
+    // --------------------------------
+
+    // Enviar a n8n
+    if (N8N_WEBHOOK_URL) {
+      try {
+        console.log(`📤 Enviando datos a n8n...`);
+        const formData = new FormData();
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        formData.append('data', blob, 'standings.csv');
+
+        const response = await fetch(N8N_WEBHOOK_URL, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (response.ok) {
+          console.log(`🚀 Datos enviados correctamente a n8n. Status: ${response.status}`);
+        } else {
+          console.error(`❌ Error enviando a n8n: ${response.status} ${response.statusText}`);
+        }
+      } catch (err) {
+        console.error(`❌ Error de conexión con n8n:`, err.message);
+      }
+    }
+  }
+  
   console.log("\n========================================");
   console.log(`🎉 ¡PROCESO COMPLETADO!`);
   console.log("========================================\n");
-
-  await browser.close();
 }
 
-scrapeStandings();
+run();

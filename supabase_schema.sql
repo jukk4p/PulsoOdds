@@ -70,3 +70,35 @@ DO $$ BEGIN
 EXCEPTION
     WHEN duplicate_object THEN null;
 END $$;
+
+-- 6. Tabla de clasificaciones (Standings)
+CREATE TABLE IF NOT EXISTS standings (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    
+    league TEXT NOT NULL,
+    pos INTEGER NOT NULL,
+    team TEXT NOT NULL, -- Nombre API
+    public_name TEXT,   -- Nombre para la web
+    pj INTEGER DEFAULT 0,
+    pg INTEGER DEFAULT 0,
+    pe INTEGER DEFAULT 0,
+    pp INTEGER DEFAULT 0,
+    goals TEXT,         -- Formato "GF:GC"
+    pts INTEGER DEFAULT 0,
+    form TEXT,          -- Racha (ej: "GGGEP")
+    logo_league TEXT,
+    logo_team TEXT,
+    zone TEXT           -- champions, europa, relegation, null
+);
+
+-- Índices y RLS para standings
+CREATE INDEX IF NOT EXISTS idx_standings_league ON standings(league);
+ALTER TABLE standings ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN
+    CREATE POLICY "Lectura pública de standings" ON standings FOR SELECT USING (true);
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;

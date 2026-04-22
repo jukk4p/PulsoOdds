@@ -3,18 +3,25 @@
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Trophy, Info, Loader2 } from "lucide-react";
-import { createClient } from "@supabase/supabase-js";
-
-// Inicializamos el cliente de Supabase (Anon Key para lectura pública)
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-);
 
 const LEAGUES = [
-  "La Liga", "Premier League", "Bundesliga", "Serie A", "Ligue 1", "Eredivisie",
-  "Segunda División", "Championship", "2. Bundesliga", "Serie B", "Ligue 2"
+  "LaLiga EA Sports", "Premier League", "Bundesliga", "Serie A", "Ligue 1", "Eredivisie",
+  "LaLiga Hypermotion", "Championship", "2. Bundesliga", "Serie B", "Ligue 2"
 ];
+
+const LEAGUE_COLORS: Record<string, string> = {
+  "LaLiga EA Sports": "rgba(238, 37, 46, 0.4)",
+  "Premier League": "rgba(61, 25, 91, 0.4)",
+  "Bundesliga": "rgba(211, 1, 12, 0.4)",
+  "Serie A": "rgba(0, 143, 215, 0.4)",
+  "Ligue 1": "rgba(218, 224, 37, 0.4)",
+  "Eredivisie": "rgba(245, 112, 0, 0.4)",
+  "LaLiga Hypermotion": "rgba(238, 37, 46, 0.2)",
+  "Championship": "rgba(255, 255, 255, 0.1)",
+  "2. Bundesliga": "rgba(211, 1, 12, 0.2)",
+  "Serie B": "rgba(0, 143, 215, 0.2)",
+  "Ligue 2": "rgba(218, 224, 37, 0.2)"
+};
 
 export default function StandingsPage() {
   const [activeLeague, setActiveLeague] = useState(LEAGUES[0]);
@@ -25,21 +32,16 @@ export default function StandingsPage() {
     async function fetchStandings() {
       setLoading(true);
       try {
-        const { data, error } = await supabase
-          .from('standings')
-          .select('*')
-          .eq('league', activeLeague)
-          .order('pos', { ascending: true });
-
-        if (error) throw error;
-        setStandings(data || []);
+        const res = await fetch('/standings.json');
+        const allData = await res.json();
+        const filtered = allData.filter((item: any) => item.liga === activeLeague);
+        setStandings(filtered);
       } catch (err) {
         console.error("Error fetching standings:", err);
       } finally {
         setLoading(false);
       }
     }
-
     fetchStandings();
   }, [activeLeague]);
 
@@ -48,40 +50,65 @@ export default function StandingsPage() {
       <div className="max-w-6xl mx-auto">
         
         {/* Header de la Página */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
           <div>
             <div className="flex items-center gap-3 mb-2">
               <div className="h-[2px] w-8 bg-neon-green" />
-              <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">Live Rankings</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">Premium Standings</span>
             </div>
-            <h1 className="text-5xl md:text-6xl font-black italic tracking-tighter uppercase leading-none">
-              Clasificación <br />
-              <span className="text-neon-green">Global</span>
+            <h1 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase leading-[0.8]">
+              Tablas de <br />
+              <span className="text-neon-green">Clasificación</span>
             </h1>
           </div>
-          <p className="text-white/40 text-xs md:text-sm max-w-xs font-medium leading-relaxed italic border-l border-white/10 pl-6">
-            Consulta la posición de tus equipos favoritos en tiempo real y analiza sus dinámicas de cara a tus próximos picks.
+          <p className="text-white/40 text-xs md:text-sm max-w-xs font-medium leading-relaxed italic border-l border-white/10 pl-6 hidden md:block">
+            Explora las dinámicas de las mejores ligas de Europa con datos actualizados en tiempo real para tus picks de valor.
           </p>
         </div>
 
-        {/* Selector de Ligas (Tabs) */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-12">
-          {LEAGUES.map((league, index) => (
-            <button
-              key={league}
-              onClick={() => setActiveLeague(league)}
-              className={cn(
-                "px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap border-2",
-                activeLeague === league 
-                  ? "bg-neon-green text-black border-neon-green shadow-[0_0_20px_rgba(0,230,118,0.2)]" 
-                  : "bg-white/5 text-white/40 border-white/5 hover:border-white/10 hover:text-white",
-                // Centrar Ligue 2 en móvil y alinear en escritorio
-                index === LEAGUES.length - 1 && "col-span-2 md:col-span-1 md:col-start-3"
-              )}
-            >
-              {league}
-            </button>
-          ))}
+        {/* Selector de Ligas Estilo Premium */}
+        <div className="relative mb-16">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-4 md:pb-0 md:flex-wrap md:justify-center">
+            {LEAGUES.map((league) => (
+              <button
+                key={league}
+                onClick={() => setActiveLeague(league)}
+                className={cn(
+                  "group relative flex items-center gap-3 px-6 py-4 rounded-2xl transition-all duration-500 shrink-0",
+                  "border border-white/5 bg-white/[0.02] backdrop-blur-md",
+                  activeLeague === league 
+                    ? "border-neon-green/30 bg-white/[0.05] shadow-[0_10px_30px_-10px_rgba(0,255,135,0.2)]" 
+                    : "hover:bg-white/[0.05] hover:border-white/10"
+                )}
+                style={{
+                  boxShadow: activeLeague === league ? `0 0 25px ${LEAGUE_COLORS[league] || 'rgba(0,255,135,0.1)'}` : ''
+                }}
+              >
+                <div className={cn(
+                  "h-6 w-6 shrink-0 transition-all duration-500 flex items-center justify-center",
+                  activeLeague === league ? "scale-125 rotate-6" : "opacity-30 grayscale group-hover:opacity-60 group-hover:grayscale-0 group-hover:scale-110"
+                )}>
+                  <img 
+                    src={`/logos/leagues/${league.toLowerCase().replace(/\./g, '').replace(/ /g, '-')}.png`} 
+                    alt="" 
+                    className="h-full w-full object-contain"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                  />
+                </div>
+                <span className={cn(
+                  "text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300",
+                  activeLeague === league ? "text-white" : "text-white/30 group-hover:text-white/60"
+                )}>
+                  {league}
+                </span>
+                
+                {/* Indicador de Línea Activa */}
+                {activeLeague === league && (
+                  <div className="absolute bottom-0 left-6 right-6 h-[2px] bg-neon-green rounded-full shadow-[0_0_10px_#00ff87]" />
+                )}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Tabla de Clasificación */}
@@ -117,7 +144,7 @@ export default function StandingsPage() {
                 <tbody className="divide-y divide-white/[0.03]">
                   {standings.map((team) => (
                     <tr 
-                      key={`${team.league}-${team.team}`} 
+                      key={`${team.liga}-${team.equipo}`} 
                       className={cn(
                         "group hover:bg-white/[0.01] transition-colors",
                         team.pos === 1 && "bg-neon-green/[0.02]"
@@ -137,24 +164,27 @@ export default function StandingsPage() {
                       <td className="py-3 md:py-6 px-2">
                         <div className="flex items-center gap-1.5 md:gap-4">
                           <div className="h-6 w-6 md:h-12 md:w-12 bg-white rounded p-0.5 md:p-1.5 shadow-sm flex items-center justify-center shrink-0">
-                            <img src={team.logo || "https://p-cdn.api-sports.io/football/teams/generic.png"} alt={team.team} className="h-full w-full object-contain" />
+                            <img src={team.logo_equipo || "https://p-cdn.api-sports.io/football/teams/generic.png"} alt={team.equipo} className="h-full w-full object-contain" />
                           </div>
-                          <span className="text-[10px] md:text-lg font-black text-white/90 uppercase tracking-tight truncate max-w-[70px] md:max-w-none">{team.team}</span>
+                          <span className="text-[10px] md:text-lg font-black text-white/90 uppercase tracking-tight truncate max-w-[70px] md:max-w-none">{team.equipo}</span>
                         </div>
                       </td>
                       <td className="py-3 md:py-6 px-1 text-center text-[10px] md:text-sm font-bold text-white/60">{team.pj}</td>
-                      <td className="py-4 md:py-6 px-4 text-center text-xs md:text-base font-bold text-white/30 hidden md:table-cell">{team.g}</td>
-                      <td className="py-4 md:py-6 px-4 text-center text-xs md:text-base font-bold text-white/30 hidden md:table-cell">{team.e}</td>
-                      <td className="py-4 md:py-6 px-4 text-center text-xs md:text-base font-bold text-white/30 hidden md:table-cell">{team.p}</td>
+                      <td className="py-4 md:py-6 px-4 text-center text-xs md:text-base font-bold text-white/30 hidden md:table-cell">{team.pg}</td>
+                      <td className="py-4 md:py-6 px-4 text-center text-xs md:text-base font-bold text-white/30 hidden md:table-cell">{team.pe}</td>
+                      <td className="py-4 md:py-6 px-4 text-center text-xs md:text-base font-bold text-white/30 hidden md:table-cell">{team.pp}</td>
                       <td className="py-3 md:py-6 px-2 text-center text-[9px] md:text-sm font-bold text-white/40 italic">
-                        {(team.goals || "").split(':').slice(0, 2).join(':')}
+                        {(team.goles || "").split(':').slice(0, 2).join(':')}
                       </td>
                       <td className="py-3 md:py-6 px-2 text-center">
                         <span className="text-sm md:text-2xl font-black text-white italic tracking-tighter">{team.pts}</span>
                       </td>
                       <td className="py-4 px-6 hidden md:table-cell">
                         <div className="flex items-center justify-center gap-1.5 md:gap-2">
-                          {(team.form || "").split('').map((res: string, i: number) => (
+                          <div className="h-5 w-5 md:h-8 md:w-8 rounded-md flex items-center justify-center text-[9px] md:text-[11px] font-black shadow-lg bg-white/10 text-white/20">
+                            ?
+                          </div>
+                          {(team.forma || "").split('').map((res: string, i: number) => (
                             <div 
                               key={i}
                               className={cn(

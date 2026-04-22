@@ -12,10 +12,10 @@ Plataforma de gestión y análisis de pronósticos deportivos. PulsoOdds combina
 ## 🚀 Funcionalidades Principales
 
 - **Dashboard de Analíticas**: Cálculo en tiempo real de ROI, Yield (Profit) y Win Rate basado en el historial de picks.
+- **Pipeline de Datos Automatizado**: Scraping avanzado de Flashscore sincronizado con Google Sheets y Supabase vía n8n.
+- **Diccionario Maestro**: Sistema de mapeo triple (Origen -> API -> Público) para garantizar consistencia de nombres y logos en toda la plataforma.
+- **Clasificaciones en Tiempo Real**: Visualización de standings alineada con el diseño premium de la web y datos del diccionario.
 - **Gestión de Picks**: Panel de administración para la creación, edición y seguimiento de pronósticos deportivos.
-- **Autenticación Segura**: Acceso restringido al panel de administración mediante filtros de correo certificado y Supabase Auth.
-- **Visualización Optimizada**: Interfaz optimizada para móviles (Mobile-First) con un sistema de visualización de alta densidad para picks.
-- **Integración con Automatizaciones**: Compatible con flujos de **n8n** para la ingesta de datos desde API-Sports.
 
 ## 🛠️ Stack Tecnológico
 
@@ -47,6 +47,7 @@ cp .env.example .env.local
 ```env
 NEXT_PUBLIC_SUPABASE_URL=tu-url-de-supabase
 NEXT_PUBLIC_SUPABASE_ANON_KEY=tu-anon-key
+N8N_WEBHOOK_URL=url-de-tu-webhook-n8n
 ```
 
 ### 4. Ejecución en Local
@@ -57,11 +58,10 @@ npm run dev
 ## 📂 Arquitectura del Proyecto
 
 ```text
-src/
-├── app/          # Estructura de rutas y layouts
-├── components/   # Componentes de UI y layout reutilizables
-├── lib/          # Clientes de base de datos y utilidades de lógica
-└── types/        # Definiciones de TypeScript para modelos de datos
+src/              # Aplicación Next.js
+scripts/          # Scripts de automatización y scraping
+public/           # Assets estáticos y JSON de clasificaciones
+diccionario_maestro_equipos.md  # Fuente de verdad para mapeo de equipos
 ```
 
 ## 📜 Licencia
