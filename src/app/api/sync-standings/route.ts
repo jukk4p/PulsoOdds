@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { normalizeTeamName, normalizeLeagueName } from "@/lib/team-normalization";
 
 // Configuración de Supabase con Service Role
 const supabase = createClient(
@@ -54,9 +55,9 @@ export async function GET(request: Request) {
     const results: Record<string, number> = {};
 
     for (const row of teams) {
-      const leagueName = row[colIdx.league];
+      const leagueName = normalizeLeagueName(row[colIdx.league]);
       const pos = parseInt(row[colIdx.pos]);
-      const teamName = row[colIdx.team];
+      const teamName = normalizeTeamName(row[colIdx.team]);
       const pj = parseInt(row[colIdx.pj]) || 0;
       const g = parseInt(row[colIdx.g]) || 0;
       const e = parseInt(row[colIdx.e]) || 0;

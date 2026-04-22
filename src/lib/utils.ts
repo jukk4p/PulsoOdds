@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { normalizeTeamName, normalizeLeagueName } from "./team-normalization";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -181,21 +182,101 @@ export const leagueLogoMap: Record<string, string> = {
 
 /**
  * Traduce y normaliza nombres de ligas y competiciones.
- * Maneja formatos simples ("England") y compuestos ("England - Premier League").
  */
 export function translateLeagueName(leagueName: string | undefined): string {
   if (!leagueName) return "";
   
-  // Si el nombre contiene el separador " - ", traducimos cada parte
-  if (leagueName.includes(' - ')) {
-    const [country, competition] = leagueName.split(' - ');
+  const normalized = normalizeLeagueName(leagueName);
+
+  if (normalized.includes(' - ')) {
+    const [country, competition] = normalized.split(' - ');
     const translatedCountry = leagueDictionary[country.trim()] || country.trim();
     const translatedComp = leagueDictionary[competition.trim()] || competition.trim();
     return `${translatedCountry} - ${translatedComp}`;
   }
 
-  // Traducción directa
-  return leagueDictionary[leagueName.trim()] || leagueName.trim();
+  return leagueDictionary[normalized.trim()] || normalized.trim();
+}
+
+/**
+ * Limpia y normaliza el nombre de un equipo
+ */
+export function formatTeamName(name: string): string {
+  return normalizeTeamName(name);
+}
+
+/**
+ * Formatea un encuentro completo
+ */
+export function formatMatchName(match: string): string {
+  if (!match) return match;
+  if (!match.toLowerCase().includes(' vs ')) return formatTeamName(match);
+
+  const [home, away] = match.split(/\s+vs\s+/i);
+  return `${formatTeamName(home)} vs ${formatTeamName(away)}`;
+}
+
+/**
+ * Normaliza cualquier formato de cuota a Decimal (European)
+ */
+export function normalizeOdds(odds: string | number | null | undefined): number {
+  if (odds == null || odds === "") return 1.0;
+  
+  const oddsStr = String(odds).trim();
+  
+  if (oddsStr.includes('/')) {
+    const [num, den] = oddsStr.split('/').map(val => parseFloat(val.trim()));
+    return num && den && !isNaN(num) && !isNaN(den) ? (num / den) + 1 : 1.0;
+  }
+  
+  const oddsNum = parseFloat(oddsStr.replace(',', '.'));
+  if (isNaN(oddsNum)) return 1.0;
+
+  if (Math.abs(oddsNum) >= 100) {
+    if (oddsNum > 0) return (oddsNum / 100) + 1;
+    else return (100 / Math.abs(oddsNum)) + 1;
+  }
+  
+  return oddsNum;
+}
+
+export function normalizeBettingPick(text: string): string {
+  if (!text) return text;
+  
+  let normalized = translateBettingTerm(text);
+  normalized = normalized.replace(/\((?:HDP|H\u00C1NDICAP|HANDICAP|H\u00C1ND)?\s*([+-]?[\d.]+)\)/gi, '$1');
+  normalized = normalized.replace(/\s+/g, ' ').trim();
+  
+  const noise = [
+    /\bEN EL PARTIDO\b/gi,
+    /\bEL PARTIDO TENDRÁ\b/gi,
+    /\bANOTARÁN EN EL PARTIDO\b/gi,
+    /\bEL$/gi,
+    /\.+$/g
+  ];
+  
+  noise.forEach(pattern => {
+    normalized = normalized.replace(pattern, '');
+  });
+  
+  return normalized.trim();
+}
+
+/**
+ * Reemplaza términos genéricos (LOCAL/VISITANTE) por el nombre real del equipo
+ */
+export function substituteTeamNames(pickText: string, matchName: string | undefined): string {
+  if (!pickText || !matchName || !matchName.toLowerCase().includes(' vs ')) {
+    return pickText;
+  }
+  
+  const [home, away] = matchName.split(/\s+vs\s+/i);
+  let result = pickText;
+  
+  result = result.replace(/\b(LOCAL|HOME)\b/gi, formatTeamName(home));
+  result = result.replace(/\b(VISITANTE|AWAY|VISITOR)\b/gi, formatTeamName(away));
+  
+  return result;
 }
 
 export interface PickStats {
@@ -226,7 +307,6 @@ export function calculateStats(picks: any[]): PickStats {
   const roi = totalStake > 0 ? (totalProfit / totalStake) * 100 : 0;
   const winRate = resolvedPicks.length > 0 ? (wins / resolvedPicks.length) * 100 : 0;
 
-  // Streak calculation (descending match_date order)
   let currentStreak = 0;
   const sortedPicks = [...picks].sort((a, b) => new Date(b.match_date).getTime() - new Date(a.match_date).getTime());
   
@@ -234,279 +314,12 @@ export function calculateStats(picks: any[]): PickStats {
     const firstStatus = sortedPicks[0].status;
     if (firstStatus !== 'pending' && firstStatus !== 'void') {
       for (const p of sortedPicks) {
-        if (p.status === firstStatus) {
-          currentStreak++;
-        } else if (p.status !== 'void') {
-          break;
-        }
+        if (p.status === firstStatus) currentStreak++;
+        else if (p.status !== 'void') break;
       }
       if (firstStatus === 'lost') currentStreak = -currentStreak;
     }
   }
 
   return { totalStake, totalProfit, roi, winRate, currentStreak };
-}
-
-/**
- * Diccionario maestro para la traducción de Equipos (Normalización total)
- */
-const teamDictionary: Record<string, string> = {
-  // La Liga
-  'FC Barcelona (77889)': 'FC Barcelona',
-  'Real Madrid (120854)': 'Real Madrid',
-  'Villarreal CF (224740)': 'Villarreal CF',
-  'Atletico Madrid (72022)': 'Atlético de Madrid',
-  'Real Betis Balompie (388582)': 'Real Betis',
-  'RC Celta de Vigo (2821)': 'Celta de Vigo',
-  'Real Sociedad (1175987)': 'Real Sociedad',
-  'Getafe CF (154822)': 'Getafe CF',
-  'CA Osasuna (2820)': 'CA Osasuna',
-  'CD Espanyol Barcelona (506008)': 'RCD Espanyol',
-  'Athletic Bilbao (1086332)': 'Athletic Club',
-  'Girona FC (24264)': 'Girona FC',
-  'Rayo Vallecano (825968)': 'Rayo Vallecano',
-  'Valencia CF (77909)': 'Valencia CF',
-  'RCD Mallorca (2826)': 'RCD Mallorca',
-  'Sevilla FC (2833)': 'Sevilla FC',
-  'Deportivo Alaves (475488)': 'Deportivo Alavés',
-  'Elche CF (2846)': 'Elche CF',
-  'Atletico Levante UD (77407)': 'Levante UD',
-  'Real Oviedo (425591)': 'Real Oviedo',
-  // Premier League
-  'Arsenal FC (42)': 'Arsenal FC',
-  'Manchester City (17)': 'Manchester City',
-  'Manchester United (35)': 'Manchester United',
-  'Aston Villa (40)': 'Aston Villa',
-  'Liverpool (90134)': 'Liverpool FC',
-  'Chelsea FC (36539)': 'Chelsea FC',
-  'Brentford (959123)': 'Brentford FC',
-  'AFC Bournemouth (60)': 'AFC Bournemouth',
-  'Bright Brighton and Hove Albion (169150)': 'Brighton & Hove Albion',
-  'Everton FC (48)': 'Everton FC',
-  'Sunderland AFC (41)': 'Sunderland AFC',
-  'Fulham FC (36548)': 'Fulham FC',
-  'Crystal Palace (290396)': 'Crystal Palace',
-  'Newcastle United (39)': 'Newcastle United',
-  'Leeds United (217974)': 'Leeds United',
-  'Nottingham Forest (14)': 'Nottingham Forest',
-  'West Ham United (37)': 'West Ham United',
-  'Tottenham Hotspur (33)': 'Tottenham Hotspur',
-  'Burnley FC (36550)': 'Burnley FC',
-  'Wolverhampton Wanderers (3)': 'Wolverhampton Wanderers',
-  // Bundesliga
-  'Bayern Munich (2672)': 'Bayern Múnich',
-  'Borussia Dortmund (1281319)': 'Borussia Dortmund',
-  'RB Leipzig (599780)': 'RB Leipzig',
-  'VfB Stuttgart (1151795)': 'VfB Stuttgart',
-  'TSG Hoffenheim (36652)': 'TSG Hoffenheim',
-  'Bayer Leverkusen (36623)': 'Bayer Leverkusen',
-  'Eintracht Frankfurt (43733)': 'Eintracht Fráncfort',
-  'SC Freiburg (2538)': 'SC Friburgo',
-  'FC Augsburg (2600)': 'FC Augsburgo',
-  'FSV Mainz (2556)': 'FSV Maguncia 05',
-  'Union Berlin (2547)': 'Union Berlín',
-  '1. FC Cologne (2671)': '1. FC Colonia',
-  'Hamburger SV (43695)': 'Hamburgo SV',
-  'Werder Bremen (43694)': 'Werder Bremen',
-  'Borussia Monchengladbach (2527)': 'Borussia Mönchengladbach',
-  'FC St. Pauli (52878)': 'FC St. Pauli',
-  'VfL Wolfsburg (43706)': 'VfL Wolfsburgo',
-  '1. FC Heidenheim (213962)': '1. FC Heidenheim',
-  // Serie A
-  'Inter Milano (1175363)': 'Inter de Milán',
-  'SSC Napoli (2714)': 'SSC Nápoles',
-  'AC Milan (502832)': 'AC Milán',
-  'Juventus Turin (1175365)': 'Juventus',
-  'Como 1907 (224570)': 'Como 1907',
-  'AS Roma (509432)': 'AS Roma',
-  'Atalanta BC (72070)': 'Atalanta BC',
-  'Bologna FC (1055371)': 'Bologna FC',
-  'Lazio Rome (2699)': 'SS Lazio',
-  'Sassuolo Calcio (2793)': 'Sassuolo',
-  'Udinese Calcio (79057)': 'Udinese',
-  'Torino FC (466279)': 'Torino FC',
-  'Parma Calcio (924573)': 'Parma',
-  'Genoa CFC (2713)': 'Genoa CFC',
-  'ACF Fiorentina (373090)': 'ACF Fiorentina',
-  'Cagliari Calcio (2719)': 'Cagliari',
-  'US Cremonese (2761)': 'US Cremonese',
-  'US Lecce (2689)': 'US Lecce',
-  'Hellas Verona (2701)': 'Hellas Verona',
-  'Pisa SC (2737)': 'Pisa SC',
-  // Ligue 1
-  'Paris Saint-Germain (55505)': 'Paris Saint-Germain',
-  'RC Lens (864167)': 'RC Lens',
-  'Lille OSC (1643)': 'Lille OSC',
-  'Olympique Marseille (1641)': 'Olympique de Marsella',
-  'Olympique Lyon (26245)': 'Olympique de Lyon',
-  'Stade Rennais FC (1312354)': 'Stade Rennais',
-  'AS Monaco (463917)': 'AS Mónaco',
-  'Strasbourg Alsace (1659)': 'RC Estrasburgo',
-  'FC Lorient (864171)': 'FC Lorient',
-  'Toulouse FC (441708)': 'Toulouse FC',
-  'Stade Brest 29 (1715)': 'Stade Brest',
-  'Paris FC (308650)': 'Paris FC',
-  'Angers SCO (453075)': 'Angers SCO',
-  'Le Havre AC (1662)': 'Le Havre AC',
-  'OGC Nice (406491)': 'OGC Niza',
-  'AJ Auxerre (1271688)': 'AJ Auxerre',
-  'FC Nantes (1647)': 'FC Nantes',
-  'FC Metz (495636)': 'FC Metz',
-  // Ligue 2 & Otros Francia
-  'Paris': 'Paris FC',
-  'Laval (1671)': 'Stade Lavallois',
-  'Grenoble (1675)': 'Grenoble Foot 38',
-  'Amiens (1677)': 'Amiens SC',
-  'Guingamp (1645)': 'EA Guingamp',
-  'Caen (1653)': 'SM Caen',
-  'Troyes (1655)': 'ESTAC Troyes',
-  'Bordeaux (1649)': 'Girondins de Burdeos',
-  // Segunda División
-  'UD Almeria (516740)': 'UD Almería',
-  'Racing Santander (2835)': 'Racing de Santander',
-  'SD Huesca (24265)': 'SD Huesca',
-  'RC Deportivo De La Coruna (2832)': 'RC Deportivo',
-  'UD Las Palmas (6577)': 'UD Las Palmas',
-  'Sporting Gijon (2852)': 'Sporting de Gijón',
-  'Real Valladolid (2831)': 'Real Valladolid CF',
-  'Real Zaragoza (439736)': 'Real Zaragoza',
-  'CD Tenerife (368994)': 'CD Tenerife',
-  'Granada CF (114819)': 'Granada CF',
-  'CD Lugo (24332)': 'CD Lugo',
-  'Burgos CF (2854)': 'Burgos CF',
-  'CD Mirandes (35092)': 'CD Mirandés',
-  'CD Leganes (427515)': 'CD Leganés',
-  'SD Ponferradina (6195)': 'SD Ponferradina',
-  'FC Cartagena (24329)': 'FC Cartagena',
-  'Club Deportivo Eldense (47321)': 'CE Eldense',
-  'SD Amorebieta (54103)': 'SD Amorebieta',
-  // Variaciones detectadas en API/Screenshot
-  'Real Betis Seville': 'Real Betis',
-  'Racing Club De Lens': 'RC Lens',
-  'Racing Club de Lens': 'RC Lens',
-  'Olympique Marseille': 'Olympique de Marsella',
-  'Olympique Lyon': 'Olympique de Lyon',
-  'Stade Rennais': 'Stade Rennais',
-  'Andorra (4818)': 'FC Andorra'
-};
-
-/**
- * Limpia y normaliza el nombre de un equipo (p.ej. "FC Bayern Munich" -> "Bayern Múnich")
- */
-export function formatTeamName(name: string): string {
-  if (!name) return name;
-
-  // 1. Traducción directa desde Diccionario Maestro (Prioridad)
-  const trimmedName = name.trim();
-  if (teamDictionary[trimmedName]) return teamDictionary[trimmedName];
-
-  // 2. Limpieza genérica si no está en el diccionario
-  let formatted = name;
-
-  // Quitar prefijos y sufijos comunes de clubes que ensucian la UI
-  const noise = [
-    /\bFC\b/gi, /\bCF\b/gi, /\bSSC\b/gi, /\bAC\b/gi, /\bAS\b/gi, /\bUD\b/gi, 
-    /\bCD\b/gi, /\bRC\b/gi, /\b1\.\s/g, /\bSC\b/gi, /\bAFC\b/gi, /\bCLUB\b/gi, /\bDE\b/gi,
-    /\bSEVILLE\b/gi, /\bBALOMPIE\b/gi,
-    /\s*\d+$/g // Quitar números al final (Brest 29 -> Brest)
-  ];
-  
-  noise.forEach(pattern => {
-    formatted = formatted.replace(pattern, '');
-  });
-
-  return formatted.trim();
-}
-
-/**
- * Formatea un encuentro completo (p.ej. "FC St. Pauli vs 1. FC Köln" -> "St. Pauli vs Colonia")
- */
-export function formatMatchName(match: string): string {
-  if (!match) return match;
-  if (!match.toLowerCase().includes(' vs ')) return formatTeamName(match);
-
-  const [home, away] = match.split(/\s+vs\s+/i);
-  return `${formatTeamName(home)} vs ${formatTeamName(away)}`;
-}
-
-/**
- * Normaliza cualquier formato de cuota a Decimal (European)
- * Maneja: American (+150, -110), Fractional (1/2), o Decimal string ("1.5")
- */
-export function normalizeOdds(odds: string | number | null | undefined): number {
-  if (odds == null || odds === "") return 1.0;
-  
-  const oddsStr = String(odds).trim();
-  
-  // 1. Caso Fraccional (ej: "1/2")
-  if (oddsStr.includes('/')) {
-    const [num, den] = oddsStr.split('/').map(val => parseFloat(val.trim()));
-    return num && den && !isNaN(num) && !isNaN(den) ? (num / den) + 1 : 1.0;
-  }
-  
-  const oddsNum = parseFloat(oddsStr.replace(',', '.'));
-  
-  if (isNaN(oddsNum)) return 1.0;
-
-  // 2. Caso Americano (ej: +150 o -110)
-  // Las americanas suelen ser >= 100 o <= -100
-  if (Math.abs(oddsNum) >= 100) {
-    if (oddsNum > 0) {
-      return (oddsNum / 100) + 1;
-    } else {
-      return (100 / Math.abs(oddsNum)) + 1;
-    }
-  }
-  
-  // 3. Ya es Decimal (o un valor pequeño < 100)
-  return oddsNum;
-}
-
-export function normalizeBettingPick(text: string): string {
-  if (!text) return text;
-  
-  // 1. Traducir/Normalizar frases completas primero (usando nuestro diccionario pro)
-  let normalized = translateBettingTerm(text);
-  
-  // 2. Limpieza de hándicaps feos: "LOCAL (HDP -1.75)" o "LOCAL (-1.75)" -> "LOCAL -1.75"
-  // Esta regex es más robusta: captura (HDP -2), (Hdp -2), (Hándicap -2) y (-2)
-  normalized = normalized.replace(/\((?:HDP|H\u00C1NDICAP|HANDICAP|H\u00C1ND)?\s*([+-]?[\d.]+)\)/gi, '$1');
-  
-  // Limpieza de espacios dobles que puedan quedar
-  normalized = normalized.replace(/\s+/g, ' ').trim();
-  
-  // 3. Si sigue siendo muy largo, limpiar ruido residual (Solo frases muy específicas)
-  const noise = [
-    /\bEN EL PARTIDO\b/gi,
-    /\bEL PARTIDO TENDRÁ\b/gi,
-    /\bANOTARÁN EN EL PARTIDO\b/gi,
-    /\bEL$/gi, // "EL" suelto al final
-    /\.+$/g    // Puntos al final
-  ];
-  
-  noise.forEach(pattern => {
-    normalized = normalized.replace(pattern, '');
-  });
-  
-  return normalized.trim();
-}
-
-/**
- * Reemplaza términos genéricos (LOCAL/VISITANTE) por el nombre real del equipo
- */
-export function substituteTeamNames(pickText: string, matchName: string | undefined): string {
-  if (!pickText || !matchName || !matchName.toLowerCase().includes(' vs ')) {
-    return pickText;
-  }
-  
-  const [home, away] = matchName.split(/\s+vs\s+/i);
-  let result = pickText;
-  
-  // Reemplazar LOCAL/HOME (con regex para ser precisos)
-  result = result.replace(/\b(LOCAL|HOME)\b/gi, formatTeamName(home));
-  
-  // Reemplazar VISITANTE/AWAY
-  result = result.replace(/\b(VISITANTE|AWAY|VISITOR)\b/gi, formatTeamName(away));
-  
-  return result;
 }
