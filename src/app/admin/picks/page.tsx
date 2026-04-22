@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Trash2, CheckCircle, XCircle, MinusCircle, Plus, Search, ShieldCheck, TrendingUp } from 'lucide-react';
-import { cn, normalizeBettingPick, translateBettingTerm, substituteTeamNames, translateLeagueName, formatMatchName } from '@/lib/utils';
+import { Trash2, CheckCircle, XCircle, MinusCircle, Plus, Search, ShieldCheck, TrendingUp, Sparkles } from 'lucide-react';
+import { cn, normalizeBettingPick, translateBettingTerm, substituteTeamNames, translateLeagueName, formatMatchName, deepNormalize } from '@/lib/utils';
 
 export default function AdminPicksPage() {
   const [picks, setPicks] = useState<any[]>([]);
@@ -241,6 +241,49 @@ export default function AdminPicksPage() {
     }
   };
 
+  const handleCleanupDuplicates = async () => {
+    if (!confirm('Esta herramienta buscará picks duplicados (mismo partido, mercado y selección) y dejará solo el más reciente. ¿Deseas continuar?')) return;
+    
+    setLoading(true);
+    let deletedCount = 0;
+    
+    try {
+      const { data: allPicks, error } = await supabase.from('picks').select('*').eq('status', 'pending').order('created_at', { ascending: false });
+      if (error) throw error;
+
+      const seen = new Set<string>();
+      const toDelete: string[] = [];
+
+      allPicks.forEach(p => {
+        const fingerprint = `${deepNormalize(p.match)}|${deepNormalize(p.market)}|${deepNormalize(p.pick)}`;
+        if (seen.has(fingerprint)) {
+          toDelete.push(p.id);
+        } else {
+          seen.add(fingerprint);
+        }
+      });
+
+      if (toDelete.length === 0) {
+        alert('✅ No se encontraron duplicados pendientes.');
+        return;
+      }
+
+      if (confirm(`Se han detectado ${toDelete.length} duplicados. ¿Proceder con la eliminación?`)) {
+        const { error: delError } = await supabase.from('picks').delete().in('id', toDelete);
+        if (delError) throw delError;
+        deletedCount = toDelete.length;
+      }
+
+      alert(`🧹 Limpieza completada. Se eliminaron ${deletedCount} picks duplicados.`);
+      fetchPicks();
+    } catch (err) {
+      console.error(err);
+      alert("Error durante la limpieza de duplicados.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const filteredPicks = picks.filter(p => 
     p.match.toLowerCase().includes(searchQuery.toLowerCase()) ||
     p.market.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -331,6 +374,12 @@ export default function AdminPicksPage() {
               className="flex-1 md:flex-none bg-white/5 text-white/60 border border-white/10 font-black px-5 py-2.5 rounded-xl flex items-center justify-center gap-2 hover:bg-white/10 transition-all active:scale-95 text-[10px] tracking-widest uppercase"
             >
               <ShieldCheck className="h-3.5 w-3.5" /> Logos
+            </button>
+            <button 
+              onClick={handleCleanupDuplicates}
+              className="flex-1 md:flex-none bg-orange-600/10 text-orange-400 border border-orange-500/20 font-black px-5 py-2.5 rounded-xl flex items-center justify-center gap-2 hover:bg-orange-600/20 transition-all active:scale-95 text-[10px] tracking-widest uppercase group"
+            >
+              <Sparkles className="h-4 w-4 group-hover:scale-110 transition-transform text-orange-400" /> Limpiar Duplicados
             </button>
             <button 
               onClick={handleTranslateAudit}

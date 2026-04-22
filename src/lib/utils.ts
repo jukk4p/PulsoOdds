@@ -7,6 +7,22 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
+ * Normalización profunda para comparaciones de duplicados
+ */
+export function deepNormalize(text: string): string {
+  if (!text) return "";
+  return text
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // Quita tildes
+    .replace(/[().,/-]/g, " ")       // Quita puntuación y paréntesis
+    .replace(/\b(1x2|final|partido|ganador|el|la|los|las)\b/gi, "") // Quita ruido común
+    .replace(/\s+/g, "")             // Quita TODOS los espacios para comparar "pegado"
+    .trim();
+}
+
+/**
  * Traduce términos de apuestas del inglés al español
  */
 export function translateBettingTerm(term: string): string {

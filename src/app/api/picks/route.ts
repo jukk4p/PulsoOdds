@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { translateBettingTerm, normalizeBettingPick, translateLeagueName, formatMatchName } from '@/lib/utils';
+import { translateBettingTerm, normalizeBettingPick, translateLeagueName, formatMatchName, deepNormalize } from '@/lib/utils';
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || '',
@@ -36,24 +36,32 @@ export async function POST(req: NextRequest) {
     // --- NORMALIZACIÓN Y PREVENCIÓN DE DUPLICADOS REFORZADA ---
     const normalizedMatch = formatMatchName(match);
     const normalizedMarket = translateBettingTerm(market);
-    // Aplicamos limpieza de ruido y luego traducción profesional al pick
     const normalizedPick = translateBettingTerm(normalizeBettingPick(pick));
 
-    const { data: existingPick } = await supabaseAdmin
+    // Buscamos picks existentes para este partido (pendientes)
+    const { data: existingPicks } = await supabaseAdmin
       .from('picks')
-      .select('id')
+      .select('id, match, market, pick')
       .eq('match', normalizedMatch)
-      .eq('match_date', match_date)
-      .eq('market', normalizedMarket)
-      .eq('pick', normalizedPick)
-      .maybeSingle();
+      .eq('status', 'pending');
 
-    if (existingPick) {
-      return NextResponse.json({ 
-        success: true, 
-        message: `El pick para [${normalizedMatch}] ya existe.`, 
-        pick_id: existingPick.id 
-      });
+    if (existingPicks && existingPicks.length > 0) {
+      const newMatchNorm = deepNormalize(normalizedMatch);
+      const newMarketNorm = deepNormalize(normalizedMarket);
+      const newPickNorm = deepNormalize(normalizedPick);
+
+      const isDuplicate = existingPicks.some(p => 
+        deepNormalize(p.match) === newMatchNorm &&
+        deepNormalize(p.market) === newMarketNorm &&
+        deepNormalize(p.pick) === newPickNorm
+      );
+
+      if (isDuplicate) {
+        return NextResponse.json({ 
+          success: true, 
+          message: `Detección de duplicado: El pick para [${normalizedMatch}] con mercado [${normalizedMarket}] ya existe.`, 
+        });
+      }
     }
     // ------------------------------------------
 
