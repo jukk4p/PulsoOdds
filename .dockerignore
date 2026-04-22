@@ -1,17 +1,28 @@
+# Dependencias y compilación
 node_modules
 .next
+
+# Datos pesados locales (Los que queremos ignorar)
+scripts/
+actualizar_ligas.bat
+*.csv
+mercado_cuotas.json
+api-response.json
+flashscore_*.csv
+
+# Git y otros
 .git
 .gitignore
 .env*
-scripts
-actualizar_ligas.bat
-*.csv
-*.json
+.atl/
+.gemini/
+scratch/
+*.md
+
+# Asegurarse de que las configuraciones VITALES NO se ignoren
+!tsconfig.json
+!next.config.ts
 !package.json
 !package-lock.json
-*.md
-Dockerfile
-README.md
-scratch
-.atl
-.gemini
+!postcss.config.mjs
+!eslint.config.mjs
