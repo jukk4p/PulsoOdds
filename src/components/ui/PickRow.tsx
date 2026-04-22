@@ -20,13 +20,10 @@ interface PickRowProps {
     razonamiento?: string;
     alertas?: string;
     factores?: string;
-    ev?: number;
-    is_verified?: boolean;
-    kickoff?: string;
-    confianza?: number;
-    home_logo?: string;
-    away_logo?: string;
     league_logo?: string;
+    bookmaker?: string;
+    prob_estimada?: number;
+    prob_implicita?: number;
   };
   isSelected?: boolean;
   onToggle?: () => void;
@@ -148,10 +145,10 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
                <span className="text-[8px] text-white/30 uppercase font-bold tracking-widest mb-1">{translateBettingTerm(pick.market || "Hándicap")}</span>
                <span className="text-[12px] font-black uppercase text-[#00e676] italic">{normalizeBettingPick(pick.pick)}</span>
             </div>
-            <button onClick={(e) => { e.stopPropagation(); onToggle?.(); }} className={cn("w-[75px] h-[60px] rounded-2xl border transition-all flex flex-col items-center justify-center", isSelected ? "bg-[#00e676] border-[#00e676] text-[#0a0f16]" : "bg-neon-green/5 border-neon-green/20 text-[#00e676]")}>
-               <span className={cn("text-[8px] font-bold uppercase opacity-30", isSelected ? "text-[#0a0f16]" : "text-white")}>Cuota</span>
-               <span className="text-[18px] font-black leading-none">{normalizeOdds(pick.odds).toFixed(2)}</span>
-            </button>
+             <button onClick={(e) => { e.stopPropagation(); onToggle?.(); }} className={cn("w-[75px] h-[60px] rounded-2xl border transition-all flex flex-col items-center justify-center relative", isSelected ? "bg-[#00e676] border-[#00e676] text-[#0a0f16]" : "bg-neon-green/5 border-neon-green/20 text-[#00e676]")}>
+                <span className={cn("text-[8px] font-bold uppercase opacity-30", isSelected ? "text-[#0a0f16]" : "text-white")}>Cuota</span>
+                <span className="text-[18px] font-black leading-none">{normalizeOdds(pick.odds).toFixed(2)}</span>
+             </button>
           </div>
 
           <button onClick={() => setIsExpanded(!isExpanded)} className="w-full flex items-center justify-center gap-2 text-[9px] font-black text-white/10 uppercase tracking-[0.4em] pt-2">
@@ -222,15 +219,15 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
              <div className="flex items-center gap-4">
                 {/* Eje de Cuota + Estado */}
                 <div className="flex flex-col items-center gap-2">
-                   <div className={cn("h-5 min-w-[75px] flex items-center justify-center rounded-md border px-2 shadow-sm mb-0.5", pick.status === 'pending' ? "text-slate-900 bg-[#c9a84c] border-[#c9a84c]" : statusStyles[pick.status as keyof typeof statusStyles])}>
-                      <span className="text-[7px] font-black tracking-[0.3em]">{statusLabels[pick.status as keyof typeof statusLabels]}</span>
-                   </div>
-                   <button onClick={(e) => { e.stopPropagation(); onToggle?.(); }} className={cn("flex flex-col items-center justify-center py-2 px-6 rounded-[18px] border transition-all duration-300 relative group", isSelected ? "bg-neon-green border-neon-green text-[#0a0f16] shadow-[0_0_20px_rgba(0,230,118,0.3)] scale-105" : "bg-white/[0.03] border-white/10 text-white/40 hover:border-neon-green/30 hover:bg-white/[0.06]")}>
-                      <div className="flex flex-col items-center relative z-10">
-                         <span className={cn("text-[7px] font-bold tracking-[0.2em] mb-0.5", isSelected ? "text-[#0a0f16]/60" : "text-white/20")}>Cuota</span>
-                         <span className={cn("text-xl font-black tracking-tighter leading-none", isSelected ? "text-[#0a0f16]" : "text-white/90 group-hover:text-neon-green")}>{normalizeOdds(pick.odds).toFixed(2)}</span>
-                      </div>
-                   </button>
+                    <div className={cn("h-4 min-w-[60px] flex items-center justify-center rounded-md border px-1.5 shadow-sm mb-0.5", pick.status === 'pending' ? "text-slate-900 bg-[#c9a84c] border-[#c9a84c]" : statusStyles[pick.status as keyof typeof statusStyles])}>
+                       <span className="text-[6.5px] font-black tracking-[0.2em]">{statusLabels[pick.status as keyof typeof statusLabels]}</span>
+                    </div>
+                    <button onClick={(e) => { e.stopPropagation(); onToggle?.(); }} className={cn("flex flex-col items-center justify-center py-2 px-6 rounded-[18px] border transition-all duration-300 relative group", isSelected ? "bg-neon-green border-neon-green text-[#0a0f16] shadow-[0_0_20px_rgba(0,230,118,0.3)] scale-105" : "bg-white/[0.03] border-white/10 text-white/40 hover:border-neon-green/30 hover:bg-white/[0.06]")}>
+                       <div className="flex flex-col items-center relative z-10">
+                          <span className={cn("text-[7px] font-bold tracking-[0.2em] mb-0.5", isSelected ? "text-[#0a0f16]/60" : "text-white/20")}>Cuota</span>
+                          <span className={cn("text-xl font-black tracking-tighter leading-none", isSelected ? "text-[#0a0f16]" : "text-white/90 group-hover:text-neon-green")}>{normalizeOdds(pick.odds).toFixed(2)}</span>
+                       </div>
+                    </button>
                 </div>
 
                 {/* Chevron Satélite */}
@@ -245,16 +242,32 @@ export function PickRow({ pick, isSelected, onToggle }: PickRowProps) {
         {isExpanded && (
           <div className="px-5 md:px-6 pb-6 pt-4 border-t border-white/5 animate-in fade-in slide-in-from-top-2 bg-gradient-to-b from-transparent to-white/[0.02]">
             <div className="max-w-4xl mx-auto flex flex-col items-center text-center space-y-6">
-               <div className="flex items-center justify-center gap-4 md:gap-6 flex-wrap">
-                  <div className="flex items-center gap-3 bg-white/5 px-4 py-2 rounded-2xl border border-white/10 shadow-sm">
-                    <div className="h-2 w-28 md:w-32 bg-slate-800 border border-white/20 rounded-full overflow-hidden relative shadow-inner">
-                        <div className="h-full bg-neon-green transition-all duration-700 ease-out" style={{ width: `${pick.confianza || 0}%` }} />
-                    </div>
-                    <span className="text-[9px] md:text-[10px] text-white/60 uppercase font-black">Confianza: <span className="text-neon-green">{pick.confianza || 0}%</span></span>
+               <div className="flex items-center justify-center gap-2 md:gap-3 flex-wrap">
+                  {/* Confianza */}
+                  <div className="flex items-center gap-2 bg-white/5 px-3 py-2 rounded-xl border border-white/5 shadow-sm">
+                    <span className="text-[8px] md:text-[9px] text-white/40 uppercase font-bold tracking-wider">Confianza: <span className="text-neon-green font-black">{pick.confianza || 0}%</span></span>
                   </div>
-                  <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/5 border border-white/10 shadow-sm">
-                    <Zap size={14} className="text-neon-green" />
-                    <span className="text-[9px] md:text-[10px] text-white/40 uppercase font-bold tracking-wider">Stake: <span className="text-white font-black">{pick.stake || 0}/10</span></span>
+                  
+                  {/* Stake */}
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/5 shadow-sm">
+                    <Zap size={12} className="text-neon-green" />
+                    <span className="text-[8px] md:text-[9px] text-white/40 uppercase font-bold tracking-wider">Stake: <span className="text-white font-black">{pick.stake || 0}/10</span></span>
+                  </div>
+
+                  {/* Bookmaker */}
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/5 shadow-sm">
+                    <span className="text-[8px] md:text-[9px] text-white/40 uppercase font-bold tracking-wider">Bookie: <span className="text-[#00e676] font-black">{pick.bookmaker || "Bet365"}</span></span>
+                  </div>
+
+                  {/* Probabilidad */}
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/5 shadow-sm">
+                    <span className="text-[8px] md:text-[9px] text-white/40 uppercase font-bold tracking-wider">Prob: <span className="text-white font-black">{(pick.prob_estimada && pick.prob_estimada < 1 ? (pick.prob_estimada * 100).toFixed(0) : (pick.prob_estimada || 0).toFixed(0))}%</span></span>
+                  </div>
+
+                  {/* Edge/EV */}
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#00e676]/10 border border-[#00e676]/20 shadow-sm">
+                    <TrendingUp size={12} className="text-[#00e676]" />
+                    <span className="text-[8px] md:text-[9px] text-[#00e676] uppercase font-black">+{pick.ev?.toFixed(1) || 0}% Value</span>
                   </div>
                </div>
                <div className="relative group max-w-2xl px-4">

@@ -52,6 +52,8 @@ diccionario_maestro_trinidad.md
 diccionario_maestro_equipos.md
 diccionario_maestro_ligas.md
 guia_maestra_equipos.md
+*.csv
+logos.md
 ligas_automatico_v5 - n8n_Consolidado.csv
 mercado_cuotas.json
 pick.json

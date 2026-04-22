@@ -39,6 +39,7 @@ export function Navbar() {
   const navLinks = [
     { name: "Inicio", href: "/", icon: Zap },
     { name: "Pronósticos", href: "/picks", icon: Trophy },
+    { name: "Clasificación", href: "/standings", icon: Trophy },
     { name: "Estadísticas", href: "/stats", icon: BarChart3 },
   ];
 
