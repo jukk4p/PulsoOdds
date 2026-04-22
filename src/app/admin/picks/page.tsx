@@ -328,21 +328,21 @@ export default function AdminPicksPage() {
           <div className="flex flex-wrap items-center gap-3 w-full md:w-auto justify-center">
             <button 
               onClick={handleCheckAssets}
-              className="flex-1 md:flex-none bg-blue-500/10 text-blue-400 border border-blue-500/20 font-black px-4 py-3.5 rounded-xl flex items-center justify-center gap-2 hover:bg-blue-500/20 transition-all active:scale-95 text-[10px] tracking-tighter uppercase"
+              className="flex-1 md:flex-none bg-white/5 text-white/60 border border-white/10 font-black px-5 py-2.5 rounded-xl flex items-center justify-center gap-2 hover:bg-white/10 transition-all active:scale-95 text-[10px] tracking-widest uppercase"
             >
-              <ShieldCheck className="h-4 w-4" /> Logos
+              <ShieldCheck className="h-3.5 w-3.5" /> Logos
             </button>
             <button 
               onClick={handleTranslateAudit}
-              className="flex-1 md:flex-none bg-purple-600/20 text-purple-400 border-2 border-purple-500/30 font-black px-6 py-3.5 rounded-xl flex items-center justify-center gap-3 hover:bg-purple-600 hover:text-white transition-all active:scale-95 text-[10px] tracking-widest uppercase shadow-[0_0_20px_rgba(168,85,247,0.15)] group"
+              className="flex-1 md:flex-none bg-purple-600/10 text-purple-400 border border-purple-500/20 font-black px-5 py-2.5 rounded-xl flex items-center justify-center gap-2 hover:bg-purple-600/20 transition-all active:scale-95 text-[10px] tracking-widest uppercase group"
             >
-              <TrendingUp className="h-5 w-5 group-hover:scale-125 transition-transform" /> Normalizar Historial
+              <TrendingUp className="h-4 w-4 group-hover:scale-110 transition-transform" /> Normalizar Historial
             </button>
             <button 
               onClick={handleNewPick}
-              className="flex-1 md:flex-none bg-neon-green text-deep-black font-black px-6 py-3.5 rounded-xl flex items-center justify-center gap-2 hover:shadow-[0_0_30px_rgba(0,255,135,0.5)] transition-all active:scale-95 text-[11px] tracking-tighter uppercase"
+              className="flex-1 md:flex-none bg-neon-green text-deep-black font-black px-6 py-2.5 rounded-xl flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(0,255,135,0.4)] transition-all active:scale-95 text-[11px] tracking-tighter uppercase"
             >
-              <Plus className="h-5 w-5 stroke-[3px]" /> Nuevo
+              <Plus className="h-4 w-4 stroke-[3px]" /> Nuevo
             </button>
           </div>
         </div>
@@ -373,7 +373,7 @@ export default function AdminPicksPage() {
                   </div>
                   <div className="flex items-start gap-3">
                     <div className="text-right flex flex-col items-end gap-1">
-                      <span className="text-lg font-mono text-neon-green leading-none">@{pick.odds.toFixed(2)}</span>
+                      <span className="text-lg font-mono text-neon-green leading-none">{pick.odds.toFixed(2)}</span>
                       <span className="text-xs text-white/20 font-bold">Stake {pick.stake}/5</span>
                       {pick.published_at && (
                         <span className="text-[8px] text-neon-green/30 font-black uppercase mt-1">
@@ -538,7 +538,7 @@ export default function AdminPicksPage() {
                     <td className="px-6 py-6 border-b border-white/5 text-center">
                       <div className="flex flex-col items-center">
                         <div className="flex items-center gap-1.5">
-                          <p className="text-white font-black font-mono">@{pick.odds.toFixed(2)}</p>
+                          <p className="text-white font-black font-mono">{pick.odds.toFixed(2)}</p>
                           {pick.is_verified && <ShieldCheck className="h-3.5 w-3.5 text-blue-400" />}
                         </div>
                         <p className="text-[10px] text-white/20 font-bold uppercase whitespace-nowrap">Stake {pick.stake}</p>

@@ -79,20 +79,24 @@ const TEAM_NAME_MAP: Record<string, string> = {
 export function normalizeTeamName(name: string): string {
   if (!name) return "";
   
-  // 1. Limpieza inicial: quitar números entre paréntesis o al final que mandan algunas APIs
-  // Ejemplo: "FC Barcelona (77889)" -> "FC Barcelona"
+  // 1. Limpieza inicial: quitar números entre paréntesis o al final
   let cleanName = name.replace(/\s*\(\d+\)$/g, "").trim();
   cleanName = cleanName.replace(/\s*\d+$/g, "").trim();
   
-  // 2. Si tenemos el mapeo directo, lo devolvemos
-  if (TEAM_NAME_MAP[cleanName]) {
-    return TEAM_NAME_MAP[cleanName];
+  // 2. Buscamos en el mapa ignorando mayúsculas/minúsculas
+  const entries = Object.entries(TEAM_NAME_MAP);
+  const match = entries.find(([key]) => key.toLowerCase() === cleanName.toLowerCase());
+  
+  if (match) {
+    return match[1];
   }
 
-  // 3. Si no hay mapeo, intentamos quitar prefijos comunes (FC, CF, etc) y volver a buscar
+  // 3. Si no hay mapeo, intentamos quitar prefijos comunes y volver a buscar
   const genericClean = cleanName.replace(/\b(FC|CF|SSC|AC|AS|UD|CD|RC|SC|AFC|Club|de)\b/gi, "").trim();
-  if (TEAM_NAME_MAP[genericClean]) {
-    return TEAM_NAME_MAP[genericClean];
+  const genericMatch = entries.find(([key]) => key.toLowerCase() === genericClean.toLowerCase());
+  
+  if (genericMatch) {
+    return genericMatch[1];
   }
 
   // 4. Como último recurso, devolvemos la limpieza genérica

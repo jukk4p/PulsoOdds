@@ -66,7 +66,7 @@ async function scrapeStandings() {
     userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'
   });
 
-  const csvContent = ["Liga,Pos,Equipo,PJ,PG,PE,PP,Goles,Pts"];
+  const csvContent = ["Liga,Pos,Equipo,PJ,PG,PE,PP,Goles,Pts,Forma,Logo Liga,Logo Equipo"];
 
   for (const league of LEAGUES) {
     process.stdout.write(`📡 Procesando ${league.name}... `);
@@ -79,16 +79,59 @@ async function scrapeStandings() {
       const standings = await page.evaluate((leagueName) => {
         const rows = Array.from(document.querySelectorAll('.ui-table__row'));
         return rows.map(row => {
-          const pos = row.querySelector('.tableCellRank')?.innerText.replace('.', '').trim();
-          const team = row.querySelector('.tableCellParticipant__name')?.innerText.trim();
           const cells = Array.from(row.querySelectorAll('.table__cell'));
-          const pts = row.querySelector('.table__cell--points')?.innerText.trim();
           
-          return `${leagueName},${pos},${team},${cells[0]?.innerText},${cells[1]?.innerText},${cells[2]?.innerText},${cells[3]?.innerText},"${cells[4]?.innerText}",${pts}`;
+          // Extraer racha (Forma)
+          const formCell = cells[9];
+          const racha = formCell ? Array.from(formCell.querySelectorAll('div'))
+            .map(el => el.innerText.trim())
+            .filter(t => t && t.length === 1) // Solo letras G, E, P individuales
+            .join('') : "";
+          
+          return {
+            rank: row.querySelector('.tableCellRank')?.innerText.replace('.', '').trim(),
+            team: row.querySelector('.tableCellParticipant__name')?.innerText.trim(),
+            pj: cells[2]?.innerText.trim() || "0",
+            pg: cells[3]?.innerText.trim() || "0",
+            pe: cells[4]?.innerText.trim() || "0",
+            pp: cells[5]?.innerText.trim() || "0",
+            goles: cells[6]?.innerText.trim() || "0:0",
+            pts: cells[8]?.innerText.trim() || "0",
+            forma: racha,
+            logo: row.querySelector('img')?.src || ""
+          };
         });
-      }, league.name);
+      });
 
-      csvContent.push(...standings);
+      // Mapeo de logos de liga (api-sports style como en tu imagen)
+      const leagueLogos = {
+        "La Liga": "https://media.api-sports.io/football/leagues/140.png",
+        "Premier League": "https://media.api-sports.io/football/leagues/39.png",
+        "Bundesliga": "https://media.api-sports.io/football/leagues/78.png",
+        "Serie A": "https://media.api-sports.io/football/leagues/135.png",
+        "Ligue 1": "https://media.api-sports.io/football/leagues/61.png"
+      };
+      const leagueLogo = leagueLogos[league.name] || "";
+
+      for (const row of standings) {
+        // Envolvemos TODO en comillas para que n8n no se confunda jamás
+        const csvRow = [
+          `"${league.name}"`,
+          `"${row.rank || ""}"`,
+          `"${row.team || ""}"`,
+          `"${row.pj || "0"}"`,
+          `"${row.pg || "0"}"`,
+          `"${row.pe || "0"}"`,
+          `"${row.pp || "0"}"`,
+          `"${row.goles || "0:0"}"`,
+          `"${row.pts || "0"}"`,
+          `"${row.forma || ""}"`,
+          `"${leagueLogo || ""}"`,
+          `"${row.logo || ""}"`
+        ];
+        csvContent.push(csvRow.join(','));
+      }
+      
       console.log(`✅ (${standings.length} equipos)`);
       
     } catch (error) {
@@ -108,9 +151,18 @@ async function scrapeStandings() {
   // ENVIAR A N8N
   try {
     console.log(`📤 Enviando datos a n8n (${N8N_WEBHOOK_URL})...`);
-    await axios.post(N8N_WEBHOOK_URL, fullCsv, {
-      headers: { 'Content-Type': 'text/csv' }
-    });
+    
+    // Cabeceras EXACTAS de tu imagen para que el mapeo sea perfecto
+    const headers = "Liga,Pos,Equipo,PJ,PG,PE,PP,Pts,Logo Liga,Logo Equipo\n";
+    const csvWithHeader = headers + fullCsv;
+    
+    const formData = new FormData();
+    const blob = new Blob([csvWithHeader], { type: 'text/csv' });
+    formData.append('data', blob, 'standings.csv');
+
+    const response = await axios.post(N8N_WEBHOOK_URL, formData);
+    
+    console.log(`✅ Respuesta de n8n: ${response.status} ${JSON.stringify(response.data)}`);
     console.log("✨ ¡Sincronización con Google Sheets completada!");
   } catch (error) {
     console.log(`⚠️ No se pudo enviar a n8n: ${error.message}`);
