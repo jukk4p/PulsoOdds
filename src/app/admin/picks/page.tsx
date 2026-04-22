@@ -309,6 +309,14 @@ export default function AdminPicksPage() {
     }
   };
 
+  const counts = {
+    all: picks.length,
+    pending: picks.filter(p => p.status === 'pending').length,
+    won: picks.filter(p => p.status === 'won').length,
+    lost: picks.filter(p => p.status === 'lost').length,
+    void: picks.filter(p => p.status === 'void').length,
+  };
+
   const filteredPicks = picks.filter(p => {
     const matchesSearch = 
       p.match.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -398,24 +406,6 @@ export default function AdminPicksPage() {
             />
           </div>
 
-          {/* Status Filter */}
-          <div className="relative w-full md:w-44">
-            <select 
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-xs text-white appearance-none focus:outline-none focus:border-neon-green/50 focus:bg-white/[0.08] transition-all cursor-pointer uppercase font-black tracking-widest"
-            >
-              <option value="all" className="bg-deep-black">Todos los Estados</option>
-              <option value="pending" className="bg-deep-black">Pendientes</option>
-              <option value="won" className="bg-deep-black">Ganados</option>
-              <option value="lost" className="bg-deep-black">Perdidos</option>
-              <option value="void" className="bg-deep-black">Nulos</option>
-            </select>
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/20">
-              <Plus className="h-3 w-3 rotate-45" />
-            </div>
-          </div>
-
           <div className="flex flex-wrap items-center gap-3 w-full md:w-auto justify-center">
             <button 
               onClick={handleCheckAssets}
@@ -442,6 +432,41 @@ export default function AdminPicksPage() {
               <Plus className="h-4 w-4 stroke-[3px]" /> Nuevo
             </button>
           </div>
+        </div>
+      </div>
+
+      {/* Filter Tabs */}
+      <div className="flex flex-col md:flex-row items-center gap-4 mb-6">
+        <div className="flex bg-white/5 p-1 rounded-2xl border border-white/10 w-full md:w-auto overflow-x-auto no-scrollbar">
+          {[
+            { id: 'all', label: 'Todos', count: counts.all },
+            { id: 'pending', label: 'Pendientes', count: counts.pending },
+            { id: 'won', label: 'Ganados', count: counts.won },
+            { id: 'lost', label: 'Perdidos', count: counts.lost },
+            { id: 'void', label: 'Nulos', count: counts.void },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setStatusFilter(tab.id)}
+              className={cn(
+                "flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all relative whitespace-nowrap",
+                statusFilter === tab.id 
+                  ? "bg-white/10 text-neon-green shadow-[0_0_15px_rgba(255,255,255,0.05)]" 
+                  : "text-white/40 hover:text-white/60 hover:bg-white/5"
+              )}
+            >
+              {tab.label}
+              <span className={cn(
+                "px-1.5 py-0.5 rounded-md text-[8px] font-bold",
+                statusFilter === tab.id ? "bg-neon-green/20 text-neon-green" : "bg-white/5 text-white/20"
+              )}>
+                {tab.count}
+              </span>
+              {statusFilter === tab.id && (
+                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-neon-green rounded-full shadow-[0_0_10px_#00ff87]" />
+              )}
+            </button>
+          ))}
         </div>
       </div>
 
