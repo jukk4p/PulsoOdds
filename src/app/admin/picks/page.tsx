@@ -406,30 +406,37 @@ export default function AdminPicksPage() {
             />
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 w-full md:w-auto justify-center">
-            <button 
-              onClick={handleCheckAssets}
-              className="flex-1 md:flex-none bg-white/5 text-white/60 border border-white/10 font-black px-5 py-2.5 rounded-xl flex items-center justify-center gap-2 hover:bg-white/10 transition-all active:scale-95 text-[10px] tracking-widest uppercase"
-            >
-              <ShieldCheck className="h-3.5 w-3.5" /> Logos
-            </button>
-            <button 
-              onClick={handleCleanupDuplicates}
-              className="flex-1 md:flex-none bg-orange-600/10 text-orange-400 border border-orange-500/20 font-black px-5 py-2.5 rounded-xl flex items-center justify-center gap-2 hover:bg-orange-600/20 transition-all active:scale-95 text-[10px] tracking-widest uppercase group"
-            >
-              <Sparkles className="h-4 w-4 group-hover:scale-110 transition-transform text-orange-400" /> Limpiar Duplicados
-            </button>
-            <button 
-              onClick={handleTranslateAudit}
-              className="flex-1 md:flex-none bg-purple-600/10 text-purple-400 border border-purple-500/20 font-black px-5 py-2.5 rounded-xl flex items-center justify-center gap-2 hover:bg-purple-600/20 transition-all active:scale-95 text-[10px] tracking-widest uppercase group"
-            >
-              <TrendingUp className="h-4 w-4 group-hover:scale-110 transition-transform" /> Normalizar Historial
-            </button>
+          <div className="flex flex-col md:flex-row items-center gap-6 w-full lg:w-auto">
+            {/* Limpieza Group */}
+            <div className="flex flex-col gap-2 p-2 bg-white/[0.03] rounded-2xl border border-white/10">
+              <span className="text-[8px] text-white/20 uppercase font-black tracking-[0.2em] px-2">Auditoría y Limpieza</span>
+              <div className="flex flex-wrap items-center gap-2">
+                <button 
+                  onClick={handleCheckAssets}
+                  className="bg-white/5 text-white/60 border border-white/10 font-black px-4 py-2 rounded-xl flex items-center gap-2 hover:bg-white/10 transition-all active:scale-95 text-[10px] tracking-widest uppercase"
+                >
+                  <ShieldCheck className="h-3.5 w-3.5" /> Logos
+                </button>
+                <button 
+                  onClick={handleCleanupDuplicates}
+                  className="bg-orange-600/10 text-orange-400 border border-orange-500/20 font-black px-4 py-2 rounded-xl flex items-center gap-2 hover:bg-orange-600/20 transition-all active:scale-95 text-[10px] tracking-widest uppercase group"
+                >
+                  <Sparkles className="h-4 w-4 group-hover:scale-110 transition-transform text-orange-400" /> Duplicados
+                </button>
+                <button 
+                  onClick={handleTranslateAudit}
+                  className="bg-purple-600/10 text-purple-400 border border-purple-500/20 font-black px-4 py-2 rounded-xl flex items-center gap-2 hover:bg-purple-600/20 transition-all active:scale-95 text-[10px] tracking-widest uppercase group"
+                >
+                  <TrendingUp className="h-4 w-4 group-hover:scale-110 transition-transform" /> Historial
+                </button>
+              </div>
+            </div>
+
             <button 
               onClick={handleNewPick}
-              className="flex-1 md:flex-none bg-neon-green text-deep-black font-black px-6 py-2.5 rounded-xl flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(0,255,135,0.4)] transition-all active:scale-95 text-[11px] tracking-tighter uppercase"
+              className="bg-neon-green text-deep-black font-black px-8 py-4 rounded-2xl flex items-center justify-center gap-2 hover:shadow-[0_0_30px_rgba(0,255,135,0.4)] transition-all active:scale-95 text-[12px] tracking-tighter uppercase"
             >
-              <Plus className="h-4 w-4 stroke-[3px]" /> Nuevo
+              <Plus className="h-5 w-5 stroke-[3px]" /> Nuevo
             </button>
           </div>
         </div>
