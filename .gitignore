@@ -58,3 +58,7 @@ ligas_automatico_v5 - n8n_Consolidado.csv
 mercado_cuotas.json
 pick.json
 PulsoOdds v2 — ODDS-API.IO + Excel + Gemini (1).json
+# scratch
+/scratch/
+/scripts/*.js
+!/scripts/scrape-flashscore.js

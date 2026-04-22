@@ -2,8 +2,8 @@ const axios = require('axios');
 const { createClient } = require('@supabase/supabase-js');
 
 // Configuración extraída de .env.local
-const SUPABASE_URL = "https://rbickeqbpqhdcwzoypmu.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJiaWNrZXFicHFoZGN3em95cG11Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NjI0NjQ1MCwiZXhwIjoyMDkxODIyNDUwfQ.GCAQ1rgBTFTvCG5SNUXISCpZ0iaxxtmMmHbLUUz95vE";
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const SHEET_ID = "1oN_W3RTwVaxZm5zyKv8HQwgUsjAEZlpJSCFDe21GJWI";
 const CONSOLIDATED_GID = "1177125270"; // GID de la pestaña n8n_Consolidado
 
