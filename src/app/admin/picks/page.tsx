@@ -385,66 +385,29 @@ export default function AdminPicksPage() {
       )}
 
       {/* Header Block */}
-      <div className="flex flex-col lg:flex-row justify-between items-center gap-6 mb-8">
-        <div className="flex flex-col items-center sm:items-start">
-          <h1 className="text-3xl md:text-4xl font-black text-white tracking-tighter uppercase italic">
-            GESTIÓN DE <span className="text-neon-green">PICKS</span>
-          </h1>
-          <p className="text-white/40 text-sm mt-1">Panel de control y resultados en tiempo real.</p>
-        </div>
-        
-        <div className="flex flex-col md:flex-row items-center gap-4 w-full lg:w-auto">
-          {/* Search Bar */}
-          <div className="relative w-full md:w-64 group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20 group-focus-within:text-neon-green transition-colors" />
-            <input 
-              type="text"
-              placeholder="Buscar por equipo, liga, mercado..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-xs text-white placeholder:text-white/20 focus:outline-none focus:border-neon-green/50 focus:bg-white/[0.08] transition-all"
-            />
-          </div>
-
-          <div className="flex flex-col md:flex-row items-center gap-6 w-full lg:w-auto">
-            {/* Limpieza Group */}
-            <div className="flex flex-col gap-2 p-2 bg-white/[0.03] rounded-2xl border border-white/10">
-              <span className="text-[8px] text-white/20 uppercase font-black tracking-[0.2em] px-2">Auditoría y Limpieza</span>
-              <div className="flex flex-wrap items-center gap-2">
-                <button 
-                  onClick={handleCheckAssets}
-                  className="bg-white/5 text-white/60 border border-white/10 font-black px-4 py-2 rounded-xl flex items-center gap-2 hover:bg-white/10 transition-all active:scale-95 text-[10px] tracking-widest uppercase"
-                >
-                  <ShieldCheck className="h-3.5 w-3.5" /> Logos
-                </button>
-                <button 
-                  onClick={handleCleanupDuplicates}
-                  className="bg-orange-600/10 text-orange-400 border border-orange-500/20 font-black px-4 py-2 rounded-xl flex items-center gap-2 hover:bg-orange-600/20 transition-all active:scale-95 text-[10px] tracking-widest uppercase group"
-                >
-                  <Sparkles className="h-4 w-4 group-hover:scale-110 transition-transform text-orange-400" /> Duplicados
-                </button>
-                <button 
-                  onClick={handleTranslateAudit}
-                  className="bg-purple-600/10 text-purple-400 border border-purple-500/20 font-black px-4 py-2 rounded-xl flex items-center gap-2 hover:bg-purple-600/20 transition-all active:scale-95 text-[10px] tracking-widest uppercase group"
-                >
-                  <TrendingUp className="h-4 w-4 group-hover:scale-110 transition-transform" /> Historial
-                </button>
-              </div>
-            </div>
-
-            <button 
-              onClick={handleNewPick}
-              className="bg-neon-green text-deep-black font-black px-8 py-4 rounded-2xl flex items-center justify-center gap-2 hover:shadow-[0_0_30px_rgba(0,255,135,0.4)] transition-all active:scale-95 text-[12px] tracking-tighter uppercase"
-            >
-              <Plus className="h-5 w-5 stroke-[3px]" /> Nuevo
-            </button>
-          </div>
-        </div>
+      <div className="flex flex-col items-center sm:items-start mb-6">
+        <h1 className="text-3xl md:text-4xl font-black text-white tracking-tighter uppercase italic">
+          GESTIÓN DE <span className="text-neon-green">PICKS</span>
+        </h1>
+        <p className="text-white/40 text-[11px] mt-1 tracking-widest uppercase font-bold">Panel de control y resultados en tiempo real.</p>
       </div>
 
-      {/* Filter Tabs */}
-      <div className="flex flex-col md:flex-row items-center gap-4 mb-6">
-        <div className="flex bg-white/5 p-1 rounded-2xl border border-white/10 w-full md:w-auto overflow-x-auto no-scrollbar">
+      {/* Compact Toolbar Area */}
+      <div className="flex flex-wrap items-center gap-3 mb-8 bg-white/[0.02] p-2 rounded-2xl border border-white/5">
+        {/* Search Bar */}
+        <div className="relative flex-1 min-w-[200px] group">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/20 group-focus-within:text-neon-green transition-colors" />
+          <input 
+            type="text"
+            placeholder="Buscar pick..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-[10px] text-white placeholder:text-white/20 focus:outline-none focus:border-neon-green/50 focus:bg-white/[0.08] transition-all"
+          />
+        </div>
+
+        {/* Compact Filter Tabs */}
+        <div className="flex bg-deep-black/40 p-1 rounded-xl border border-white/5 overflow-x-auto no-scrollbar">
           {[
             { id: 'all', label: 'Todos', count: counts.all },
             { id: 'pending', label: 'Pendientes', count: counts.pending },
@@ -456,25 +419,54 @@ export default function AdminPicksPage() {
               key={tab.id}
               onClick={() => setStatusFilter(tab.id)}
               className={cn(
-                "flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all relative whitespace-nowrap",
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-tighter transition-all relative whitespace-nowrap",
                 statusFilter === tab.id 
-                  ? "bg-white/10 text-neon-green shadow-[0_0_15px_rgba(255,255,255,0.05)]" 
-                  : "text-white/40 hover:text-white/60 hover:bg-white/5"
+                  ? "bg-white/10 text-neon-green" 
+                  : "text-white/30 hover:text-white/50 hover:bg-white/5"
               )}
             >
               {tab.label}
               <span className={cn(
-                "px-1.5 py-0.5 rounded-md text-[8px] font-bold",
-                statusFilter === tab.id ? "bg-neon-green/20 text-neon-green" : "bg-white/5 text-white/20"
+                "px-1 py-0.5 rounded text-[8px] font-bold min-w-[16px]",
+                statusFilter === tab.id ? "bg-neon-green/20 text-neon-green" : "bg-white/5 text-white/10"
               )}>
                 {tab.count}
               </span>
-              {statusFilter === tab.id && (
-                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-neon-green rounded-full shadow-[0_0_10px_#00ff87]" />
-              )}
             </button>
           ))}
         </div>
+
+        {/* Cleaning Group - Icons Only */}
+        <div className="flex items-center gap-1 p-1 bg-white/[0.03] rounded-xl border border-white/10">
+          <button 
+            onClick={handleCheckAssets}
+            title="Logos"
+            className="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-lg transition-all"
+          >
+            <ShieldCheck className="h-4 w-4" />
+          </button>
+          <button 
+            onClick={handleCleanupDuplicates}
+            title="Duplicados"
+            className="p-2 text-orange-400/50 hover:text-orange-400 hover:bg-orange-400/10 rounded-lg transition-all"
+          >
+            <Sparkles className="h-4 w-4" />
+          </button>
+          <button 
+            onClick={handleTranslateAudit}
+            title="Historial"
+            className="p-2 text-purple-400/50 hover:text-purple-400 hover:bg-purple-400/10 rounded-lg transition-all"
+          >
+            <TrendingUp className="h-4 w-4" />
+          </button>
+        </div>
+
+        <button 
+          onClick={handleNewPick}
+          className="bg-neon-green text-deep-black font-black px-5 py-2.5 rounded-xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(0,255,135,0.4)] transition-all active:scale-95 text-[10px] tracking-tighter uppercase"
+        >
+          <Plus className="h-3.5 w-3.5 stroke-[3px]" /> Nuevo
+        </button>
       </div>
 
       {/* Main Content Area */}
