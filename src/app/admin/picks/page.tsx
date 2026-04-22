@@ -9,6 +9,7 @@ export default function AdminPicksPage() {
   const [picks, setPicks] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState('all');
   const [selectedPicks, setSelectedPicks] = useState<Set<string>>(new Set());
 
   const fetchPicks = async () => {
@@ -308,13 +309,18 @@ export default function AdminPicksPage() {
     }
   };
 
-  const filteredPicks = picks.filter(p => 
-    p.match.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.market.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.competition.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    translateLeagueName(p.competition).toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.sport.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredPicks = picks.filter(p => {
+    const matchesSearch = 
+      p.match.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.market.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.competition.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      translateLeagueName(p.competition).toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.sport.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesStatus = statusFilter === 'all' || p.status === statusFilter;
+    
+    return matchesSearch && matchesStatus;
+  });
 
   return (
     <div className="space-y-6 text-center sm:text-left">
@@ -390,6 +396,24 @@ export default function AdminPicksPage() {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-xs text-white placeholder:text-white/20 focus:outline-none focus:border-neon-green/50 focus:bg-white/[0.08] transition-all"
             />
+          </div>
+
+          {/* Status Filter */}
+          <div className="relative w-full md:w-44">
+            <select 
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-xs text-white appearance-none focus:outline-none focus:border-neon-green/50 focus:bg-white/[0.08] transition-all cursor-pointer uppercase font-black tracking-widest"
+            >
+              <option value="all" className="bg-deep-black">Todos los Estados</option>
+              <option value="pending" className="bg-deep-black">Pendientes</option>
+              <option value="won" className="bg-deep-black">Ganados</option>
+              <option value="lost" className="bg-deep-black">Perdidos</option>
+              <option value="void" className="bg-deep-black">Nulos</option>
+            </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/20">
+              <Plus className="h-3 w-3 rotate-45" />
+            </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 w-full md:w-auto justify-center">
