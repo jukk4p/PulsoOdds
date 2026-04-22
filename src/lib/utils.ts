@@ -17,7 +17,7 @@ export function deepNormalize(text: string): string {
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "") // Quita tildes
     .replace(/[().,/-]/g, " ")       // Quita puntuación y paréntesis
-    .replace(/\b(1x2|final|partido|ganador|resultado|el|la|los|las|de|del|vs|v)\b/gi, "") // Ruido agresivo
+    .replace(/\b(1x2|final|partido|ganador|resultado|el|la|los|las|de|del|vs|v|con|y|un|una)\b/gi, "") // Ruido extremo
     .replace(/[^a-z0-9]/g, "")       // Limpieza TOTAL: solo letras y números
     .trim();
 

@@ -249,12 +249,33 @@ export default function AdminPicksPage() {
       const duplicateDetails: string[] = [];
 
       allPicks.forEach(p => {
+        // Normalización extrema de mercado
+        let fMarket = deepNormalize(p.market);
+        // Si el mercado parece ser de ganador, lo unificamos
+        if (fMarket === "" || fMarket.includes("ganador") || fMarket.includes("resultado") || fMarket.includes("1x2")) {
+          fMarket = "match_winner";
+        }
+
+        // Normalización extrema de selección
+        let fPick = deepNormalize(p.pick);
         const fMatch = deepNormalize(p.match);
-        const fMarket = deepNormalize(p.market);
-        const fPick = deepNormalize(p.pick);
+
+        // Lógica inteligente: Si la selección es el nombre de un equipo, lo mapeamos a local/visitante
+        if (p.match.toLowerCase().includes(' vs ')) {
+          const [home, away] = p.match.split(/\s+vs\s+/i);
+          const fHome = deepNormalize(home);
+          const fAway = deepNormalize(away);
+
+          if (fPick === fHome) fPick = "local";
+          else if (fPick === fAway) fPick = "visitante";
+        }
+
         const fingerprint = `${fMatch}|${fMarket}|${fPick}`;
         
-        console.log(`🔍 Auditando pick [${p.id}]:`, { match: p.match, market: p.market, pick: p.pick, fingerprint });
+        console.log(`🔍 Auditando pick [${p.id}]:`, { 
+          original: `${p.match} | ${p.market} | ${p.pick}`,
+          normalized: fingerprint 
+        });
 
         if (seen.has(fingerprint)) {
           toDelete.push(p.id);
