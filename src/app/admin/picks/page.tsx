@@ -251,15 +251,18 @@ export default function AdminPicksPage() {
       const { data: allPicks, error } = await supabase.from('picks').select('*').eq('status', 'pending').order('created_at', { ascending: false });
       if (error) throw error;
 
-      const seen = new Set<string>();
+      const seen = new Map<string, any>();
       const toDelete: string[] = [];
+      const duplicateDetails: string[] = [];
 
       allPicks.forEach(p => {
         const fingerprint = `${deepNormalize(p.match)}|${deepNormalize(p.market)}|${deepNormalize(p.pick)}`;
         if (seen.has(fingerprint)) {
           toDelete.push(p.id);
+          const original = seen.get(fingerprint);
+          duplicateDetails.push(`• ${p.match} (${p.market}) - Repetido`);
         } else {
-          seen.add(fingerprint);
+          seen.set(fingerprint, p);
         }
       });
 
@@ -268,7 +271,9 @@ export default function AdminPicksPage() {
         return;
       }
 
-      if (confirm(`Se han detectado ${toDelete.length} duplicados. ¿Proceder con la eliminación?`)) {
+      const report = duplicateDetails.slice(0, 10).join('\n') + (duplicateDetails.length > 10 ? `\n... y ${duplicateDetails.length - 10} más.` : '');
+      
+      if (confirm(`🔍 CAZA DE DUPLICADOS:\n\nSe han detectado ${toDelete.length} duplicados pendientes:\n\n${report}\n\n¿Proceder con la eliminación de los repetidos (manteniendo solo el más reciente)?`)) {
         const { error: delError } = await supabase.from('picks').delete().in('id', toDelete);
         if (delError) throw delError;
         deletedCount = toDelete.length;
