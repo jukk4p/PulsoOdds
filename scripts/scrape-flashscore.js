@@ -2,11 +2,12 @@ const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
+require('dotenv').config({ path: path.join(__dirname, '../.env.local') });
 
 /**
  * CONFIGURACIÓN
  */
-const N8N_WEBHOOK_URL = "https://n8n.ivangonzalez.cloud/webhook/sync-pulso-standings";
+const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL;
 
 const LEAGUES = [
   { name: "La Liga", slug: "espana/laliga-ea-sports", id: "140" },
@@ -14,6 +15,7 @@ const LEAGUES = [
   { name: "Bundesliga", slug: "alemania/bundesliga", id: "78" },
   { name: "Serie A", slug: "italia/serie-a", id: "135" },
   { name: "Ligue 1", slug: "francia/ligue-1", id: "61" },
+  { name: "Eredivisie", slug: "paises-bajos/eredivisie", id: "88" },
   { name: "Segunda División", slug: "espana/laliga-hypermotion", id: "141" },
   { name: "Championship", slug: "inglaterra/championship", id: "40" },
   { name: "2. Bundesliga", slug: "alemania/2-bundesliga", id: "79" },
@@ -51,7 +53,10 @@ const TEAM_IDS = {
   "Lyon": "80", "Rennes": "111", "Mónaco": "91", "Estrasburgo": "95",
   "Lorient": "101", "Toulouse": "96", "Brest": "130", "Paris FC": "109",
   "Angers": "84", "Le Havre": "113", "Niza": "108", "Auxerre": "778",
-  "Nantes": "83", "Metz": "114",
+  "Nantes": "83",  "Metz": "114",
+  // Países Bajos - Eredivisie
+  "Ajax": "194", "PSV": "197", "Feyenoord": "196", "AZ Alkmaar": "201",
+  "Twente": "198", "Utrecht": "199", "Sparta Rotterdam": "205"
 };
 
 const BASE_URL = "https://www.flashscore.es/futbol";
@@ -66,7 +71,9 @@ async function scrapeStandings() {
     userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'
   });
 
-  const csvContent = ["Liga,Pos,Equipo,PJ,PG,PE,PP,Goles,Pts,Forma,Logo Liga,Logo Equipo"];
+  const csvRows = [];
+  // Cabecera con comillas para que n8n no se confunda
+  csvRows.push('"Liga","Pos","Equipo","PJ","PG","PE","PP","Goles","Pts","Forma","Logo Liga","Logo Equipo"');
 
   for (const league of LEAGUES) {
     process.stdout.write(`📡 Procesando ${league.name}... `);
@@ -109,7 +116,8 @@ async function scrapeStandings() {
         "Premier League": "https://media.api-sports.io/football/leagues/39.png",
         "Bundesliga": "https://media.api-sports.io/football/leagues/78.png",
         "Serie A": "https://media.api-sports.io/football/leagues/135.png",
-        "Ligue 1": "https://media.api-sports.io/football/leagues/61.png"
+        "Ligue 1": "https://media.api-sports.io/football/leagues/61.png",
+        "Eredivisie": "https://media.api-sports.io/football/leagues/88.png"
       };
       const leagueLogo = leagueLogos[league.name] || "";
 
@@ -129,7 +137,7 @@ async function scrapeStandings() {
           `"${leagueLogo || ""}"`,
           `"${row.logo || ""}"`
         ];
-        csvContent.push(csvRow.join(','));
+        csvRows.push(csvRow.join(','));
       }
       
       console.log(`✅ (${standings.length} equipos)`);
@@ -141,32 +149,40 @@ async function scrapeStandings() {
     }
   }
 
-  const fullCsv = csvContent.join('\n');
+  const fullCsv = csvRows.join('\n');
 
   // Guardar archivo local
   const outputPath = path.join(__dirname, '../flashscore_standings.csv');
   fs.writeFileSync(outputPath, fullCsv, 'utf8');
-  console.log(`\n📂 Archivo local actualizado.`);
+  console.log(`\n📂 Archivo local actualizado en: ${outputPath}`);
 
   // ENVIAR A N8N
   try {
-    console.log(`📤 Enviando datos a n8n (${N8N_WEBHOOK_URL})...`);
+    const webhookUrl = process.env.N8N_WEBHOOK_URL;
+    if (!webhookUrl) {
+      throw new Error("N8N_WEBHOOK_URL no está definida en .env.local");
+    }
+
+    console.log(`📤 Enviando archivo a n8n (${webhookUrl})...`);
     
-    // Cabeceras EXACTAS de tu imagen para que el mapeo sea perfecto
-    const headers = "Liga,Pos,Equipo,PJ,PG,PE,PP,Pts,Logo Liga,Logo Equipo\n";
-    const csvWithHeader = headers + fullCsv;
-    
+    // Usamos FormData nativo de Node 24
     const formData = new FormData();
-    const blob = new Blob([csvWithHeader], { type: 'text/csv' });
+    const blob = new Blob([fullCsv], { type: 'text/csv' });
     formData.append('data', blob, 'standings.csv');
 
-    const response = await axios.post(N8N_WEBHOOK_URL, formData);
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      body: formData
+    });
     
-    console.log(`✅ Respuesta de n8n: ${response.status} ${JSON.stringify(response.data)}`);
-    console.log("✨ ¡Sincronización con Google Sheets completada!");
+    if (response.ok) {
+      console.log(`✅ Respuesta de n8n: ${response.status}`);
+      console.log("✨ ¡Sincronización enviada y recibida como archivo!");
+    } else {
+      console.log(`❌ Error en n8n: ${response.status} ${await response.text()}`);
+    }
   } catch (error) {
     console.log(`⚠️ No se pudo enviar a n8n: ${error.message}`);
-    console.log("ℹ️ Asegúrate de que el workflow de n8n esté ACTIVO.");
   }
 
   console.log("\n========================================");

@@ -41,7 +41,9 @@ export async function GET(request: Request) {
       g: header.indexOf("pg") !== -1 ? header.indexOf("pg") : (header.indexOf("g") !== -1 ? header.indexOf("g") : header.indexOf("pg")),
       e: header.indexOf("pe") !== -1 ? header.indexOf("pe") : (header.indexOf("e") !== -1 ? header.indexOf("e") : header.indexOf("pe")),
       p: header.indexOf("pp") !== -1 ? header.indexOf("pp") : (header.indexOf("p") !== -1 ? header.indexOf("p") : header.indexOf("pp")),
+      goals: header.indexOf("goles"),
       pts: header.indexOf("pts"),
+      form: header.indexOf("forma"),
       logo: header.indexOf("logo equipo")
     };
 
@@ -62,14 +64,16 @@ export async function GET(request: Request) {
       const g = parseInt(row[colIdx.g]) || 0;
       const e = parseInt(row[colIdx.e]) || 0;
       const p = parseInt(row[colIdx.p]) || 0;
+      const goals = row[colIdx.goals] || "0:0";
       const pts = parseInt(row[colIdx.pts]) || 0;
-      const dg = (g * 2) - (p * 2); // Simplificado o calculado
+      const form = row[colIdx.form] || "";
+      const dg = (g * 2) - (p * 2);
 
       // Zona de competición
       let zone = null;
       if (pos <= 4) zone = "champions";
       else if (pos <= 6) zone = "europa";
-      else if (pos >= 18) zone = "relegation";
+      else if (pos >= 18 && (leagueName === "La Liga" || leagueName === "Premier League")) zone = "relegation";
 
       // Logo: Prioridad al del Excel, si no, genérico
       const logoUrl = row[colIdx.logo] || `https://media.api-sports.io/football/teams/generic.png`;
@@ -81,7 +85,9 @@ export async function GET(request: Request) {
           pos,
           team: teamName,
           logo: logoUrl,
-          pj, g, e, p, dg, pts, zone
+          pj, g, e, p, dg, pts, zone,
+          goals,
+          form
         }, { 
           onConflict: 'league,team' 
         });

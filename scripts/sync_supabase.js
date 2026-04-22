@@ -1,5 +1,6 @@
 const axios = require('axios');
 const { createClient } = require('@supabase/supabase-js');
+require('dotenv').config({ path: '.env.local' });
 
 // Configuración extraída de .env.local
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -65,7 +66,11 @@ const TEAM_NAME_MAP = {
   "Marseille": "Marsella",
   "Olympique Lyonnais": "Lyon",
   "Monaco": "Mónaco",
-  "Saint Etienne": "St Etienne"
+  "Saint Etienne": "St Etienne",
+  "Ajax Amsterdam": "Ajax",
+  "PSV Eindhoven": "PSV",
+  "Feyenoord Rotterdam": "Feyenoord",
+  "AZ Alkmaar": "AZ"
 };
 
 function normalizeTeamName(name) {
@@ -108,7 +113,9 @@ async function sync() {
       g: header.indexOf("pg") !== -1 ? header.indexOf("pg") : (header.indexOf("g") !== -1 ? header.indexOf("g") : header.indexOf("pg")),
       e: header.indexOf("pe") !== -1 ? header.indexOf("pe") : (header.indexOf("e") !== -1 ? header.indexOf("e") : header.indexOf("pe")),
       p: header.indexOf("pp") !== -1 ? header.indexOf("pp") : (header.indexOf("p") !== -1 ? header.indexOf("p") : header.indexOf("pp")),
+      goals: header.indexOf("goles"),
       pts: header.indexOf("pts"),
+      form: header.indexOf("forma"),
       logo: header.indexOf("logo equipo")
     };
 
@@ -123,7 +130,9 @@ async function sync() {
       const g = parseInt(row[colIdx.g]) || 0;
       const e = parseInt(row[colIdx.e]) || 0;
       const p = parseInt(row[colIdx.p]) || 0;
+      const goals = row[colIdx.goals] || "0:0";
       const pts = parseInt(row[colIdx.pts]) || 0;
+      const form = row[colIdx.form] || "";
       const dg = (g * 2) - (p * 2);
 
       let zone = null;
@@ -140,7 +149,9 @@ async function sync() {
           pos,
           team: teamName,
           logo: logoUrl,
-          pj, g, e, p, dg, pts, zone
+          pj, g, e, p, dg, pts, zone,
+          goals,
+          form
         }, { 
           onConflict: 'league,team' 
         });

@@ -1,5 +1,6 @@
 const axios = require('axios');
 const { createClient } = require('@supabase/supabase-js');
+require('dotenv').config({ path: '.env.local' });
 
 // Configuración de Supabase
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -64,7 +65,11 @@ const TEAM_NAME_MAP = {
   "Marseille": "Marsella",
   "Olympique Lyonnais": "Lyon",
   "Monaco": "Mónaco",
-  "Saint Etienne": "St Etienne"
+  "Saint Etienne": "St Etienne",
+  "Ajax Amsterdam": "Ajax",
+  "PSV Eindhoven": "PSV",
+  "Feyenoord Rotterdam": "Feyenoord",
+  "AZ Alkmaar": "AZ"
 };
 
 function normalizeTeamName(name) {

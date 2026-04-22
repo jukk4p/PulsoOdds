@@ -12,7 +12,7 @@ const supabase = createClient(
 );
 
 const LEAGUES = [
-  "La Liga", "Premier League", "Bundesliga", "Serie A", "Ligue 1",
+  "La Liga", "Premier League", "Bundesliga", "Serie A", "Ligue 1", "Eredivisie",
   "Segunda División", "Championship", "2. Bundesliga", "Serie B", "Ligue 2"
 ];
 
@@ -66,7 +66,7 @@ export default function StandingsPage() {
 
         {/* Selector de Ligas (Tabs) */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-12">
-          {LEAGUES.map((league) => (
+          {LEAGUES.map((league, index) => (
             <button
               key={league}
               onClick={() => setActiveLeague(league)}
@@ -74,7 +74,9 @@ export default function StandingsPage() {
                 "px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap border-2",
                 activeLeague === league 
                   ? "bg-neon-green text-black border-neon-green shadow-[0_0_20px_rgba(0,230,118,0.2)]" 
-                  : "bg-white/5 text-white/40 border-white/5 hover:border-white/10 hover:text-white"
+                  : "bg-white/5 text-white/40 border-white/5 hover:border-white/10 hover:text-white",
+                // Centrar Ligue 2 en móvil y alinear en escritorio
+                index === LEAGUES.length - 1 && "col-span-2 md:col-span-1 md:col-start-3"
               )}
             >
               {league}
@@ -101,15 +103,15 @@ export default function StandingsPage() {
               <table className="w-full text-left border-collapse table-fixed md:table-auto">
                 <thead>
                   <tr className="bg-white/[0.02] border-b border-white/5">
-                    <th className="py-5 px-2 text-[9px] font-black text-white/20 uppercase tracking-widest text-center w-8">#</th>
-                    <th className="py-5 px-2 text-[9px] font-black text-white/20 uppercase tracking-widest w-auto">Equipo</th>
-                    <th className="py-5 px-1 text-[9px] font-black text-white/20 uppercase tracking-widest text-center w-8">PJ</th>
-                    <th className="py-6 px-4 text-[10px] font-black text-white/20 uppercase tracking-widest text-center hidden md:table-cell w-12">G</th>
-                    <th className="py-6 px-4 text-[10px] font-black text-white/20 uppercase tracking-widest text-center hidden md:table-cell w-12">E</th>
-                    <th className="py-6 px-4 text-[10px] font-black text-white/20 uppercase tracking-widest text-center hidden md:table-cell w-12">P</th>
-                    <th className="py-5 px-2 text-[9px] font-black text-white/20 uppercase tracking-widest text-center w-14">G</th>
-                    <th className="py-5 px-2 text-[9px] font-black text-white/20 uppercase tracking-widest text-center w-12">Pts</th>
-                    <th className="py-6 px-6 text-[10px] font-black text-white/20 uppercase tracking-widest text-center hidden md:table-cell w-40">Forma</th>
+                    <th className="py-5 px-2 text-[9px] md:text-[11px] font-black text-white/20 uppercase tracking-widest text-center w-8 md:w-14">#</th>
+                    <th className="py-5 px-2 text-[9px] md:text-[11px] font-black text-white/20 uppercase tracking-widest w-auto">Equipo</th>
+                    <th className="py-5 px-1 text-[9px] md:text-[11px] font-black text-white/20 uppercase tracking-widest text-center w-8 md:w-16">PJ</th>
+                    <th className="py-6 px-4 text-[10px] md:text-xs font-black text-white/20 uppercase tracking-widest text-center hidden md:table-cell w-12 md:w-20">G</th>
+                    <th className="py-6 px-4 text-[10px] md:text-xs font-black text-white/20 uppercase tracking-widest text-center hidden md:table-cell w-12 md:w-20">E</th>
+                    <th className="py-6 px-4 text-[10px] md:text-xs font-black text-white/20 uppercase tracking-widest text-center hidden md:table-cell w-12 md:w-20">P</th>
+                    <th className="py-5 px-2 text-[9px] md:text-[11px] font-black text-white/20 uppercase tracking-widest text-center w-14 md:w-24">G</th>
+                    <th className="py-5 px-2 text-[9px] md:text-[11px] font-black text-white/20 uppercase tracking-widest text-center w-12 md:w-24">Pts</th>
+                    <th className="py-6 px-6 text-[10px] md:text-xs font-black text-white/20 uppercase tracking-widest text-center hidden md:table-cell w-40 md:w-56">Forma</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/[0.03]">
@@ -121,9 +123,9 @@ export default function StandingsPage() {
                         team.pos === 1 && "bg-neon-green/[0.02]"
                       )}
                     >
-                      <td className="py-3 px-2 text-center">
+                      <td className="py-3 md:py-6 px-2 text-center">
                         <div className={cn(
-                          "inline-flex items-center justify-center h-5 w-5 rounded text-[9px] font-black italic",
+                          "inline-flex items-center justify-center h-5 w-5 md:h-8 md:w-8 rounded md:rounded-lg text-[9px] md:text-xs font-black italic",
                           team.zone === "champions" ? "bg-neon-green text-black shadow-[0_0_10px_rgba(0,230,118,0.3)]" : 
                           team.zone === "europa" ? "bg-blue-500 text-white" :
                           team.zone === "relegation" ? "bg-red-500 text-white" :
@@ -132,31 +134,31 @@ export default function StandingsPage() {
                           {team.pos}
                         </div>
                       </td>
-                      <td className="py-3 px-2">
-                        <div className="flex items-center gap-1.5">
-                          <div className="h-6 w-6 bg-white rounded p-0.5 shadow-sm flex items-center justify-center shrink-0">
+                      <td className="py-3 md:py-6 px-2">
+                        <div className="flex items-center gap-1.5 md:gap-4">
+                          <div className="h-6 w-6 md:h-12 md:w-12 bg-white rounded p-0.5 md:p-1.5 shadow-sm flex items-center justify-center shrink-0">
                             <img src={team.logo || "https://p-cdn.api-sports.io/football/teams/generic.png"} alt={team.team} className="h-full w-full object-contain" />
                           </div>
-                          <span className="text-[10px] font-black text-white/90 uppercase tracking-tight truncate max-w-[70px] md:max-w-none">{team.team}</span>
+                          <span className="text-[10px] md:text-lg font-black text-white/90 uppercase tracking-tight truncate max-w-[70px] md:max-w-none">{team.team}</span>
                         </div>
                       </td>
-                      <td className="py-3 px-1 text-center text-[10px] font-bold text-white/60">{team.pj}</td>
-                      <td className="py-4 px-4 text-center text-xs font-bold text-white/30 hidden md:table-cell">{team.g}</td>
-                      <td className="py-4 px-4 text-center text-xs font-bold text-white/30 hidden md:table-cell">{team.e}</td>
-                      <td className="py-4 px-4 text-center text-xs font-bold text-white/30 hidden md:table-cell">{team.p}</td>
-                      <td className="py-3 px-2 text-center text-[9px] font-bold text-white/40 italic">
+                      <td className="py-3 md:py-6 px-1 text-center text-[10px] md:text-sm font-bold text-white/60">{team.pj}</td>
+                      <td className="py-4 md:py-6 px-4 text-center text-xs md:text-base font-bold text-white/30 hidden md:table-cell">{team.g}</td>
+                      <td className="py-4 md:py-6 px-4 text-center text-xs md:text-base font-bold text-white/30 hidden md:table-cell">{team.e}</td>
+                      <td className="py-4 md:py-6 px-4 text-center text-xs md:text-base font-bold text-white/30 hidden md:table-cell">{team.p}</td>
+                      <td className="py-3 md:py-6 px-2 text-center text-[9px] md:text-sm font-bold text-white/40 italic">
                         {(team.goals || "").split(':').slice(0, 2).join(':')}
                       </td>
-                      <td className="py-3 px-2 text-center">
-                        <span className="text-sm font-black text-white italic tracking-tighter">{team.pts}</span>
+                      <td className="py-3 md:py-6 px-2 text-center">
+                        <span className="text-sm md:text-2xl font-black text-white italic tracking-tighter">{team.pts}</span>
                       </td>
                       <td className="py-4 px-6 hidden md:table-cell">
-                        <div className="flex items-center justify-center gap-1.5">
+                        <div className="flex items-center justify-center gap-1.5 md:gap-2">
                           {(team.form || "").split('').map((res: string, i: number) => (
                             <div 
                               key={i}
                               className={cn(
-                                "h-5 w-5 rounded-md flex items-center justify-center text-[9px] font-black",
+                                "h-5 w-5 md:h-8 md:w-8 rounded-md flex items-center justify-center text-[9px] md:text-[11px] font-black shadow-lg",
                                 res === 'G' ? "bg-green-500 text-white" :
                                 res === 'E' ? "bg-orange-500 text-white" :
                                 res === 'P' ? "bg-red-500 text-white" :

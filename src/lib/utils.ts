@@ -190,6 +190,7 @@ const leagueDictionary: Record<string, string> = {
   'Serie A': 'Serie A',
   'Bundesliga': 'Bundesliga',
   'Ligue 1': 'Ligue 1',
+  'Eredivisie': 'Eredivisie',
   'MLS': 'MLS',
 };
 
@@ -203,6 +204,7 @@ export const leagueLogoMap: Record<string, string> = {
   "ITALIA - SERIE A": "/logos/leagues/serie_a.png",
   "ALEMANIA - BUNDESLIGA": "/logos/leagues/bundesliga.png",
   "FRANCIA - LIGUE 1": "/logos/leagues/ligue_1.png",
+  "PAÍSES BAJOS - EREDIVISIE": "https://media.api-sports.io/football/leagues/88.png",
   "CHAMPIONS LEAGUE": "/logos/leagues/champions.png",
   "EUROPA LEAGUE": "/logos/leagues/europa_league.png",
   "CONFERENCE LEAGUE": "/logos/leagues/conference.png",
