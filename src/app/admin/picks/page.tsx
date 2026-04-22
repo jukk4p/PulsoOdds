@@ -119,22 +119,18 @@ export default function AdminPicksPage() {
       let suggestedOdd = null;
       
       if (!data.error && Array.isArray(data)) {
-        // Buscamos el partido por matching de nombre (fuzzy simple)
         const match = data.find((event: any) => 
           pick.match.toLowerCase().includes(event.home_team.toLowerCase()) ||
           pick.match.toLowerCase().includes(event.away_team.toLowerCase())
         );
         
         if (match) {
-          // Intentamos extraer la cuota del mercado correspondiente (h2h o btts)
-          const bookmaker = match.bookmakers[0]; // Usamos el primero (suele ser el más real/liquid)
+          const bookmaker = match.bookmakers[0];
           if (bookmaker) {
             const market = bookmaker.markets.find((m: any) => 
               m.key === 'h2h' || m.key === 'btts'
             );
             if (market) {
-               // Aquí iría la lógica de selección específica según el pick.pick
-               // Por ahora sugerimos la primera cuota encontrada o dejamos que el user elija
                suggestedOdd = market.outcomes[0].price;
             }
           }
@@ -169,9 +165,6 @@ export default function AdminPicksPage() {
   };
 
   const handleCheckAssets = () => {
-    const GENERIC_SHIELD = "https://img.icons8.com/ios-filled/100/ffffff/shield.png";
-    const GENERIC_LEAGUE = "https://img.icons8.com/ios-filled/100/ffffff/trophy.png";
-
     const pendingPicks = picks.filter(p => p.status === 'pending');
     const missingHome = pendingPicks.filter(p => !p.home_logo || p.home_logo.includes('shield.png'));
     const missingAway = pendingPicks.filter(p => !p.away_logo || p.away_logo.includes('shield.png'));
@@ -256,10 +249,15 @@ export default function AdminPicksPage() {
       const duplicateDetails: string[] = [];
 
       allPicks.forEach(p => {
-        const fingerprint = `${deepNormalize(p.match)}|${deepNormalize(p.market)}|${deepNormalize(p.pick)}`;
+        const fMatch = deepNormalize(p.match);
+        const fMarket = deepNormalize(p.market);
+        const fPick = deepNormalize(p.pick);
+        const fingerprint = `${fMatch}|${fMarket}|${fPick}`;
+        
+        console.log(`🔍 Auditando pick [${p.id}]:`, { match: p.match, market: p.market, pick: p.pick, fingerprint });
+
         if (seen.has(fingerprint)) {
           toDelete.push(p.id);
-          const original = seen.get(fingerprint);
           duplicateDetails.push(`• ${p.match} (${p.market}) - Repetido`);
         } else {
           seen.set(fingerprint, p);
@@ -532,11 +530,11 @@ export default function AdminPicksPage() {
             <tbody className="divide-y divide-white/5">
               {loading ? (
                 <tr>
-                   <td colSpan={5} className="px-6 py-12 text-center text-white/20 italic">Cargando picks...</td>
+                   <td colSpan={6} className="px-6 py-12 text-center text-white/20 italic">Cargando picks...</td>
                 </tr>
               ) : filteredPicks.length === 0 ? (
                 <tr>
-                   <td colSpan={5} className="px-6 py-12 text-center text-white/20 italic">No se encontraron resultados.</td>
+                   <td colSpan={6} className="px-6 py-12 text-center text-white/20 italic">No se encontraron resultados.</td>
                 </tr>
               ) : (
                 filteredPicks.map((pick) => (
@@ -592,20 +590,20 @@ export default function AdminPicksPage() {
                     <td className="px-6 py-6 border-b border-white/5 text-center">
                       <div className="flex flex-col items-center">
                         <div className="flex items-center gap-1.5">
-                          <p className="text-white font-black font-mono">{pick.odds.toFixed(2)}</p>
-                          {pick.is_verified && <ShieldCheck className="h-3.5 w-3.5 text-blue-400" />}
+                          <span className="text-base font-mono text-neon-green font-black">{pick.odds.toFixed(2)}</span>
+                          <TrendingUp className="h-3 w-3 text-neon-green/40" />
                         </div>
                         <p className="text-[10px] text-white/20 font-bold uppercase whitespace-nowrap">Stake {pick.stake}</p>
                         {pick.published_at && (
-                          <p className="text-[8px] text-neon-green/30 font-black uppercase mt-1 truncate max-w-[100px]">
-                            {new Date(pick.published_at).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
-                          </p>
+                          <span className="text-[8px] text-neon-green/20 font-black uppercase mt-1">
+                            Reg: {new Date(pick.published_at).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                          </span>
                         )}
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-6 border-b border-white/5">
                       <span className={cn(
-                        "px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-wider",
+                        "px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest",
                         pick.status === 'won' && "bg-neon-green/10 text-neon-green",
                         pick.status === 'lost' && "bg-red-500/10 text-red-500",
                         pick.status === 'pending' && "bg-yellow-500/10 text-yellow-500",
@@ -614,18 +612,30 @@ export default function AdminPicksPage() {
                         {pick.status === 'pending' ? 'Pendiente' : pick.status === 'won' ? 'Ganado' : pick.status === 'lost' ? 'Perdido' : 'Nulo'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
-                      <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => updateStatus(pick.id, 'won')} className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-neon-green/20 text-white/10 hover:text-neon-green transition-all" title="Ganado">
+                    <td className="px-6 py-6 border-b border-white/5 text-right">
+                      <div className="flex justify-end gap-1" onClick={(e) => e.stopPropagation()}>
+                        <button 
+                          onClick={() => updateStatus(pick.id, 'won')}
+                          className="h-8 w-8 flex items-center justify-center rounded-lg bg-neon-green/10 text-neon-green border border-neon-green/20 hover:bg-neon-green/20 transition-colors"
+                        >
                           <CheckCircle className="h-4 w-4" />
                         </button>
-                        <button onClick={() => updateStatus(pick.id, 'lost')} className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-red-500/20 text-white/10 hover:text-red-500 transition-all" title="Perdido">
+                        <button 
+                          onClick={() => updateStatus(pick.id, 'lost')}
+                          className="h-8 w-8 flex items-center justify-center rounded-lg bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20 transition-colors"
+                        >
                           <XCircle className="h-4 w-4" />
                         </button>
-                        <button onClick={() => updateStatus(pick.id, 'void')} className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-white/10 text-white/10 hover:text-white transition-all" title="Nulo">
+                        <button 
+                          onClick={() => updateStatus(pick.id, 'void')}
+                          className="h-8 w-8 flex items-center justify-center rounded-lg bg-white/5 text-white/40 border border-white/10 hover:bg-white/10 transition-colors"
+                        >
                           <MinusCircle className="h-4 w-4" />
                         </button>
-                        <button onClick={() => deletePick(pick.id)} className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-white/10 text-white/10 hover:text-white transition-all" title="Eliminar">
+                        <button 
+                          onClick={() => deletePick(pick.id)}
+                          className="h-8 w-8 flex items-center justify-center rounded-lg bg-white/5 text-white/20 border border-white/10 hover:bg-white/10 transition-colors ml-1"
+                        >
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </div>

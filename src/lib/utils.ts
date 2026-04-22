@@ -18,10 +18,10 @@ export function deepNormalize(text: string): string {
     .replace(/[\u0300-\u036f]/g, "") // Quita tildes
     .replace(/[().,/-]/g, " ")       // Quita puntuación y paréntesis
     .replace(/\b(1x2|final|partido|ganador|resultado|el|la|los|las|de|del|vs|v)\b/gi, "") // Ruido agresivo
-    .replace(/\s+/g, "")             // Quita TODOS los espacios
+    .replace(/[^a-z0-9]/g, "")       // Limpieza TOTAL: solo letras y números
     .trim();
 
-  // Mapeo de sinónimos para selecciones (1=Local, X=Empate, 2=Visitante)
+  // Mapeo de sinónimos para selecciones (1=local, x=empate, 2=visitante)
   const selectionMap: Record<string, string> = {
     "1": "local",
     "home": "local",
