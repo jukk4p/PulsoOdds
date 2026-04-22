@@ -11,15 +11,27 @@ export function cn(...inputs: ClassValue[]) {
  */
 export function deepNormalize(text: string): string {
   if (!text) return "";
-  return text
+  const normalized = text
     .trim()
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "") // Quita tildes
     .replace(/[().,/-]/g, " ")       // Quita puntuación y paréntesis
-    .replace(/\b(1x2|final|partido|ganador|el|la|los|las)\b/gi, "") // Quita ruido común
-    .replace(/\s+/g, "")             // Quita TODOS los espacios para comparar "pegado"
+    .replace(/\b(1x2|final|partido|ganador|resultado|el|la|los|las|de|del|vs|v)\b/gi, "") // Ruido agresivo
+    .replace(/\s+/g, "")             // Quita TODOS los espacios
     .trim();
+
+  // Mapeo de sinónimos para selecciones (1=Local, X=Empate, 2=Visitante)
+  const selectionMap: Record<string, string> = {
+    "1": "local",
+    "home": "local",
+    "x": "empate",
+    "draw": "empate",
+    "2": "visitante",
+    "away": "visitante",
+  };
+
+  return selectionMap[normalized] || normalized;
 }
 
 /**
