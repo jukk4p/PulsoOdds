@@ -100,8 +100,6 @@ export function translateBettingTerm(term: string): string {
     "HALF TIME RESULT": "Resultado al Descanso",
     "SPREAD HT": "Hándicap Asiático (1ª Parte)",
     "TOTALS HT": "Total de Goles (1ª Parte)",
-    "EUROPEAN HANDICAP": "Hándicap Europeo",
-    "NUMBER OF GOALS IN MATCH": "Número de Goles",
     
     // Córners
     "CORNERS": "Saques de Esquina",
@@ -137,8 +135,6 @@ export function translateBettingTerm(term: string): string {
     "PLAYER TO SCORE OR ASSIST": "Gol o Asistencia (Jugador)",
     
     // Otros / Estadísticas
-    "TEAM TOTAL GOALS HOME": "Total de Goles - Local",
-    "TEAM TOTAL GOALS AWAY": "Total de Goles - Visitante",
     "MATCH SHOTS": "Remates Totales",
     "MATCH SHOTS ON TARGET": "Remates a Puerta Totales",
     "MATCH OFFSIDES": "Fueras de Juego",
