@@ -37,6 +37,7 @@ const LEAGUE_DB_NAMES: Record<string, string> = {
   "Ligue 2":             "Ligue 2",
 };
 
+export default function StandingsPage() {
   const [activeLeague, setActiveLeague] = useState(LEAGUES[0]);
   const [standings, setStandings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
