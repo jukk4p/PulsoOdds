@@ -118,8 +118,12 @@ export function PicksExplorer({ initialPicks }: PicksExplorerProps) {
         weekday: 'long', day: 'numeric', month: 'long' 
       });
       
-      // Clave robusta: Normalizamos competencia, partido y solo usamos la fecha (YYYY-MM-DD)
-      const dayKey = d.toISOString().split('T')[0];
+      // Clave robusta: usamos fecha LOCAL (no ISO UTC) para evitar desfase de timezone
+      // y normalizamos competition + match con simpleNormalize
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      const dayKey = `${year}-${month}-${day}`;
       const matchKey = `${simpleNormalize(p.competition || "")}_${simpleNormalize(p.match || "")}_${dayKey}`;
       
       if (!groups[date]) groups[date] = {};

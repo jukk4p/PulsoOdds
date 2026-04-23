@@ -25,7 +25,10 @@ async function getData() {
   // Lógica de agrupamiento robusta (igual que en PicksExplorer)
   const groupedPicks = (picks || []).reduce((acc, pick) => {
     const d = new Date(pick.match_date);
-    const dayKey = d.toISOString().split('T')[0];
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    const dayKey = `${year}-${month}-${day}`;
     const matchKey = `${simpleNormalize(pick.competition || "")}_${simpleNormalize(pick.match || "")}_${dayKey}`;
     
     if (!acc[matchKey]) {
