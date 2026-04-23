@@ -91,7 +91,7 @@ export default async function Home() {
           </div>
 
           <div className="space-y-3">
-            {groupedRecentPicks.map((matchPicks, idx) => (
+            {groupedRecentPicks.map((matchPicks: any, idx) => (
               <MatchGroup key={idx} picks={matchPicks} />
             ))}
           </div>
