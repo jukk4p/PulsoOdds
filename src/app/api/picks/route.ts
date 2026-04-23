@@ -59,6 +59,7 @@ export async function POST(req: NextRequest) {
       if (isDuplicate) {
         return NextResponse.json({ 
           success: true, 
+          pick_id: null,
           message: `Detección de duplicado: El pick para [${normalizedMatch}] con mercado [${normalizedMarket}] ya existe.`, 
         });
       }
@@ -102,7 +103,11 @@ export async function POST(req: NextRequest) {
 
     if (error) throw error;
 
-    return NextResponse.json({ success: true, pick_id: data.id });
+    return NextResponse.json({ 
+      success: true, 
+      pick_id: data.id,
+      message: null 
+    });
   } catch (error: any) {
     console.error('API Error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });

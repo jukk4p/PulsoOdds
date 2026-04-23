@@ -2,28 +2,47 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 import { PickCard } from "@/components/ui/PickCard";
-import { PickRow } from "@/components/ui/PickRow";
-import { calculateStats, cn } from "@/lib/utils";
+import { MatchGroup } from "@/components/ui/MatchGroup";
+import { calculateStats, cn, simpleNormalize } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
 import { TrendingUp, Target, Zap, Trophy } from "lucide-react";
 import Link from "next/link";
 
 async function getData() {
+  // Traemos los últimos 10 picks sin importar el estado para que la home nunca esté vacía
+  // pero priorizamos los pendientes arriba
   const { data: picks, error } = await supabase
     .from('picks')
     .select('*')
-    .eq('status', 'pending')
-    .order('created_at', { ascending: false })
-    .limit(3);
+    .order('status', { ascending: false }) // 'pending' suele ir después de 'won'/'lost' alfabéticamente, pero order por created_at es mejor
+    .order('match_date', { ascending: true })
+    .limit(10);
 
   const { data: allPicks } = await supabase.from('picks').select('*');
   
   const stats = calculateStats(allPicks || []);
-  return { recentPicks: picks || [], stats };
+
+  // Lógica de agrupamiento robusta (igual que en PicksExplorer)
+  const groupedPicks = (picks || []).reduce((acc, pick) => {
+    const d = new Date(pick.match_date);
+    const dayKey = d.toISOString().split('T')[0];
+    const matchKey = `${simpleNormalize(pick.competition || "")}_${simpleNormalize(pick.match || "")}_${dayKey}`;
+    
+    if (!acc[matchKey]) {
+      acc[matchKey] = [];
+    }
+    acc[matchKey].push(pick);
+    return acc;
+  }, {} as Record<string, any[]>);
+
+  return { 
+    groupedRecentPicks: Object.values(groupedPicks), 
+    stats 
+  };
 }
 
 export default async function Home() {
-  const { recentPicks, stats } = await getData();
+  const { groupedRecentPicks, stats } = await getData();
 
   return (
     <div className="bg-deep-black min-h-screen text-white">
@@ -60,7 +79,7 @@ export default async function Home() {
 
       {/* Latest Picks */}
       <section className="py-20 px-6 bg-white/[0.02]">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-[1000px] mx-auto">
           <div className="flex items-end justify-between mb-12">
             <div>
               <h2 className="text-3xl font-black">ÚLTIMOS <span className="text-neon-green">PICKS</span></h2>
@@ -71,9 +90,9 @@ export default async function Home() {
             </Link>
           </div>
 
-          <div className="glass-card neon-border rounded-2xl overflow-hidden divide-y divide-white/5">
-            {recentPicks.map((pick) => (
-              <PickRow key={pick.id} pick={pick} />
+          <div className="space-y-3">
+            {groupedRecentPicks.map((matchPicks, idx) => (
+              <MatchGroup key={idx} picks={matchPicks} />
             ))}
           </div>
         </div>

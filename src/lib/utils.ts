@@ -35,6 +35,18 @@ export function deepNormalize(text: string): string {
 }
 
 /**
+ * Normalización simple para búsquedas: minúsculas y sin tildes
+ */
+export function simpleNormalize(text: string): string {
+  if (!text) return "";
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+}
+
+/**
  * Traduce términos de apuestas del inglés al español
  */
 export function translateBettingTerm(term: string): string {
@@ -49,24 +61,46 @@ export function translateBettingTerm(term: string): string {
     "MONEY LINE": "Ganador del Partido",
     "MATCH RESULT": "Ganador del Partido",
     "1X2": "Ganador del Partido",
+    "VICTORIA LOCAL": "Ganador del Partido",
+    "VICTORIA VISITANTE": "Ganador del Partido",
+    "VICTORIA CASA": "Ganador del Partido",
+    "VICTORIA FUERA": "Ganador del Partido",
     "DOUBLE CHANCE": "Doble Oportunidad",
-    "DRAW NO BET": "Empate Apuesta No Válida",
-    "DNB": "Empate Apuesta No Válida",
-    "SPREAD": "Hándicap Asiático",
+    "DOBLE OPORTUNIDAD LOCAL": "Doble Oportunidad",
+    "DOBLE OPORTUNIDAD VISITANTE": "Doble Oportunidad",
+    "DOBLE OPORTUNIDAD LOCAL O VISITANTE": "Doble Oportunidad",
+    "DRAW NO BET": "Empate no válido",
+    "DNB": "Empate no válido",
+    "EMPATE APUESTA NO VALIDA": "Empate no válido",
+    "EMPATE APUESTA NO VÁLIDA": "Empate no válido",
     "ASIAN HANDICAP": "Hándicap Asiático",
-    "TOTALS": "Total de Goles (Over/Under)",
-    "GOALS OVER/UNDER": "Goles Más/Menos",
-    "ALTERNATIVE TOTAL GOALS": "Total de Goles (Alternativo)",
+    "SPREAD": "Hándicap Asiático",
+    "HDP": "Hándicap Asiático",
+    "EUROPEAN HANDICAP": "Hándicap Europeo",
+    "HANDICAP": "Hándicap Europeo",
+    "TOTALS": "Total de Goles",
+    "GOALS OVER/UNDER": "Total de Goles",
+    "ALTERNATIVE TOTAL GOALS": "Total de Goles",
+    "TEAM TOTAL GOALS HOME": "Total de Goles - Local",
+    "TEAM TOTAL GOALS AWAY": "Total de Goles - Visitante",
+    "EXACT TOTAL GOALS": "Total de Goles (Exacto)",
+    "NUMBER OF GOALS IN MATCH": "Total de Goles",
     "BOTH TEAMS TO SCORE": "Ambos Equipos Anotan",
     "BTTS": "Ambos Equipos Anotan",
+    "ENCUENTRO (SI Y NO)": "Ambos Equipos Anotan",
+    "ENCUENTRO (SÍ Y NO)": "Ambos Equipos Anotan",
     "BTTS - YES": "Ambos Equipos Anotan - SÍ",
     "BTTS - NO": "Ambos Equipos Anotan - NO",
-    "1ST HALF - BOTH TEAMS TO SCORE": "Ambos Marcan (1ª Parte)",
+    "1ST HALF - BOTH TEAMS TO SCORE": "Ambos Equipos Anotan (1ª Parte)",
+    "1º MITAD (SI Y NO)": "Ambos Equipos Anotan (1ª Parte)",
+    "1º MITAD (SÍ Y NO)": "Ambos Equipos Anotan (1ª Parte)",
+    "2ND HALF - BOTH TEAMS TO SCORE": "Ambos Equipos Anotan (2ª Parte)",
+    "2º MITAD (SI Y NO)": "Ambos Equipos Anotan (2ª Parte)",
+    "2º MITAD (SÍ Y NO)": "Ambos Equipos Anotan (2ª Parte)",
     "HALF TIME RESULT": "Resultado al Descanso",
     "SPREAD HT": "Hándicap Asiático (1ª Parte)",
     "TOTALS HT": "Total de Goles (1ª Parte)",
     "EUROPEAN HANDICAP": "Hándicap Europeo",
-    "EXACT TOTAL GOALS": "Total Exacto de Goles",
     "NUMBER OF GOALS IN MATCH": "Número de Goles",
     
     // Córners
@@ -103,8 +137,8 @@ export function translateBettingTerm(term: string): string {
     "PLAYER TO SCORE OR ASSIST": "Gol o Asistencia (Jugador)",
     
     // Otros / Estadísticas
-    "TEAM TOTAL GOALS HOME": "Goles Local (O/U)",
-    "TEAM TOTAL GOALS AWAY": "Goles Visitante (O/U)",
+    "TEAM TOTAL GOALS HOME": "Total de Goles - Local",
+    "TEAM TOTAL GOALS AWAY": "Total de Goles - Visitante",
     "MATCH SHOTS": "Remates Totales",
     "MATCH SHOTS ON TARGET": "Remates a Puerta Totales",
     "MATCH OFFSIDES": "Fueras de Juego",
@@ -113,6 +147,8 @@ export function translateBettingTerm(term: string): string {
     "FIRST 10 MINUTES (00:00 - 09:59)": "Primeros 10 Minutos",
     "OVER": "Más de",
     "UNDER": "Menos de",
+    "EXACTLY": "Exactamente",
+    "EXACT": "Exactamente",
     "DRAW": "Empate",
     "SÍ": "SÍ",
     "NO": "NO"
@@ -130,11 +166,13 @@ export function translateBettingTerm(term: string): string {
     [/(.*)\s+GANARÁ EN LA PRIMERA PARTE/gi, "$1 gana 1ª Mitad"],
     [/(.*)\s+(VENCERÁ|GANARÁ|GANA)\s+(EL PARTIDO|EL|PARTIDO)$/gi, "$1 gana"],
     [/.*HAN MOSTRADO PARIDAD EN ENCUENTROS ANTERIORES.*/gi, "Empate"],
+    [/\bDRAW OR (.*)/gi, "Empate o $1"],
+    [/(.*) OR DRAW\b/gi, "$1 o Empate"],
   ];
 
   for (const [pattern, replacement] of complexPatterns) {
     if (pattern.test(translated)) {
-      return translated.replace(pattern, replacement).trim();
+      translated = translated.replace(pattern, replacement).trim();
     }
   }
 
@@ -144,7 +182,8 @@ export function translateBettingTerm(term: string): string {
     "No": "No",
     "Draw": "Empate",
     "Home": "Local",
-    "Away": "Visitante"
+    "Away": "Visitante",
+    "or": "o"
   };
 
   Object.entries(commonTerms).forEach(([eng, esp]) => {
@@ -195,20 +234,43 @@ const leagueDictionary: Record<string, string> = {
 };
 
 /**
- * Mapa de logos de ligas para forzar el uso de logos locales si la API manda basura
+ * Mapa de logos de ligas usando URLs directas de Flashscore (Diccionario Maestro)
  */
 export const leagueLogoMap: Record<string, string> = {
-  "ESPAÑA - LALIGA": "/logos/leagues/laliga.png",
-  "ESPAÑA - LALIGA HYPERMOTION": "/logos/leagues/laliga_2.png",
-  "INGLATERRA - PREMIER LEAGUE": "/logos/leagues/premier.png",
-  "ITALIA - SERIE A": "/logos/leagues/serie_a.png",
-  "ALEMANIA - BUNDESLIGA": "/logos/leagues/bundesliga.png",
-  "FRANCIA - LIGUE 1": "/logos/leagues/ligue_1.png",
-  "PAÍSES BAJOS - EREDIVISIE": "https://media.api-sports.io/football/leagues/88.png",
-  "CHAMPIONS LEAGUE": "/logos/leagues/champions.png",
-  "EUROPA LEAGUE": "/logos/leagues/europa_league.png",
-  "CONFERENCE LEAGUE": "/logos/leagues/conference.png",
+  "laliga": "https://static.flashscore.com/res/image/data/6aNYx0jD-A3tOPy9B.png",
+  "premier league": "https://static.flashscore.com/res/image/data/423YHekd-UZ1TZUJe.png",
+  "bundesliga": "https://static.flashscore.com/res/image/data/fqltz6CO-4ATnefbq.png",
+  "serie a": "https://static.flashscore.com/res/image/data/rFHMayEO-2exwJQks.png",
+  "ligue 1": "https://static.flashscore.com/res/image/data/tOAXV6hU-QJIQNuDK.png",
+  "eredivisie": "https://static.flashscore.com/res/image/data/tUREAsfU-GlPCPH4g.png",
+  "laliga hypermotion": "https://static.flashscore.com/res/image/data/pKR6BlXI-ldSUHsCQ.png",
+  "championship": "https://static.flashscore.com/res/image/data/4ADJttRp-GEd5kOd6.png",
+  "2. bundesliga": "https://static.flashscore.com/res/image/data/ryRxh88j-ziwIGcqp.png",
+  "serie b": "https://static.flashscore.com/res/image/data/4U93rbmd-rTQVhPCF.png",
+  "ligue 2": "https://static.flashscore.com/res/image/data/IHwVm9ld-G2ORd69c.png",
+  "conference league": "https://static.flashscore.com/res/image/data/6a9THkA7-fmGCnzrf.png",
+  "europa league": "https://static.flashscore.com/res/image/data/lxUusmmd-nyYh4pi6.png",
+  "champions league": "https://static.flashscore.com/res/image/data/fNS5fTmC-WvvSE8Dm.png",
+  "copa sul-sudeste": "https://static.flashscore.com/res/image/data/6o8mQjjd-xlq6J1Ve.png",
+  "serie a betano": "https://static.flashscore.com/res/image/data/6o8mQjjd-xlq6J1Ve.png",
 };
+
+/**
+ * Obtiene el logo de la liga de forma robusta
+ */
+export function getLeagueLogo(competition: string | undefined, apiLogo?: string): string {
+  if (!competition) return apiLogo || "/logos/placeholder.png";
+  
+  const normalized = simpleNormalize(competition);
+  const cleanName = normalized.includes(':') ? normalized.split(':').pop()?.trim() : normalized;
+
+  // Búsqueda por coincidencia parcial en el mapa
+  const logoKey = Object.keys(leagueLogoMap).find(key => 
+    cleanName?.includes(key) || key.includes(cleanName || "")
+  );
+
+  return logoKey ? leagueLogoMap[logoKey] : (apiLogo || "/logos/placeholder.png");
+}
 
 /**
  * Traduce y normaliza nombres de ligas y competiciones.
@@ -270,11 +332,27 @@ export function normalizeOdds(odds: string | number | null | undefined): number 
   return oddsNum;
 }
 
-export function normalizeBettingPick(text: string): string {
+export function normalizeBettingPick(text: string, match?: string): string {
   if (!text) return text;
   
   let normalized = translateBettingTerm(text);
   normalized = normalized.replace(/\((?:HDP|H\u00C1NDICAP|HANDICAP|H\u00C1ND)?\s*([+-]?[\d.]+)\)/gi, '$1');
+  
+  // Si tenemos el contexto del partido, normalizamos los nombres de los equipos en el pick
+  if (match && match.includes(' vs ')) {
+    const [home, away] = match.split(/\s+vs\s+/i);
+    const cleanHome = normalizeTeamName(home);
+    const cleanAway = normalizeTeamName(away);
+    
+    // Reemplazamos nombres completos si aparecen en el pick
+    normalized = normalized.replace(new RegExp(home.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), cleanHome);
+    normalized = normalized.replace(new RegExp(away.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), cleanAway);
+    
+    // También manejamos LOCAL/VISITANTE
+    normalized = normalized.replace(/\b(LOCAL|HOME)\b/gi, cleanHome);
+    normalized = normalized.replace(/\b(VISITANTE|AWAY|VISITOR)\b/gi, cleanAway);
+  }
+
   normalized = normalized.replace(/\s+/g, ' ').trim();
   
   const noise = [
