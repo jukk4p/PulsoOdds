@@ -9,39 +9,41 @@ import { TrendingUp, Target, Zap, Trophy } from "lucide-react";
 import Link from "next/link";
 
 async function getData() {
-  // Traemos los últimos 10 picks sin importar el estado para que la home nunca esté vacía
-  // pero priorizamos los pendientes arriba
-  const { data: picks, error } = await supabase
+  // Traemos picks pendientes con cuota alta, ordenados por fecha de partido
+  const { data: picks } = await supabase
     .from('picks')
     .select('*')
-    .order('status', { ascending: false }) // 'pending' suele ir después de 'won'/'lost' alfabéticamente, pero order por created_at es mejor
+    .eq('status', 'pending')
+    .gte('odds', 1.50)
     .order('match_date', { ascending: true })
-    .limit(10);
+    .limit(30); // traemos más de los necesarios para filtrar top picks y luego limitar grupos
 
   const { data: allPicks } = await supabase.from('picks').select('*');
-  
   const stats = calculateStats(allPicks || []);
 
-  // Lógica de agrupamiento robusta (igual que en PicksExplorer)
-  const groupedPicks = (picks || []).reduce((acc, pick) => {
+  // Filtrar solo top picks: confianza >= 85 o stake >= 8.5
+  const topPicks = (picks || []).filter(p =>
+    (p.confianza != null && p.confianza >= 85) || (p.stake != null && p.stake >= 8.5)
+  );
+
+  // Lógica de agrupamiento robusta — igual que en PicksExplorer
+  const groupedPicks = topPicks.reduce((acc, pick) => {
     const d = new Date(pick.match_date);
     const year = d.getFullYear();
     const month = String(d.getMonth() + 1).padStart(2, '0');
     const day = String(d.getDate()).padStart(2, '0');
     const dayKey = `${year}-${month}-${day}`;
-    const matchKey = `${simpleNormalize(pick.competition || "")}_${simpleNormalize(pick.match || "")}_${dayKey}`;
+    const matchKey = `${simpleNormalize(pick.match || "")}_${dayKey}`;
     
-    if (!acc[matchKey]) {
-      acc[matchKey] = [];
-    }
+    if (!acc[matchKey]) acc[matchKey] = [];
     acc[matchKey].push(pick);
     return acc;
   }, {} as Record<string, any[]>);
 
-  return { 
-    groupedRecentPicks: Object.values(groupedPicks), 
-    stats 
-  };
+  // Limitar a los primeros 4 partidos agrupados
+  const groupedRecentPicks = Object.values(groupedPicks).slice(0, 4);
+
+  return { groupedRecentPicks, stats };
 }
 
 export default async function Home() {
