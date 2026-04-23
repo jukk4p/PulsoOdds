@@ -32,12 +32,12 @@ export default function StandingsPage() {
     async function fetchStandings() {
       setLoading(true);
       try {
-        const res = await fetch('/standings.json');
-        const allData = await res.json();
-        const filtered = allData.filter((item: any) => item.liga === activeLeague);
-        setStandings(filtered);
+        const res = await fetch(`/api/standings?league=${encodeURIComponent(activeLeague)}`);
+        const data = await res.json();
+        setStandings(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("Error fetching standings:", err);
+        setStandings([]);
       } finally {
         setLoading(false);
       }
