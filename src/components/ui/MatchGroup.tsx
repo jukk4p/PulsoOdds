@@ -55,7 +55,7 @@ export function MatchGroup({ picks, selectedPickIds = [], onTogglePick }: MatchG
         <div className="flex flex-col md:grid md:grid-cols-[180px_1fr_140px] items-stretch md:items-center px-3 md:px-6 py-2 md:py-3 border-b border-white/[0.03] bg-white/[0.01] gap-2 md:gap-0">
           
           {/* MOBILE HEADER BAR: League Only */}
-          <div className="md:hidden flex items-center justify-start w-full mb-2">
+          <div className="md:hidden flex items-center justify-center w-full mb-2">
             <div className="flex items-center gap-2">
               <div className="w-5 h-5 rounded bg-white/90 flex items-center justify-center p-0.5 shadow-sm shrink-0">
                 <img src={getLeagueLogo(firstPick.competition, firstPick.competition_logo)} alt="" className="w-full h-full object-contain" />
