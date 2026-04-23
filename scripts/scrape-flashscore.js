@@ -10,17 +10,19 @@ const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL;
 const BASE_URL = "https://www.flashscore.es/futbol";
 
 const LEAGUES = [
-  { name: "LaLiga EA Sports", slug: "espana/laliga-ea-sports", id: "140" },
-  { name: "Premier League", slug: "inglaterra/premier-league", id: "39" },
-  { name: "Bundesliga", slug: "alemania/bundesliga", id: "78" },
-  { name: "Serie A", slug: "italia/serie-a", id: "135" },
-  { name: "Ligue 1", slug: "francia/ligue-1", id: "61" },
-  { name: "Eredivisie", slug: "paises-bajos/eredivisie", id: "88" },
-  { name: "LaLiga Hypermotion", slug: "espana/laliga-hypermotion", id: "141" },
-  { name: "Championship", slug: "inglaterra/championship", id: "40" },
-  { name: "2. Bundesliga", slug: "alemania/2-bundesliga", id: "79" },
-  { name: "Serie B", slug: "italia/serie-b", id: "136" },
-  { name: "Ligue 2", slug: "francia/ligue-2", id: "62" }
+  { name: "LaLiga EA Sports", apiName: "Spain - LaLiga", slug: "espana/laliga-ea-sports", id: "140" },
+  { name: "Premier League", apiName: "England - Premier League", slug: "inglaterra/premier-league", id: "39" },
+  { name: "Bundesliga", apiName: "Germany - Bundesliga", slug: "alemania/bundesliga", id: "78" },
+  { name: "Serie A", apiName: "Italy - Serie A", slug: "italia/serie-a", id: "135" },
+  { name: "Ligue 1", apiName: "France - Ligue 1", slug: "francia/ligue-1", id: "61" },
+  { name: "Eredivisie", apiName: "Netherlands - Eredivisie", slug: "paises-bajos/eredivisie", id: "88" },
+  { name: "LaLiga Hypermotion", apiName: "Spain - LaLiga2", slug: "espana/laliga-hypermotion", id: "141" },
+  { name: "Championship", apiName: "England - Championship", slug: "inglaterra/championship", id: "40" },
+  { name: "2. Bundesliga", apiName: "Germany - 2. Bundesliga", slug: "alemania/2-bundesliga", id: "79" },
+  { name: "Serie B", apiName: "Italy - Serie B", slug: "italia/serie-b", id: "136" },
+  { name: "Ligue 2", apiName: "France - Ligue 2", slug: "francia/ligue-2", id: "62" },
+  { name: "Serie A Betano / Brasil", apiName: "Brazil - Brasileiro Serie A", slug: "brasil/serie-a-betano", id: "325" },
+  { name: "Flashscore.com MLS", apiName: "USA - MLS", slug: "usa/mls", id: "330" }
 ];
 
 // Mapeo dinámico desde el diccionario maestro
@@ -46,59 +48,82 @@ function loadTeamDictionary() {
 
     const content = fs.readFileSync(dictPath, 'utf8');
     
-    // 1. Extraer logos de ligas (están sobre los ###)
+    // 1. Extraer logos de ligas
     const leagueRegex = /### (.*?)\n!\[Logo .*?\]\((.*?)\)/g;
     let match;
     while ((match = leagueRegex.exec(content)) !== null) {
         const name = match[1].trim();
         const logo = match[2].trim();
-        // Mapeamos el nombre de la liga (limpio) al logo
         LEAGUE_MAP[normalize(name)] = logo;
-        // También por si acaso el nombre exacto
         if (name === "LaLiga EA Sports") LEAGUE_MAP[normalize("La Liga")] = logo;
         if (name === "LaLiga Hypermotion") LEAGUE_MAP[normalize("Segunda División")] = logo;
     }
 
-    // 2. Extraer mapeo de equipos
+    // 2. Extraer mapeo de equipos por liga
+    let currentLeague = "default";
     const lines = content.split('\n');
     lines.forEach(line => {
+      if (line.startsWith('### ')) {
+          currentLeague = normalize(line.replace('###', '').trim());
+          if (!TEAM_MAP[currentLeague]) TEAM_MAP[currentLeague] = {};
+      }
+      
       if (line.includes('|') && !line.includes('---') && !line.includes('Origen Sheets')) {
-        const parts = line.split('|').map(p => p.trim()).filter(p => p !== '');
-        if (parts.length >= 4) {
-          const sheetName = parts[0]; // Origen Sheets
-          let apiFull = parts[1];      // Puente API (ID)
-          const publicName = parts[2].replace(/\*\*/g, ''); // Nombre Público
-          const logoPart = parts[3];   // Logo: ![Logo](url)
+        // Ignorar el primer y último elemento vacío del split generado por los pipes '|' en los extremos
+        const rawParts = line.split('|');
+        const parts = rawParts.slice(1, -1).map(p => p.trim());
+        
+        if (parts.length >= 3) {
+          const sheetName = parts[0]; 
+          let apiFull = parts[1];      
+          const publicName = parts[2].replace(/\*\*/g, ''); 
+          const logoPart = parts[3] || "";   
           
           const logoMatch = logoPart.match(/\((.*?)\)/);
           const logoUrl = logoMatch ? logoMatch[1] : "";
 
+          // Extraer nombre limpio de la API (quitar IDs si existen)
           const apiName = (apiFull && apiFull !== '-') 
             ? apiFull.replace(/\s*\(\d+\)\s*$/, '').trim()
             : sheetName;
             
           const data = { apiName, publicName, logo: logoUrl };
           
-          TEAM_MAP[normalize(sheetName)] = data;
-          TEAM_MAP[normalize(publicName)] = data;
+          if (!TEAM_MAP[currentLeague]) TEAM_MAP[currentLeague] = {};
+          
+          // Registramos TODAS las variantes posibles como llaves de búsqueda DENTRO DE SU LIGA
+          if (sheetName) TEAM_MAP[currentLeague][normalize(sheetName)] = data;
+          if (publicName) TEAM_MAP[currentLeague][normalize(publicName)] = data;
+          if (apiName) TEAM_MAP[currentLeague][normalize(apiName)] = data;
+          
+          // Caso especial para nombres comunes que Flashscore suele abreviar
+          if (apiName.includes("Real ")) TEAM_MAP[currentLeague][normalize(apiName.replace("Real ", ""))] = data;
         }
       }
     });
-    console.log(`✅ Diccionario cargado: ${Object.keys(TEAM_MAP).length} equipos y ${Object.keys(LEAGUE_MAP).length} ligas.`);
+    console.log(`✅ Diccionario cargado: ${Object.keys(TEAM_MAP).length} variantes registradas.`);
   } catch (err) {
     console.error("❌ Error cargando diccionario:", err.message);
   }
 }
 
-function getTeamData(name) {
+function getTeamData(name, leagueName) {
   const norm = normalize(name);
-  if (TEAM_MAP[norm]) return TEAM_MAP[norm];
+  const leagueNorm = normalize(leagueName);
   
-  for (const variant in TEAM_MAP) {
-      if (variant.includes(norm) || norm.includes(variant)) {
-          return TEAM_MAP[variant];
+  const leagueDict = TEAM_MAP[leagueNorm] || {};
+
+  // 1. Match exacto en su liga
+  if (leagueDict[norm]) return leagueDict[norm];
+  
+  // 2. Intento de match por contención DENTRO DE SU LIGA
+  for (const variant in leagueDict) {
+      if (variant.length > 4 && (variant.includes(norm) || norm.includes(variant))) {
+          return leagueDict[variant];
       }
   }
+  
+  // 3. Fallback: Si no existe en la liga, usamos el original
   return { apiName: name, publicName: name, logo: "" };
 }
 
@@ -130,15 +155,26 @@ async function scrapeLeague(context, league) {
         // 0: rank, 1: team, 2: pj, 3: pg, 4: pe, 5: pp, 6: goles, 7: diff, 8: pts, 9: forma
         
         // Extraer racha (Forma)
-        const formCell = row.querySelector('.ui-table__cell--form, .table__cell--form');
+        // Extraer racha (Forma) - Lógica blindada tipo Scraper Pro
         let form = "";
-        if (formCell) {
-            const dots = formCell.querySelectorAll('.ui-table__cell--form-dot, a > div');
-            dots.forEach(dot => {
-                const text = dot.innerText.trim();
-                if (text === 'W' || text === 'G') form += 'G';
+        const rowText = row.innerText.trim();
+        const formMatch = rowText.match(/\b([GEPVEDWL\?](?:\s+[GEPVEDWL\?])*)\s*$/i);
+        
+        if (formMatch) {
+            // Método 1: Regex sobre el texto de la fila (limpia saltos de línea y unifica letras)
+            form = formMatch[1].replace(/\s+/g, '').toUpperCase()
+                     .replace(/W|V/g, 'G')
+                     .replace(/D/g, 'E')
+                     .replace(/L/g, 'P');
+        } else {
+            // Método 2: Fallback por selectores actualizados de Flashscore
+            const icons = row.querySelectorAll('[class*="formIcon"], [class*="tableCellFormIcon"]');
+            icons.forEach(icon => {
+                const text = icon.innerText.trim().toUpperCase();
+                if (text === 'W' || text === 'G' || text === 'V') form += 'G';
                 else if (text === 'D' || text === 'E') form += 'E';
                 else if (text === 'L' || text === 'P') form += 'P';
+                else if (text === '?') form += '?';
             });
         }
 
@@ -159,13 +195,15 @@ async function scrapeLeague(context, league) {
     await page.close();
     
     return data.map(r => {
-      const teamData = getTeamData(r.team);
+      const teamData = getTeamData(r.team, league.name);
+      const finalLeagueName = league.apiName || league.name;
+      
       return {
         ...r,
         team: teamData.apiName,
         publicName: teamData.publicName,
         teamLogo: teamData.logo,
-        league: league.name
+        league: finalLeagueName
       };
     });
 
