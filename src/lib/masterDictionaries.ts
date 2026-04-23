@@ -147,8 +147,7 @@ export const MASTER_MARKETS: Record<string, string> = {
   "Player To Score or Assist": "Gol o Asistencia (Jugador)",
 
   // Stats
-  "TEAM TOTAL GOALS HOME": "Total de Goles - Local",
-  "TEAM TOTAL GOALS AWAY": "Total de Goles - Visitante",
+
   "MATCH SHOTS": "Remates Totales",
   "MATCH SHOTS ON TARGET": "Remates a Puerta Totales",
   "MATCH OFFSIDES": "Fueras de Juego",
