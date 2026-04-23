@@ -24,17 +24,17 @@ const LEAGUE_COLORS: Record<string, string> = {
 };
 // Mapeo de nombres de UI → nombres exactos en Supabase
 const LEAGUE_DB_NAMES: Record<string, string> = {
-  "LaLiga EA Sports":    "LaLiga",
-  "Premier League":      "Premier League",
-  "Bundesliga":          "Bundesliga",
-  "Serie A":             "Serie A",
-  "Ligue 1":             "Ligue 1",
-  "Eredivisie":          "Eredivisie",
+  "LaLiga EA Sports":    "Spain - LaLiga",
+  "Premier League":      "England - Premier League",
+  "Bundesliga":          "Germany - Bundesliga",
+  "Serie A":             "Italy - Serie A",
+  "Ligue 1":             "France - Ligue 1",
+  "Eredivisie":          "Netherlands - Eredivisie",
   "LaLiga Hypermotion":  "Segunda División",
-  "Championship":        "Championship",
-  "2. Bundesliga":       "2. Bundesliga",
-  "Serie B":             "Serie B",
-  "Ligue 2":             "Ligue 2",
+  "Championship":        "England - Championship",
+  "2. Bundesliga":       "Germany - 2. Bundesliga",
+  "Serie B":             "Italy - Serie B",
+  "Ligue 2":             "France - Ligue 2",
 };
 
 export default function StandingsPage() {
