@@ -62,3 +62,10 @@ PulsoOdds v2 — ODDS-API.IO + Excel + Gemini (1).json
 /scratch/
 /scripts/*.js
 !/scripts/scrape-flashscore.js
+
+# Basura local y temporales
+Filtro Calidad Final.json
+apieventos.json
+*.rar
+Scraper pro/
+public/standings.json
