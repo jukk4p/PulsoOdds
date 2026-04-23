@@ -43,7 +43,7 @@ export function MatchGroup({ picks, selectedPickIds = [], onTogglePick }: MatchG
   const awayName = formatTeamName(awayRaw || "Visitante");
 
   return (
-    <div className="group relative flex flex-col w-full mb-4 transition-all duration-500 px-4 md:px-0">
+    <div className="group relative flex flex-col w-full mb-2 transition-all duration-500 px-4 md:px-0">
       <div className={cn(
         "relative flex flex-col w-full rounded-[20px] overflow-hidden transition-all duration-300",
         "bg-[#12141c]/40 backdrop-blur-md",
@@ -52,7 +52,7 @@ export function MatchGroup({ picks, selectedPickIds = [], onTogglePick }: MatchG
       )}>
         
         {/* HEADER: EVENT INFO */}
-        <div className="flex flex-col md:grid md:grid-cols-[220px_1fr_160px] items-stretch md:items-center px-4 md:px-8 py-3 md:py-5 border-b border-white/[0.03] bg-white/[0.01] gap-3 md:gap-0">
+        <div className="flex flex-col md:grid md:grid-cols-[180px_1fr_140px] items-stretch md:items-center px-3 md:px-6 py-2 md:py-3 border-b border-white/[0.03] bg-white/[0.01] gap-2 md:gap-0">
           
           {/* MOBILE HEADER BAR: League Only */}
           <div className="md:hidden flex items-center justify-start w-full mb-2">
@@ -156,7 +156,7 @@ function SelectionRow({ pick, isSelected, onToggle }: { pick: Pick, isSelected: 
     <div className="flex flex-col w-full">
       <div 
         className={cn(
-          "flex items-center justify-between px-4 md:px-8 py-2.5 md:py-5 transition-all cursor-pointer group/row",
+          "flex items-center justify-between px-3 md:px-6 py-1.5 md:py-3 transition-all cursor-pointer group/row",
           isSelected ? "bg-white/[0.04]" : "hover:bg-white/[0.01]"
         )}
         onClick={() => setIsExpanded(!isExpanded)}
