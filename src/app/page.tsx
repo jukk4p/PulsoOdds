@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-import { PickCard } from "@/components/ui/PickCard";
+
 import { MatchGroup } from "@/components/ui/MatchGroup";
 import { calculateStats, cn, simpleNormalize } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
