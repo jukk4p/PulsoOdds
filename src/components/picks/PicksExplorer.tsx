@@ -5,6 +5,19 @@ import { MatchGroup } from "@/components/ui/MatchGroup";
 import { cn, translateLeagueName, simpleNormalize } from "@/lib/utils";
 import { BetSlip } from "./BetSlip";
 
+/**
+ * Normalización agresiva para la clave de agrupación de partidos.
+ * Elimina sufijos de club (FC, CF, AFC...) y unifica separadores (vs, -, |)
+ * para que picks de distintas fuentes siempre agrupen en la misma tarjeta.
+ */
+function normalizeMatchKey(match: string): string {
+  return simpleNormalize(match)
+    .replace(/\b(fc|cf|afc|sc|ac|fk|sk|rc|cd|rcd|sd|ud|cp|ca|as|ss|ssc|ac|bsc|vfb|vfl|tsv|sv|sg|rsc|ksc|kv|ck|fk|nk|ok|hsk|zsk|msk)\b/g, '')
+    .replace(/\s*(vs\.?|-|\|)\s*/g, ' vs ')  // unifica separadores
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 interface Pick {
   id: string;
   sport: string;
@@ -118,13 +131,13 @@ export function PicksExplorer({ initialPicks }: PicksExplorerProps) {
         weekday: 'long', day: 'numeric', month: 'long' 
       });
       
-      // Clave robusta: usamos fecha LOCAL (no ISO UTC) para evitar desfase de timezone
-      // y normalizamos competition + match con simpleNormalize
+      // Clave robusta: usamos SOLO el partido + fecha local.
+      // Ignoramos competition porque puede venir en distintos idiomas/formatos según el bot.
       const year = d.getFullYear();
       const month = String(d.getMonth() + 1).padStart(2, '0');
       const day = String(d.getDate()).padStart(2, '0');
       const dayKey = `${year}-${month}-${day}`;
-      const matchKey = `${simpleNormalize(p.competition || "")}_${simpleNormalize(p.match || "")}_${dayKey}`;
+      const matchKey = `${normalizeMatchKey(p.match || "")}_${dayKey}`;
       
       if (!groups[date]) groups[date] = {};
       if (!groups[date][matchKey]) groups[date][matchKey] = [];
