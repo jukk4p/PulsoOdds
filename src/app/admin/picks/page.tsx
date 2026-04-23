@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Trash2, CheckCircle, XCircle, MinusCircle, Plus, Search, ShieldCheck, TrendingUp, Sparkles, Pencil, X, Save, AlertCircle } from 'lucide-react';
-import { cn, normalizeBettingPick, translateBettingTerm, substituteTeamNames, translateLeagueName, formatMatchName, formatTeamName, deepNormalize } from '@/lib/utils';
+import { cn, normalizeBettingPick, translateBettingTerm, substituteTeamNames, translateLeagueName, formatMatchName, formatTeamName, deepNormalize, simpleNormalize } from '@/lib/utils';
 
 // ==========================================
 // COMPONENTE: MODAL DE EDICIÓN TOTAL
