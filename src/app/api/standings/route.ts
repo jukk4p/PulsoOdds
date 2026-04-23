@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
       .order('pos', { ascending: true });
 
     if (league) {
-      query = query.eq('liga', league);
+      query = query.eq('league', league);
     }
 
     const { data, error } = await query;
