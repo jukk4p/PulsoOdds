@@ -34,7 +34,7 @@ async function getData() {
     return acc;
   }, {} as Record<string, any[]>);
 
-  const groupedRecentPicks = Object.values(groupedPicks).slice(0, 4);
+  const groupedRecentPicks = Object.values(groupedPicks).slice(0, 4) as any[][];
   return { groupedRecentPicks, stats };
 }
 
