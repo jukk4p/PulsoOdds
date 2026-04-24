@@ -6,6 +6,7 @@ import { MatchGroup } from "@/components/ui/MatchGroup";
 import { calculateStats, cn, simpleNormalize } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
 import { StatCard } from "@/components/ui/StatCard";
+import { TopPicksSection } from "@/components/picks/TopPicksSection";
 import Link from "next/link";
 
 async function getData() {
@@ -135,17 +136,8 @@ export default async function Home() {
             </Link>
           </div>
 
-          <div className="space-y-4">
-            {groupedRecentPicks.length > 0 ? (
-              groupedRecentPicks.map((matchPicks: any, idx) => (
-                <MatchGroup key={idx} picks={matchPicks} />
-              ))
-            ) : (
-              <div className="py-20 text-center border border-dashed border-border-base rounded-xl">
-                <p className="text-text-muted font-bold uppercase tracking-widest text-xs">No hay top picks disponibles ahora</p>
-              </div>
-            )}
-          </div>
+          <TopPicksSection groupedRecentPicks={groupedRecentPicks} />
+
         </div>
       </section>
     </div>

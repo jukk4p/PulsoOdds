@@ -40,6 +40,7 @@ interface Pick {
   razonamiento?: string;
   home_slug?: string;
   away_slug?: string;
+  is_top?: boolean;
 }
 
 interface PicksExplorerProps {
@@ -64,7 +65,7 @@ export function PicksExplorer({ initialPicks }: PicksExplorerProps) {
     // Definimos los criterios de cada mercado para reusar en el conteo
     const getMarketMatches = (marketId: string, picks: Pick[]) => {
       if (marketId === "all") return picks;
-      if (marketId === "top") return picks.filter(p => (normalizeOdds(p.odds) >= 1.50) && ((p.confianza || 0) >= 85 || (p.stake || 0) >= 8.5));
+      if (marketId === "top") return picks.filter(p => p.is_top || ((normalizeOdds(p.odds) >= 1.50) && ((p.confianza || 0) >= 85 || (p.stake || 0) >= 8.5)));
       
       const search = marketId.toLowerCase();
       return picks.filter(p => {
@@ -100,7 +101,7 @@ export function PicksExplorer({ initialPicks }: PicksExplorerProps) {
     let result = initialPicks;
 
     if (selectedMarket === "top") {
-      result = result.filter(p => (normalizeOdds(p.odds) >= 1.50) && ((p.confianza || 0) >= 85 || (p.stake || 0) >= 8.5));
+      result = result.filter(p => p.is_top || ((normalizeOdds(p.odds) >= 1.50) && ((p.confianza || 0) >= 85 || (p.stake || 0) >= 8.5)));
     } else if (selectedMarket !== "all") {
       const search = selectedMarket.toLowerCase();
       result = result.filter(p => {

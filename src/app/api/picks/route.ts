@@ -92,6 +92,7 @@ export async function POST(req: NextRequest) {
       league_logo: body.league_logo || '',
       home_slug: createSlug(normalizedMatch.split(/\s+vs\s+/i)[0]),
       away_slug: createSlug(normalizedMatch.split(/\s+vs\s+/i)[1]),
+      is_top: (parseFloat(odds) >= 1.50) && ((parseInt(body.confianza) || 70) >= 85 || (parseInt(stake) || 0) >= 8.5),
       source: 'n8n-bot',
       status: 'pending',
       published_at: new Date().toISOString(),
