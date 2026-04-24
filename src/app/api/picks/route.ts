@@ -117,11 +117,28 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// GET for basic aggregation (admin metrics)
+// GET for basic aggregation and external tool consumption (n8n)
 export async function GET(req: NextRequest) {
-  const { data, error } = await supabaseAdmin
+  const searchParams = req.nextUrl.searchParams;
+  const status = searchParams.get('status');
+  const isTop = searchParams.get('is_top');
+  const limit = searchParams.get('limit') || '50';
+
+  let query = supabaseAdmin
     .from('picks')
-    .select('*');
+    .select('*')
+    .order('match_date', { ascending: true })
+    .limit(parseInt(limit));
+
+  if (status) {
+    query = query.eq('status', status);
+  }
+
+  if (isTop === 'true') {
+    query = query.eq('is_top', true);
+  }
+
+  const { data, error } = await query;
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
