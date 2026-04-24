@@ -30,29 +30,18 @@ export function BankrollManager() {
 
   return (
     <div className="relative">
-      {/* Sleek Integrated Control */}
-      <div className="flex items-center bg-bg-surface/40 backdrop-blur-xl border border-white/5 rounded-sm overflow-hidden shadow-2xl transition-all duration-300 hover:border-accent/30 group">
-        <div className="flex items-center gap-3 px-4 py-2.5 border-r border-white/5">
-          <div className="p-1.5 rounded-full bg-accent/10 group-hover:bg-accent/20 transition-colors">
-            <Wallet className="w-3.5 h-3.5 text-accent" />
-          </div>
-          <div className="flex flex-col min-w-[80px]">
-            <span className="text-[8px] font-black uppercase tracking-[0.2em] text-text-muted/60 leading-none mb-1">BANKROLL</span>
-            <span className="text-xs font-black text-text-primary tabular-nums leading-none">
-              {bankroll ? `${Number(bankroll).toLocaleString()}€` : "--- €"}
-            </span>
-          </div>
+      <div 
+        className="flex items-center gap-3 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 hover:border-accent/50 transition-all duration-300 group cursor-pointer" 
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <Wallet className="w-3.5 h-3.5 text-accent" />
+        <div className="flex items-center gap-2">
+          <span className="text-[9px] font-black uppercase tracking-widest text-text-muted/60">BANKROLL</span>
+          <span className="text-xs font-black text-text-primary tabular-nums">
+            {bankroll ? `${Number(bankroll).toLocaleString()}€` : "0€"}
+          </span>
         </div>
-
-        <button 
-          onClick={() => setIsOpen(!isOpen)}
-          className={cn(
-            "px-3 py-2.5 transition-all duration-300 hover:bg-white/5",
-            isOpen ? "text-accent" : "text-text-muted"
-          )}
-        >
-          <Settings2 className={cn("w-4 h-4 transition-transform duration-500", isOpen && "rotate-90")} />
-        </button>
+        <Settings2 className={cn("w-3 h-3 text-text-muted/40 group-hover:text-accent transition-all", isOpen && "rotate-90")} />
       </div>
 
       {/* Refined Popover */}
