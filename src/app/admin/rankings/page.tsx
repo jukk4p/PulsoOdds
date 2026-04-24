@@ -99,6 +99,10 @@ export default function AdminRankingsPage() {
     setSaving(null);
   };
 
+  const handleInputChange = (id: string, field: string, value: any) => {
+    setTeams(prev => prev.map(t => t.id === id ? { ...t, [field]: value } : t));
+  };
+
   const saveTeam = async (team: any) => {
     setSaving(team.id);
     const { error } = await supabase
