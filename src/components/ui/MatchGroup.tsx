@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { cn, normalizeOdds, normalizeBettingPick } from "@/lib/utils";
 import { getTeamLogo, getLeagueLogo } from "@/lib/logos";
 import { Zap, Clock, ChevronDown, Calculator } from "lucide-react";
-import { BankrollManager } from "./BankrollManager";
+import { BankrollManager } from "../picks/BankrollManager";
 
 interface Pick {
   id: string;

@@ -5,6 +5,7 @@ import { MatchGroup } from "@/components/ui/MatchGroup";
 import { cn, simpleNormalize } from "@/lib/utils";
 import { CategoryFilter } from "./CategoryFilter";
 import { BetSlip } from "./BetSlip";
+import { BankrollManager } from "./BankrollManager";
 import { Search } from "lucide-react";
 
 function normalizeMatchKey(match: string): string {
@@ -46,6 +47,7 @@ export function PicksExplorer({ initialPicks }: PicksExplorerProps) {
   const [filter, setFilter] = useState<string>("pending");
   const [selectedMarket, setSelectedMarket] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [selectedPickIds, setSelectedPickIds] = useState<string[]>([]);
   
   const normalizeOdds = (odds: any): number => {
@@ -156,35 +158,58 @@ export function PicksExplorer({ initialPicks }: PicksExplorerProps) {
   };
 
   return (
-    <div className="space-y-10">
-      {/* Search Bar Row */}
-      <div className="relative group">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted/30 group-focus-within:text-accent transition-colors" />
-        <input 
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="BUSCAR EQUIPO, LIGA O MERCADO..."
-          className="w-full bg-bg-surface/30 border border-white/5 rounded-lg py-4 pl-12 pr-4 text-[11px] font-black uppercase tracking-widest text-text-primary placeholder:text-text-muted/20 focus:outline-none focus:border-accent/30 transition-all shadow-xl"
-        />
-      </div>
-
-      <div className="flex flex-col gap-6">
-        <CategoryFilter 
-          categories={statsCategories}
-          selectedId={filter}
-          onSelect={setFilter}
-        />
-
-        <div className="py-4 border-t border-white/5">
+    <div className="space-y-6">
+      {/* Row 1: Status & Actions */}
+      <div className="flex items-center justify-start gap-8">
+        <div className="w-auto overflow-hidden">
           <CategoryFilter 
-            categories={marketCategories}
-            selectedId={selectedMarket}
-            onSelect={setSelectedMarket}
+            categories={statsCategories}
+            selectedId={filter}
+            onSelect={setFilter}
           />
         </div>
+        
+        <div className="flex items-center gap-2">
+          {/* Search Toggle */}
+          <button 
+            onClick={() => setIsSearchOpen(!isSearchOpen)}
+            className={cn(
+              "p-2.5 rounded-full border transition-all duration-300",
+              isSearchOpen ? "bg-accent border-accent text-bg-base" : "bg-white/5 border-white/10 text-text-muted hover:border-accent/50"
+            )}
+          >
+            <Search className="w-4 h-4" />
+          </button>
+          
+          <BankrollManager />
+        </div>
       </div>
-    </div>
+
+      {/* Expandable Search Input */}
+      {isSearchOpen && (
+        <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="relative group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text-muted/40 group-focus-within:text-accent transition-colors" />
+            <input 
+              type="text"
+              autoFocus
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="¿QUÉ EVENTO BUSCÁS?..."
+              className="w-full bg-white/5 border border-white/10 rounded-lg py-3 pl-10 pr-4 text-[11px] font-black uppercase tracking-widest text-text-primary placeholder:text-text-muted/20 focus:outline-none focus:border-accent/40 transition-all shadow-2xl"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Row 2: Markets */}
+      <div className="py-4 border-t border-white/5">
+        <CategoryFilter 
+          categories={marketCategories}
+          selectedId={selectedMarket}
+          onSelect={setSelectedMarket}
+        />
+      </div>
 
       {/* Results List */}
       <div className="space-y-16">

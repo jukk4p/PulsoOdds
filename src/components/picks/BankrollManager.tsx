@@ -30,23 +30,20 @@ export function BankrollManager() {
 
   return (
     <div className="relative">
-      <div 
-        className="flex items-center gap-3 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 hover:border-accent/50 transition-all duration-300 group cursor-pointer" 
+      {/* Ghost Icon Trigger */}
+      <button 
         onClick={() => setIsOpen(!isOpen)}
+        className={cn(
+          "p-2.5 rounded-full border transition-all duration-300",
+          isOpen ? "bg-accent border-accent text-bg-base" : "bg-white/5 border-white/10 text-text-muted hover:border-accent/50"
+        )}
       >
-        <Wallet className="w-3.5 h-3.5 text-accent" />
-        <div className="flex items-center gap-2">
-          <span className="text-[9px] font-black uppercase tracking-widest text-text-muted/60">BANKROLL</span>
-          <span className="text-xs font-black text-text-primary tabular-nums">
-            {bankroll ? `${Number(bankroll).toLocaleString()}€` : "0€"}
-          </span>
-        </div>
-        <Settings2 className={cn("w-3 h-3 text-text-muted/40 group-hover:text-accent transition-all", isOpen && "rotate-90")} />
-      </div>
+        <Wallet className="w-4 h-4" />
+      </button>
 
-      {/* Refined Popover */}
+      {/* Popover */}
       {isOpen && (
-        <div className="absolute top-full right-0 mt-3 w-64 bg-[#0D121A] border border-white/10 rounded-lg shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-5 animate-in fade-in zoom-in-95 duration-300 z-[100]">
+        <div className="absolute top-full right-0 mt-3 w-64 bg-bg-surface border border-border-base rounded-lg shadow-2xl p-5 animate-in fade-in zoom-in-95 duration-300 z-[100]">
           <div className="flex items-center gap-3 mb-6">
             <div className="p-2 rounded-sm bg-accent/10 border border-accent/20">
               <Calculator className="w-4 h-4 text-accent" />
