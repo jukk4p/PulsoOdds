@@ -43,7 +43,7 @@ export function MatchGroup({ picks, selectedPickIds = [], onTogglePick }: MatchG
   const awayName = formatTeamName(awayRaw || "Visitante");
 
   return (
-    <div className="group relative flex flex-col w-full mb-2 transition-all duration-500 px-4 md:px-0">
+    <div className="group relative flex flex-col w-full mb-2 transition-all duration-500 px-2 md:px-0">
       <div className={cn(
         "relative flex flex-col w-full rounded-[20px] overflow-hidden transition-all duration-300",
         "bg-[#12141c]/40 backdrop-blur-md",
@@ -52,7 +52,7 @@ export function MatchGroup({ picks, selectedPickIds = [], onTogglePick }: MatchG
       )}>
         
         {/* HEADER: EVENT INFO */}
-        <div className="flex flex-col md:grid md:grid-cols-[180px_1fr_140px] items-stretch md:items-center px-3 md:px-6 py-2 md:py-3 border-b border-white/[0.03] bg-white/[0.01] gap-2 md:gap-0">
+        <div className="flex flex-col md:grid md:grid-cols-[180px_1fr_140px] items-stretch md:items-center px-2 md:px-6 py-2 md:py-3 border-b border-white/[0.03] bg-white/[0.01] gap-2 md:gap-0">
           
           {/* MOBILE HEADER BAR: League Only */}
           <div className="md:hidden flex items-center justify-center w-full mb-2">
@@ -83,9 +83,9 @@ export function MatchGroup({ picks, selectedPickIds = [], onTogglePick }: MatchG
           </div>
 
           {/* COL 2: Teams Center */}
-          <div className="flex items-center justify-center gap-2 md:gap-8 flex-1 min-w-0">
-            <div className="flex items-center gap-2 md:gap-4 flex-1 justify-end min-w-0">
-              <span className="text-xs md:text-sm font-black uppercase text-white/80 tracking-tight text-right line-clamp-2 md:line-clamp-none max-w-[90px] md:max-w-none leading-tight">
+          <div className="flex items-center justify-center gap-1.5 sm:gap-2 md:gap-8 flex-1 min-w-0">
+            <div className="flex items-center gap-1.5 sm:gap-2 md:gap-4 flex-1 justify-end min-w-0">
+              <span className="text-[11px] sm:text-xs md:text-sm font-black uppercase text-white/80 tracking-tight text-right line-clamp-2 md:line-clamp-none leading-tight">
                 {homeName}
               </span>
               {firstPick.home_logo && (
@@ -104,11 +104,11 @@ export function MatchGroup({ picks, selectedPickIds = [], onTogglePick }: MatchG
                 {formattedDateFull}
               </span>
             </div>
-            <div className="flex items-center gap-2 md:gap-4 flex-1 justify-start min-w-0">
+            <div className="flex items-center gap-1.5 sm:gap-2 md:gap-4 flex-1 justify-start min-w-0">
               {firstPick.away_logo && (
                 <img src={firstPick.away_logo} alt="" loading="lazy" decoding="async" className="h-6 w-6 md:h-9 md:w-9 object-contain filter brightness-90 grayscale-[0.2] shrink-0" />
               )}
-              <span className="text-xs md:text-sm font-black uppercase text-white/80 tracking-tight text-left line-clamp-2 md:line-clamp-none max-w-[90px] md:max-w-none leading-tight">
+              <span className="text-[11px] sm:text-xs md:text-sm font-black uppercase text-white/80 tracking-tight text-left line-clamp-2 md:line-clamp-none leading-tight">
                 {awayName}
               </span>
             </div>
@@ -164,7 +164,7 @@ function SelectionRow({ pick, isSelected, onToggle }: { pick: Pick, isSelected: 
     <div className="flex flex-col w-full">
       <div 
         className={cn(
-          "flex items-center justify-between px-3 md:px-6 py-1.5 md:py-3 transition-all cursor-pointer group/row",
+          "flex items-center justify-between px-2 md:px-6 py-1.5 md:py-3 transition-all cursor-pointer group/row",
           isSelected ? "bg-white/[0.04]" : "hover:bg-white/[0.01]"
         )}
         onClick={() => setIsExpanded(!isExpanded)}
