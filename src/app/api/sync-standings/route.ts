@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { normalizeTeamName, normalizeLeagueName } from "@/lib/team-normalization";
+import { createSlug } from "@/lib/utils";
 
 // Configuración de Supabase con Service Role
 const supabase = createClient(
@@ -87,7 +88,8 @@ export async function GET(request: Request) {
           logo: logoUrl,
           pj, g, e, p, dg, pts, zone,
           goals,
-          form
+          form,
+          team_slug: createSlug(teamName)
         }, { 
           onConflict: 'league,team' 
         });

@@ -6,6 +6,7 @@ import { cn, simpleNormalize } from "@/lib/utils";
 import { CategoryFilter } from "./CategoryFilter";
 import { BetSlip } from "./BetSlip";
 import { BankrollManager } from "./BankrollManager";
+import { AnalysisDrawer } from "./AnalysisDrawer";
 import { Search } from "lucide-react";
 
 function normalizeMatchKey(match: string): string {
@@ -37,6 +38,8 @@ interface Pick {
   away_logo?: string;
   competition_logo?: string;
   razonamiento?: string;
+  home_slug?: string;
+  away_slug?: string;
 }
 
 interface PicksExplorerProps {
@@ -49,6 +52,7 @@ export function PicksExplorer({ initialPicks }: PicksExplorerProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [selectedPickIds, setSelectedPickIds] = useState<string[]>([]);
+  const [analysisPick, setAnalysisPick] = useState<any | null>(null);
   
   const normalizeOdds = (odds: any): number => {
     if (typeof odds === 'number') return odds;
@@ -157,6 +161,10 @@ export function PicksExplorer({ initialPicks }: PicksExplorerProps) {
     setSelectedPickIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
   };
 
+  const openAnalysis = (pick: any) => {
+    setAnalysisPick(pick);
+  };
+
   return (
     <div className="space-y-6">
       {/* Row 1: Status & Actions */}
@@ -231,6 +239,7 @@ export function PicksExplorer({ initialPicks }: PicksExplorerProps) {
                     picks={matchPicks} 
                     selectedPickIds={selectedPickIds}
                     onTogglePick={togglePick}
+                    onOpenAnalysis={openAnalysis}
                   />
                 ))}
               </div>
@@ -249,6 +258,12 @@ export function PicksExplorer({ initialPicks }: PicksExplorerProps) {
         picks={initialPicks.filter(p => selectedPickIds.includes(p.id))} 
         onRemove={togglePick} 
         onClear={() => setSelectedPickIds([])} 
+      />
+
+      <AnalysisDrawer 
+        pick={analysisPick}
+        isOpen={!!analysisPick}
+        onClose={() => setAnalysisPick(null)}
       />
     </div>
   );

@@ -29,9 +29,10 @@ interface MatchGroupProps {
   picks: Pick[];
   selectedPickIds?: string[];
   onTogglePick?: (id: string) => void;
+  onOpenAnalysis?: (pick: any) => void;
 }
 
-export function MatchGroup({ picks, selectedPickIds = [], onTogglePick }: MatchGroupProps) {
+export function MatchGroup({ picks, selectedPickIds = [], onTogglePick, onOpenAnalysis }: MatchGroupProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [bankroll, setBankroll] = useState<number | null>(null);
 
@@ -152,6 +153,7 @@ export function MatchGroup({ picks, selectedPickIds = [], onTogglePick }: MatchG
                 pick={pick} 
                 isSelected={selectedPickIds.includes(pick.id)}
                 onToggle={() => onTogglePick?.(pick.id)}
+                onOpenAnalysis={() => onOpenAnalysis?.(pick)}
                 bankroll={bankroll}
               />
             ))}
@@ -162,7 +164,19 @@ export function MatchGroup({ picks, selectedPickIds = [], onTogglePick }: MatchG
   );
 }
 
-function SelectionRow({ pick, isSelected, onToggle, bankroll }: { pick: Pick, isSelected: boolean, onToggle: () => void, bankroll: number | null }) {
+function SelectionRow({ 
+  pick, 
+  isSelected, 
+  onToggle, 
+  onOpenAnalysis,
+  bankroll 
+}: { 
+  pick: Pick, 
+  isSelected: boolean, 
+  onToggle: () => void, 
+  onOpenAnalysis: () => void,
+  bankroll: number | null 
+}) {
   const [isExpanded, setIsExpanded] = useState(false);
   const confidenceValue = pick.confianza || pick.stake * 10;
   const isTopPick = (normalizeOdds(pick.odds) >= 1.50) && (confidenceValue >= 85);
@@ -175,7 +189,7 @@ function SelectionRow({ pick, isSelected, onToggle, bankroll }: { pick: Pick, is
           "flex items-center justify-between px-6 py-4 transition-all cursor-pointer group/row",
           isSelected ? "bg-accent/5" : "hover:bg-white/[0.02]"
         )}
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={onOpenAnalysis}
       >
         <div className="flex items-center gap-6 flex-1 min-w-0">
           <div className={cn(
@@ -240,42 +254,6 @@ function SelectionRow({ pick, isSelected, onToggle, bankroll }: { pick: Pick, is
       </div>
     </div>
 
-    {isExpanded && (
-        <div className="px-8 pb-6 pt-1 animate-in fade-in duration-300">
-          <div className="bg-bg-surface/50 rounded-lg p-5 border border-border-base/50">
-            <div className="flex items-center justify-between mb-4 border-b border-border-base pb-3">
-              <div className="flex items-center gap-2 text-text-secondary">
-                <Zap size={14} className="text-accent" />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em]">Análisis Técnico</span>
-              </div>
-              <div className="flex items-center gap-6 font-mono text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="text-text-muted uppercase text-[10px]">Stake</span>
-                  <span className="font-bold text-accent italic">{pick.stake}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-text-muted uppercase text-[10px]">Confianza</span>
-                  <span className="font-bold text-accent italic">{confidenceValue}%</span>
-                </div>
-              </div>
-            </div>
-
-            {calculatedBet && Number(calculatedBet) > 0 && (
-              <div className="md:hidden flex items-center justify-between mb-4 p-3 rounded bg-accent/5 border border-accent/20">
-                <div className="flex items-center gap-2">
-                  <Calculator size={14} className="text-accent" />
-                  <span className="text-[10px] font-black uppercase tracking-widest text-text-muted">APUESTA SUGERIDA</span>
-                </div>
-                <span className="text-sm font-black text-accent">{Number(calculatedBet).toLocaleString()}€</span>
-              </div>
-            )}
-
-            <p className="text-xs md:text-sm text-text-secondary leading-relaxed italic font-medium">
-              {pick.razonamiento || "Análisis técnico de alta precisión para este mercado."}
-            </p>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

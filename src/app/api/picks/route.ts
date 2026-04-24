@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { translateBettingTerm, normalizeBettingPick, translateLeagueName, formatMatchName, deepNormalize } from '@/lib/utils';
+import { translateBettingTerm, normalizeBettingPick, translateLeagueName, formatMatchName, deepNormalize, createSlug } from '@/lib/utils';
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || '',
@@ -90,6 +90,8 @@ export async function POST(req: NextRequest) {
       home_logo: body.home_logo || '',
       away_logo: body.away_logo || '',
       league_logo: body.league_logo || '',
+      home_slug: createSlug(normalizedMatch.split(/\s+vs\s+/i)[0]),
+      away_slug: createSlug(normalizedMatch.split(/\s+vs\s+/i)[1]),
       source: 'n8n-bot',
       status: 'pending',
       published_at: new Date().toISOString(),

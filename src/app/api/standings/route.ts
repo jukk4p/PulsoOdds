@@ -8,17 +8,25 @@ const supabase = createClient(
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const league = searchParams.get('league');
-
+  
   try {
+    const league = searchParams.get('league');
+    const slugs = searchParams.get('slugs');
+
     let query = supabase
       .from('standings')
-      .select('*')
-      .order('pos', { ascending: true });
+      .select('*');
 
-    if (league) {
+    if (league && !slugs) {
       query = query.eq('league', league);
     }
+
+    if (slugs) {
+      const slugList = slugs.split(',');
+      query = query.in('team_slug', slugList);
+    }
+
+    query = query.order('pos', { ascending: true });
 
     const { data, error } = await query;
 

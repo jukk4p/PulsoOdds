@@ -191,6 +191,21 @@ export function translateBettingTerm(term: string): string {
 }
 
 /**
+ * Genera un slug único y normalizado para un equipo basado en el diccionario maestro
+ */
+export function createSlug(name: string): string {
+  if (!name) return "";
+  const normalized = normalizeTeamName(name);
+  return normalized
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+/**
  * Diccionario maestro para la traducción de Países y Ligas
  */
 const leagueDictionary: Record<string, string> = {
