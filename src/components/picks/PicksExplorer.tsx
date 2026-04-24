@@ -5,7 +5,6 @@ import { MatchGroup } from "@/components/ui/MatchGroup";
 import { cn, simpleNormalize } from "@/lib/utils";
 import { CategoryFilter } from "./CategoryFilter";
 import { BetSlip } from "./BetSlip";
-import { BankrollManager } from "./BankrollManager";
 import { Search } from "lucide-react";
 
 function normalizeMatchKey(match: string): string {
@@ -157,40 +156,31 @@ export function PicksExplorer({ initialPicks }: PicksExplorerProps) {
   };
 
   return (
-    <div className="space-y-10">
-      
-      <div className="flex flex-col gap-6 mb-10">
-        {/* Row 1: Status & Bankroll */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6 bg-bg-surface/20 p-4 rounded-lg border border-white/5">
-          <div className="flex-1">
-            <CategoryFilter 
-              categories={statsCategories}
-              selectedId={filter}
-              onSelect={setFilter}
-            />
-          </div>
-          <BankrollManager />
-        </div>
+      {/* Search Bar Row */}
+      <div className="relative group">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted/30 group-focus-within:text-accent transition-colors" />
+        <input 
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="BUSCAR EQUIPO, LIGA O MERCADO..."
+          className="w-full bg-bg-surface/30 border border-white/5 rounded-lg py-4 pl-12 pr-4 text-[11px] font-black uppercase tracking-widest text-text-primary placeholder:text-text-muted/20 focus:outline-none focus:border-accent/30 transition-all shadow-xl"
+        />
+      </div>
 
-        {/* Row 2: Markets & Search */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-border-base/30">
-          <div className="flex-1">
-            <CategoryFilter 
-              categories={marketCategories}
-              selectedId={selectedMarket}
-              onSelect={setSelectedMarket}
-            />
-          </div>
-          <div className="relative group w-full lg:w-72">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text-muted/40 group-focus-within:text-accent transition-colors" />
-            <input 
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="BUSCAR EVENTO..."
-              className="w-full bg-white/5 border border-white/10 rounded-full py-2.5 pl-10 pr-4 text-[10px] font-black uppercase tracking-widest text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent/40 transition-all"
-            />
-          </div>
+      <div className="flex flex-col gap-6">
+        <CategoryFilter 
+          categories={statsCategories}
+          selectedId={filter}
+          onSelect={setFilter}
+        />
+
+        <div className="py-4 border-t border-white/5">
+          <CategoryFilter 
+            categories={marketCategories}
+            selectedId={selectedMarket}
+            onSelect={setSelectedMarket}
+          />
         </div>
       </div>
 

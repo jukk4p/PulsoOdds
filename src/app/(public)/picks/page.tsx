@@ -1,4 +1,5 @@
 import { PicksExplorer } from "@/components/picks/PicksExplorer";
+import { BankrollManager } from "@/components/picks/BankrollManager";
 import { supabase } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
@@ -24,9 +25,12 @@ export default async function PicksPage() {
     <div className="min-h-screen bg-deep-black pb-20">
       <header className="pt-20 pb-12 px-6">
         <div className="max-w-[900px] mx-auto">
-          <h1 className="text-4xl md:text-5xl font-black text-white mb-4">
-            PRONÓSTICOS <span className="text-neon-green">ACTIVOS</span>
-          </h1>
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-6">
+            <h1 className="text-4xl md:text-5xl font-black text-white">
+              PRONÓSTICOS <span className="text-neon-green">ACTIVOS</span>
+            </h1>
+            <BankrollManager />
+          </div>
           <p className="text-white/60 max-w-2xl">
             Explora las mejores oportunidades del mercado analizadas por nuestro equipo de expertos. 
             Transparencia total en todos nuestros resultados.
