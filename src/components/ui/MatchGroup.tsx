@@ -47,8 +47,8 @@ export function MatchGroup({ picks, selectedPickIds = [], onTogglePick }: MatchG
       <div className={cn(
         "relative flex flex-col w-full rounded-[20px] overflow-hidden transition-all duration-300",
         "bg-[#12141c]/40 backdrop-blur-md",
-        "border border-white/5 shadow-xl",
-        isExpanded && "bg-[#12141c]/60 border-white/10"
+        "border border-white/10 shadow-xl",
+        isExpanded && "bg-[#12141c]/60 border-white/20 shadow-[0_0_20px_rgba(0,255,135,0.05)]"
       )}>
         
         {/* HEADER: EVENT INFO */}
@@ -59,10 +59,10 @@ export function MatchGroup({ picks, selectedPickIds = [], onTogglePick }: MatchG
             <div className="flex items-center gap-2">
               <div className="w-5 h-5 rounded bg-white/90 flex items-center justify-center p-0.5 shadow-sm shrink-0 overflow-hidden">
                 {getLeagueLogo(firstPick.competition, firstPick.competition_logo) && (
-                  <img src={getLeagueLogo(firstPick.competition, firstPick.competition_logo)} alt="" className="w-full h-full object-contain" />
+                  <img src={getLeagueLogo(firstPick.competition, firstPick.competition_logo)} alt="" loading="lazy" decoding="async" className="w-full h-full object-contain" />
                 )}
               </div>
-              <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.1em] truncate max-w-[150px] leading-none mt-[1px]">
+              <span className="text-[11px] font-black text-white/40 uppercase tracking-[0.1em] truncate max-w-[150px] leading-none mt-[1px]">
                 {translateLeagueName(firstPick.competition).split(' - ').pop()}
               </span>
             </div>
@@ -72,43 +72,43 @@ export function MatchGroup({ picks, selectedPickIds = [], onTogglePick }: MatchG
           <div className="hidden md:flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-white/90 flex items-center justify-center p-1.5 shadow-lg shrink-0 overflow-hidden">
               {getLeagueLogo(firstPick.competition, firstPick.competition_logo) && (
-                <img src={getLeagueLogo(firstPick.competition, firstPick.competition_logo)} alt="" className="w-full h-full object-contain" />
+                <img src={getLeagueLogo(firstPick.competition, firstPick.competition_logo)} alt="" loading="lazy" decoding="async" className="w-full h-full object-contain" />
               )}
             </div>
             <div className="flex items-center">
-              <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] leading-none mt-[1px]">
+              <span className="text-xs font-black text-white/50 uppercase tracking-[0.2em] leading-none mt-[1px]">
                 {translateLeagueName(firstPick.competition).split(' - ').pop()}
               </span>
             </div>
           </div>
 
           {/* COL 2: Teams Center */}
-          <div className="flex items-center justify-center gap-4 md:gap-8 flex-1 min-w-0">
+          <div className="flex items-center justify-center gap-2 md:gap-8 flex-1 min-w-0">
             <div className="flex items-center gap-2 md:gap-4 flex-1 justify-end min-w-0">
-              <span className="text-[10px] md:text-sm font-black uppercase text-white/80 tracking-tight text-right truncate max-w-[70px] md:max-w-none">
+              <span className="text-xs md:text-sm font-black uppercase text-white/80 tracking-tight text-right line-clamp-2 md:line-clamp-none max-w-[90px] md:max-w-none leading-tight">
                 {homeName}
               </span>
               {firstPick.home_logo && (
-                <img src={firstPick.home_logo} alt="" className="h-6 w-6 md:h-9 md:w-9 object-contain filter brightness-90 grayscale-[0.2] shrink-0" />
+                <img src={firstPick.home_logo} alt="" loading="lazy" decoding="async" className="h-6 w-6 md:h-9 md:w-9 object-contain filter brightness-90 grayscale-[0.2] shrink-0" />
               )}
             </div>
             <div className="flex flex-col items-center justify-center shrink-0 mx-1 md:mx-2">
-              <span className="text-[8px] md:text-[9px] font-black text-white/10 italic leading-none mb-1.5">VS</span>
-              <div className="flex h-4 md:h-5 items-center gap-1 px-1.5 md:px-2 rounded bg-white/5 border border-white/5">
-                <Clock size={8} className="text-white/40" />
-                <span className="text-[9px] md:text-[10px] font-bold text-white/60 tabular-nums leading-none mt-[1px]">
+              <span className="text-[10px] md:text-xs font-black text-white/20 italic leading-none mb-1.5">VS</span>
+              <div className="flex h-5 items-center gap-1 px-1.5 md:px-2 rounded bg-white/5 border border-white/10">
+                <Clock size={10} className="text-white/50" />
+                <span className="text-[10px] md:text-xs font-bold text-white/70 tabular-nums leading-none mt-[1px]">
                   {formattedTime}
                 </span>
               </div>
-              <span className="text-[7px] md:text-[8px] font-bold text-white/20 uppercase tracking-widest mt-1.5">
+              <span className="text-[9px] md:text-[10px] font-bold text-white/40 uppercase tracking-widest mt-1.5">
                 {formattedDateFull}
               </span>
             </div>
             <div className="flex items-center gap-2 md:gap-4 flex-1 justify-start min-w-0">
               {firstPick.away_logo && (
-                <img src={firstPick.away_logo} alt="" className="h-6 w-6 md:h-9 md:w-9 object-contain filter brightness-90 grayscale-[0.2] shrink-0" />
+                <img src={firstPick.away_logo} alt="" loading="lazy" decoding="async" className="h-6 w-6 md:h-9 md:w-9 object-contain filter brightness-90 grayscale-[0.2] shrink-0" />
               )}
-              <span className="text-[10px] md:text-sm font-black uppercase text-white/80 tracking-tight text-left truncate max-w-[70px] md:max-w-none">
+              <span className="text-xs md:text-sm font-black uppercase text-white/80 tracking-tight text-left line-clamp-2 md:line-clamp-none max-w-[90px] md:max-w-none leading-tight">
                 {awayName}
               </span>
             </div>
@@ -119,15 +119,15 @@ export function MatchGroup({ picks, selectedPickIds = [], onTogglePick }: MatchG
             <button 
               onClick={() => setIsExpanded(!isExpanded)}
               className={cn(
-                "group/btn relative flex items-center gap-2.5 px-4 py-1.5 rounded-full transition-all duration-500",
-                "bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] hover:border-neon-green/20",
-                isExpanded && "bg-white/[0.05] border-white/10"
+                "group/btn relative flex items-center gap-2.5 px-4 py-2 rounded-full transition-all duration-500",
+                "bg-white/[0.02] border border-white/10 hover:bg-white/[0.05] hover:border-neon-green/30",
+                isExpanded && "bg-white/[0.05] border-white/20"
               )}
             >
-              <div className="flex items-center justify-center w-4 h-4 rounded-full bg-neon-green/10 border border-neon-green/20 group-hover/btn:border-neon-green/40 transition-colors">
-                <span className="text-[8px] font-black text-neon-green leading-none">{picks.length}</span>
+              <div className="flex items-center justify-center w-5 h-5 rounded-full bg-neon-green/10 border border-neon-green/30 group-hover/btn:border-neon-green/50 transition-colors">
+                <span className="text-[10px] font-black text-neon-green leading-none">{picks.length}</span>
               </div>
-              <span className="text-[8px] font-black uppercase tracking-[0.15em] text-white/30 group-hover/btn:text-white/60 transition-colors">
+              <span className="text-[10px] font-black uppercase tracking-[0.15em] text-white/40 group-hover/btn:text-white/80 transition-colors">
                 {isExpanded ? "Ocultar" : "Pronósticos"}
               </span>
               <div className={cn("text-white/10 group-hover/btn:text-white/40 transition-all duration-500", isExpanded && "rotate-180")}>
@@ -176,15 +176,15 @@ function SelectionRow({ pick, isSelected, onToggle }: { pick: Pick, isSelected: 
             isSelected && "bg-neon-green/80 shadow-[0_0_15px_rgba(0,255,135,0.4)]"
           )} />
           <div className="flex flex-col min-w-0">
-            <span className="text-[8px] md:text-[9px] font-black text-white/10 uppercase tracking-[0.2em] mb-0.5">
+            <span className="text-[10px] md:text-xs font-black text-white/30 uppercase tracking-[0.2em] mb-1">
               {translateBettingTerm(pick.market || "Pick")}
             </span>
-            <div className="flex items-center gap-1.5 md:gap-3">
-              <span className="text-[11px] md:text-sm font-black text-white/80 uppercase tracking-tight italic truncate">
+            <div className="flex items-center gap-2 md:gap-3 flex-wrap">
+              <span className="text-xs md:text-sm font-black text-white/90 uppercase tracking-tight italic line-clamp-2 md:line-clamp-none">
                 {normalizeBettingPick(pick.pick, pick.match)}
               </span>
               {isTopPick && (
-                <span className="text-[5px] md:text-[7px] font-black text-neon-green/60 uppercase tracking-[0.2em] shrink-0">
+                <span className="text-[9px] md:text-[10px] px-2 py-0.5 rounded-md bg-neon-green/10 font-black text-neon-green uppercase tracking-[0.2em] shrink-0 border border-neon-green/20">
                   Top Pick
                 </span>
               )}
@@ -223,23 +223,23 @@ function SelectionRow({ pick, isSelected, onToggle }: { pick: Pick, isSelected: 
       {isExpanded && (
         <div className="px-5 md:px-8 pb-5 md:pb-6 pt-1 animate-in fade-in duration-300">
           <div className="bg-white/[0.01] rounded-xl p-4 md:p-5 border border-white/[0.03]">
-            <div className="flex items-center justify-between mb-3 border-b border-white/[0.03] pb-2">
-              <div className="flex items-center gap-2 text-white/40">
-                <Zap size={10} className="text-neon-green/60" />
-                <span className="text-[8px] font-black uppercase tracking-[0.2em]">Análisis Técnico</span>
+            <div className="flex items-center justify-between mb-4 border-b border-white/5 pb-3">
+              <div className="flex items-center gap-2 text-white/50">
+                <Zap size={12} className="text-neon-green/80" />
+                <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em]">Análisis Técnico</span>
               </div>
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[7px] font-black text-white/20 uppercase tracking-tighter">Stake</span>
-                  <span className="text-[10px] font-black text-neon-green italic leading-none">{pick.stake}</span>
+              <div className="flex items-center gap-5">
+                <div className="flex items-center gap-2">
+                  <span className="text-[9px] font-black text-white/40 uppercase tracking-tighter">Stake</span>
+                  <span className="text-xs font-black text-neon-green italic leading-none">{pick.stake}</span>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[7px] font-black text-white/20 uppercase tracking-tighter">Confianza</span>
-                  <span className="text-[10px] font-black text-neon-green italic leading-none">{confidenceValue}%</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[9px] font-black text-white/40 uppercase tracking-tighter">Confianza</span>
+                  <span className="text-xs font-black text-neon-green italic leading-none">{confidenceValue}%</span>
                 </div>
               </div>
             </div>
-            <p className="text-[10px] md:text-xs text-white/40 leading-relaxed italic font-medium">
+            <p className="text-xs md:text-sm text-white/60 leading-relaxed italic font-medium">
               {pick.razonamiento || "Análisis técnico de alta fidelidad."}
             </p>
           </div>
