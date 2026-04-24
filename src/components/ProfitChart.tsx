@@ -82,7 +82,7 @@ export function ProfitChart({ data }: ProfitChartProps) {
         bodyFont: {
           family: 'JetBrains Mono',
           size: 14,
-          weight: '900' as const,
+          weight: 'bold' as const,
         },
         titleColor: 'rgba(255, 255, 255, 0.5)',
         bodyColor: '#C8FF00',
