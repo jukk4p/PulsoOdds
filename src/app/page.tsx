@@ -5,44 +5,35 @@ export const revalidate = 0;
 import { MatchGroup } from "@/components/ui/MatchGroup";
 import { calculateStats, cn, simpleNormalize } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
-import { TrendingUp, Target, Zap, Trophy } from "lucide-react";
+import { StatCard } from "@/components/ui/StatCard";
 import Link from "next/link";
 
 async function getData() {
-  // Traemos picks pendientes con cuota alta, ordenados por fecha de partido
   const { data: picks } = await supabase
     .from('picks')
     .select('*')
     .eq('status', 'pending')
     .gte('odds', 1.50)
     .order('match_date', { ascending: true })
-    .limit(30); // traemos más de los necesarios para filtrar top picks y luego limitar grupos
+    .limit(30);
 
   const { data: allPicks } = await supabase.from('picks').select('*');
   const stats = calculateStats(allPicks || []);
 
-  // Filtrar solo top picks: confianza >= 85 o stake >= 8.5
   const topPicks = (picks || []).filter(p =>
     (p.confianza != null && p.confianza >= 85) || (p.stake != null && p.stake >= 8.5)
   );
 
-  // Lógica de agrupamiento robusta — igual que en PicksExplorer
   const groupedPicks = topPicks.reduce((acc, pick) => {
     const d = new Date(pick.match_date);
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    const dayKey = `${year}-${month}-${day}`;
+    const dayKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     const matchKey = `${simpleNormalize(pick.match || "")}_${dayKey}`;
-    
     if (!acc[matchKey]) acc[matchKey] = [];
     acc[matchKey].push(pick);
     return acc;
   }, {} as Record<string, any[]>);
 
-  // Limitar a los primeros 4 partidos agrupados
   const groupedRecentPicks = Object.values(groupedPicks).slice(0, 4);
-
   return { groupedRecentPicks, stats };
 }
 
@@ -50,76 +41,113 @@ export default async function Home() {
   const { groupedRecentPicks, stats } = await getData();
 
   return (
-    <div className="bg-deep-black min-h-screen text-white">
+    <div className="bg-bg-base min-h-screen text-text-primary font-body">
       {/* Hero Section */}
-      <header className="relative py-24 px-6 overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-neon-green/10 blur-[120px] rounded-full -mr-48 -mt-48" />
+      <header className="relative pt-32 pb-24 px-6 overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-accent/5 blur-[120px] rounded-full -mr-64 -mt-64 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-accent/5 blur-[100px] rounded-full -ml-32 -mb-32 pointer-events-none" />
+        
         <div className="max-w-7xl mx-auto relative">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <div className="grid lg:grid-cols-[1.2fr_1fr] gap-16 items-center">
             <div className="text-center lg:text-left flex flex-col items-center lg:items-start">
-              <h1 className="text-6xl md:text-8xl font-black leading-[0.9] tracking-tighter mb-8 italic">
-                TUS RESULTADOS <br />
-                <span className="text-neon-green animate-pulse-neon drop-shadow-[0_0_15px_rgba(0,255,135,0.4)]">MÁS CLAROS</span>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-[10px] font-black uppercase tracking-widest mb-8">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
+                </span>
+                Predictive Analytics Engine
+              </div>
+
+              <h1 className="text-6xl md:text-8xl font-display font-black leading-[0.85] tracking-tighter mb-10 uppercase">
+                Tu Ventaja <br />
+                <span className="text-accent text-glow">Eléctrica</span>
               </h1>
-              <p className="text-xl text-white/50 max-w-lg mb-10 leading-relaxed font-medium">
-                Análisis deportivo honesto con resultados a la vista. 
-                Te damos la información que necesitas para que tomes mejores decisiones, día a día.
+              
+              <p className="text-lg md:text-xl text-text-secondary max-w-lg mb-12 leading-relaxed font-medium">
+                Análisis deportivo de alto impacto basado en datos, no en corazonadas. 
+                Transparencia total y rentabilidad verificada.
               </p>
-              <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
-                <Link href="/picks" className="bg-neon-green text-deep-black font-black uppercase text-xs tracking-widest px-10 py-5 rounded-xl hover:shadow-[0_0_30px_rgba(0,255,135,0.4)] transition-all active:scale-95">
-                  Ver Pronósticos
+
+              <div className="flex flex-wrap gap-6 justify-center lg:justify-start">
+                <Link 
+                  href="/picks" 
+                  className="bg-accent text-bg-base font-black uppercase text-xs tracking-[0.2em] px-12 py-5 rounded-sm hover:scale-105 active:scale-95 transition-all duration-300 shadow-[0_0_30px_rgba(200,255,0,0.2)]"
+                >
+                  Explorar Picks
+                </Link>
+                <Link 
+                  href="/stats" 
+                  className="flex items-center gap-3 text-text-primary font-black uppercase text-xs tracking-[0.2em] px-8 py-5 border border-border-base hover:border-accent transition-all duration-300"
+                >
+                  Nuestras Stats
                 </Link>
               </div>
             </div>
 
+            {/* Stats Grid */}
             <div className="grid grid-cols-2 gap-4">
-              <StatCard label="ROI MENSUAL" value={`${stats.roi.toFixed(1)}%`} icon={<TrendingUp className="h-5 w-5" />} color="neon" />
-              <StatCard label="ACIERTO" value={`${stats.winRate.toFixed(1)}%`} icon={<Target className="h-5 w-5" />} color="white" />
-              <StatCard label="RACHA ACTUAL" value={stats.currentStreak > 0 ? `+${stats.currentStreak}` : stats.currentStreak} icon={<Zap className="h-5 w-5" />} color="neon" />
-              <StatCard label="UNIDADES" value={(stats.totalProfit > 0 ? '+' : '') + stats.totalProfit.toFixed(1)} icon={<Trophy className="h-5 w-5" />} color="white" />
+              <StatCard 
+                label="ROI Mensual" 
+                value={`${stats.roi.toFixed(1)}%`} 
+                subtext="Rentabilidad Activa"
+                trend={stats.roi > 0 ? "up" : "down"}
+              />
+              <StatCard 
+                label="Tasa de Acierto" 
+                value={`${stats.winRate.toFixed(0)}%`} 
+                subtext="Precisión Total"
+              />
+              <StatCard 
+                label="Racha Actual" 
+                value={stats.currentStreak > 0 ? `+${stats.currentStreak}` : stats.currentStreak} 
+                subtext="Picks seguidos"
+                trend={stats.currentStreak > 0 ? "up" : "neutral"}
+              />
+              <StatCard 
+                label="Profit Unidades" 
+                value={(stats.totalProfit > 0 ? '+' : '') + stats.totalProfit.toFixed(1)} 
+                subtext="Beneficio Total"
+                trend={stats.totalProfit > 0 ? "up" : "down"}
+              />
             </div>
           </div>
         </div>
       </header>
 
-      {/* Latest Picks */}
-      <section className="py-20 px-6 bg-white/[0.02]">
-        <div className="max-w-[1000px] mx-auto">
-          <div className="flex items-end justify-between mb-12">
+      {/* Latest Picks Section */}
+      <section className="py-24 px-6 bg-bg-surface/50 border-t border-border-base">
+        <div className="max-w-[900px] mx-auto">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
             <div>
-              <h2 className="text-3xl font-black">ÚLTIMOS <span className="text-neon-green">PICKS</span></h2>
-              <p className="text-white/40">Lo más reciente de nuestros expertos</p>
+              <div className="h-1 w-12 bg-accent mb-4" />
+              <h2 className="text-4xl font-display font-black uppercase tracking-tight">
+                Top <span className="text-accent">Picks</span>
+              </h2>
+              <p className="text-text-secondary mt-2 font-medium">Pronósticos de alta confianza seleccionados para hoy</p>
             </div>
-            <Link href="/picks" className="text-neon-green text-sm font-bold border-b border-neon-green/30 hover:border-neon-green transition-all pb-1">
-              Ver todos
+            <Link 
+              href="/picks" 
+              className="group flex items-center gap-2 text-accent text-xs font-black uppercase tracking-widest"
+            >
+              Ver todos los picks
+              <div className="h-[1px] w-6 bg-accent transition-all duration-300 group-hover:w-12" />
             </Link>
           </div>
 
-          <div className="space-y-3">
-            {groupedRecentPicks.map((matchPicks: any, idx) => (
-              <MatchGroup key={idx} picks={matchPicks} />
-            ))}
+          <div className="space-y-4">
+            {groupedRecentPicks.length > 0 ? (
+              groupedRecentPicks.map((matchPicks: any, idx) => (
+                <MatchGroup key={idx} picks={matchPicks} />
+              ))
+            ) : (
+              <div className="py-20 text-center border border-dashed border-border-base rounded-xl">
+                <p className="text-text-muted font-bold uppercase tracking-widest text-xs">No hay top picks disponibles ahora</p>
+              </div>
+            )}
           </div>
         </div>
       </section>
-    </div>
-  );
-}
-
-function StatCard({ label, value, icon, color }: { label: string, value: any, icon: any, color: 'neon' | 'white' }) {
-  return (
-    <div className={cn(
-      "glass-card rounded-2xl p-6 border transition-all duration-300 hover:scale-[1.02]",
-      color === 'neon' ? "border-neon-green/30 hover:shadow-[0_0_20px_rgba(0,255,135,0.1)]" : "border-white/10"
-    )}>
-      <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center mb-4 transition-colors", 
-        color === 'neon' ? "bg-neon-green/20 text-neon-green" : "bg-white/10 text-white")}>
-        {icon}
-      </div>
-      <p className="text-xs text-white/40 uppercase tracking-widest font-bold mb-1">{label}</p>
-      <p className={cn("text-4xl font-black transition-all", color === 'neon' ? "text-neon-green text-neon" : "text-white")}>
-        {value}
-      </p>
     </div>
   );
 }

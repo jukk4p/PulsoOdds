@@ -1,8 +1,8 @@
 import { ProfitChart } from "@/components/ProfitChart";
-import { redirect } from 'next/navigation';
 import { supabase } from "@/lib/supabase";
 import { calculateStats, cn } from "@/lib/utils";
-import { TrendingUp, BarChart3, PieChart, Activity, Zap } from "lucide-react";
+import { StatCard } from "@/components/ui/StatCard";
+import { BarChart3, PieChart } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -15,7 +15,6 @@ async function getStatsData() {
 
   const stats = calculateStats(picks || []);
   
-  // Prepare daily profit data for the chart
   const dailyProfits: { date: string; profit: number }[] = [];
   (picks || []).forEach(p => {
     let profit = 0;
@@ -27,7 +26,6 @@ async function getStatsData() {
     }
   });
 
-  // Group by sport
   const sportsData: Record<string, { stake: number; profit: number; count: number }> = {};
   (picks || []).forEach(p => {
     const sportName = (p.sport || 'Otros').toLowerCase() === 'football' ? 'Fútbol' : p.sport;
@@ -45,72 +43,103 @@ export default async function StatsPage() {
   const { stats, dailyProfits, sportsData } = await getStatsData();
 
   return (
-    <div className="min-h-screen bg-deep-black py-20 px-6">
+    <div className="min-h-screen bg-bg-base py-32 px-6">
       <div className="max-w-7xl mx-auto">
-        <header className="mb-16">
-          <h1 className="text-4xl md:text-5xl font-black text-white mb-4">
-            MÉTRICAS DE <span className="text-neon-green">RENDIMIENTO</span>
+        <header className="mb-20">
+          <div className="h-1.5 w-16 bg-accent mb-6" />
+          <h1 className="text-5xl md:text-6xl font-display font-black text-text-primary uppercase tracking-tighter">
+            Métricas de <span className="text-accent text-glow">Rendimiento</span>
           </h1>
-          <p className="text-white/40">Análisis detallado de nuestra rentabilidad y estadísticas históricas.</p>
+          <p className="text-text-secondary mt-4 font-medium max-w-2xl">
+            Análisis algorítmico de rentabilidad y estadísticas históricas verificadas. 
+            Transparencia total en cada unidad apostada.
+          </p>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-16">
           {/* Main Chart */}
-          <div className="lg:col-span-2 glass-card rounded-2xl p-8 border border-white/5">
-            <div className="flex items-center justify-between mb-8">
+          <div className="lg:col-span-2 bg-bg-surface p-8 rounded-lg border border-border-base relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-1 h-full bg-accent/20" />
+            <div className="flex items-center justify-between mb-10">
               <div className="flex items-center gap-3">
-                <BarChart3 className="h-5 w-5 text-neon-green" />
-                <h2 className="text-xl font-bold text-white">Evolución de Beneficios</h2>
+                <BarChart3 className="h-5 w-5 text-accent" />
+                <h2 className="text-lg font-black uppercase tracking-widest text-text-primary">Evolución de Beneficios</h2>
               </div>
-              <div className="text-xs text-white/40 bg-white/5 px-2 py-1 rounded">Últimos 30 días</div>
+              <div className="text-[10px] font-black uppercase tracking-widest text-text-muted bg-bg-base px-3 py-1.5 border border-border-base rounded-sm">
+                Unidades acumuladas
+              </div>
             </div>
-            <ProfitChart data={dailyProfits} />
+            <div className="h-[350px]">
+              <ProfitChart data={dailyProfits} />
+            </div>
           </div>
 
           {/* Quick Metrics */}
-          <div className="space-y-4">
-            <StatsMiniCard label="ROI Global" value={`${stats.roi.toFixed(1)}%`} subtext="Rentabilidad total" icon={<Activity className="text-neon-green" />} />
-            <StatsMiniCard label="Acierto" value={`${stats.winRate.toFixed(1)}%`} subtext="Tasa de predicción" icon={<TrendingUp className="text-white" />} />
-            <StatsMiniCard label="Profit Total" value={`${stats.totalProfit.toFixed(1)}`} subtext="Unidades ganadas" icon={<Zap className="text-neon-green" />} />
+          <div className="grid grid-cols-1 gap-4">
+            <StatCard 
+              label="ROI Global" 
+              value={`${stats.roi.toFixed(1)}%`} 
+              subtext="Rentabilidad histórica" 
+              trend={stats.roi > 0 ? "up" : "down"}
+            />
+            <StatCard 
+              label="Tasa de Acierto" 
+              value={`${stats.winRate.toFixed(1)}%`} 
+              subtext="Precisión analítica" 
+              trend={stats.winRate > 50 ? "up" : "neutral"}
+            />
+            <StatCard 
+              label="Profit Total" 
+              value={`${stats.totalProfit.toFixed(1)}`} 
+              subtext="Unidades netas" 
+              trend={stats.totalProfit > 0 ? "up" : "down"}
+            />
           </div>
         </div>
 
-        {/* ROI by Sport Table */}
-        <div className="glass-card rounded-2xl p-8 border border-white/5">
-          <div className="flex items-center gap-3 mb-8">
-            <PieChart className="h-5 w-5 text-neon-green" />
-            <h2 className="text-xl font-bold text-white">Rendimiento por Deporte</h2>
+        {/* ROI by Sport */}
+        <div className="bg-bg-surface rounded-lg border border-border-base overflow-hidden">
+          <div className="p-8 border-b border-border-base flex items-center gap-4 bg-bg-surface">
+            <PieChart className="h-5 w-5 text-accent" />
+            <h2 className="text-lg font-black uppercase tracking-widest text-text-primary">Rendimiento por Disciplina</h2>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="text-[10px] md:text-[12px] uppercase text-white/20 tracking-[0.2em] border-b border-white/5">
-                  <th className="pb-6 font-black text-left">Deporte</th>
-                  <th className="pb-6 font-black text-center">Picks</th>
-                  <th className="pb-6 font-black text-center">Inversión</th>
-                  <th className="pb-6 font-black text-center">Beneficio</th>
-                  <th className="pb-6 font-black text-center">ROI</th>
+                <tr className="text-[10px] uppercase text-text-muted tracking-[0.3em] bg-bg-base/50">
+                  <th className="px-8 py-5 font-black">Disciplina</th>
+                  <th className="px-8 py-5 font-black text-center">Eventos</th>
+                  <th className="px-8 py-5 font-black text-center">Inversión</th>
+                  <th className="px-8 py-5 font-black text-center">Beneficio</th>
+                  <th className="px-8 py-5 font-black text-right">ROI</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-border-base">
                 {sportsData.map(([sport, d]: [string, any]) => {
                   const roiValue = (d.profit / d.stake * 100);
                   return (
-                    <tr key={sport} className="group hover:bg-white/[0.02] transition-colors">
-                      <td className="py-6 font-black text-white uppercase text-sm md:text-base tracking-tight">{sport}</td>
-                      <td className="py-6 text-center text-white/60 text-sm md:text-base font-medium">{d.count}</td>
-                      <td className="py-6 text-center text-white/60 text-sm md:text-base font-medium">{Number(d.stake.toFixed(1))} unidades</td>
-                      <td className={cn(
-                        "py-6 text-center text-sm md:text-base font-black italic", 
-                        d.profit >= 0 ? "text-neon-green" : "text-red-500"
-                      )}>
-                        {d.profit > 0 ? '+' : ''}{Number(d.profit.toFixed(1))} unidades
+                    <tr key={sport} className="group hover:bg-accent/[0.02] transition-colors">
+                      <td className="px-8 py-6">
+                        <div className="flex items-center gap-3">
+                          <div className="h-2 w-2 rounded-full bg-accent shadow-[0_0_8px_rgba(200,255,0,0.5)]" />
+                          <span className="font-display font-black text-text-primary uppercase tracking-tight text-base">
+                            {sport}
+                          </span>
+                        </div>
                       </td>
-                      <td className="py-6 text-center">
+                      <td className="px-8 py-6 text-center font-mono font-bold text-text-secondary">{d.count}</td>
+                      <td className="px-8 py-6 text-center font-mono font-bold text-text-secondary">{d.stake.toFixed(1)} u</td>
+                      <td className={cn(
+                        "px-8 py-6 text-center font-mono font-black italic", 
+                        d.profit >= 0 ? "text-accent" : "text-red-500"
+                      )}>
+                        {d.profit > 0 ? '+' : ''}{d.profit.toFixed(1)} u
+                      </td>
+                      <td className="px-8 py-6 text-right">
                         <span className={cn(
-                          "inline-flex items-center justify-center px-3 py-1.5 md:px-4 md:py-2 rounded-lg text-[10px] md:text-[13px] font-black min-w-[60px] md:min-w-[85px] border transition-all",
+                          "inline-flex items-center justify-center px-4 py-2 rounded-sm text-xs font-mono font-black border transition-all",
                           roiValue >= 0 
-                            ? "bg-neon-green/10 text-neon-green border-neon-green/20 shadow-[0_0_10px_rgba(0,230,118,0.1)]" 
+                            ? "bg-accent/10 text-accent border-accent/20" 
                             : "bg-red-500/10 text-red-500 border-red-500/20"
                         )}>
                           {roiValue > 0 ? '+' : ''}{roiValue.toFixed(1)}%
@@ -123,21 +152,6 @@ export default async function StatsPage() {
             </table>
           </div>
         </div>
-      </div>
-    </div>
-  );
-}
-
-function StatsMiniCard({ label, value, subtext, icon }: any) {
-  return (
-    <div className="glass-card rounded-2xl p-6 border border-white/5 flex items-center justify-between">
-      <div>
-        <p className="text-[10px] uppercase tracking-widest text-white/40 font-bold mb-1">{label}</p>
-        <p className="text-3xl font-black text-white">{value}</p>
-        <p className="text-xs text-white/20 mt-1">{subtext}</p>
-      </div>
-      <div className="h-12 w-12 rounded-xl bg-white/5 flex items-center justify-center">
-        {icon}
       </div>
     </div>
   );

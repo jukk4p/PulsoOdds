@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Trophy, Save, RefreshCw, Pencil, ExternalLink, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { LogoAutocomplete } from '@/components/admin/LogoAutocomplete';
+
 
 const LEAGUES = [
   "Spain - LaLiga", "Spain - LaLiga2", "England - Premier League", "Germany - Bundesliga", 
@@ -417,23 +419,12 @@ export default function AdminRankingsPage() {
                   </div>
                   
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-white/30 uppercase tracking-widest">URL del Logotipo</label>
-                    <div className="flex items-center gap-4">
-                      <div className="h-16 w-16 rounded-[1.25rem] bg-white/[0.03] border border-white/10 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
-                        {editingTeam.logo_url ? (
-                          <img src={editingTeam.logo_url} className="h-10 w-10 object-contain" onError={(e) => e.currentTarget.src = 'https://via.placeholder.com/40?text=?'} />
-                        ) : (
-                          <Trophy className="h-6 w-6 text-white/5" />
-                        )}
-                      </div>
-                      <input 
-                        type="text"
-                        value={editingTeam.logo_url || ''}
-                        onChange={(e) => handleModalChange('logo_url', e.target.value)}
-                        className="flex-1 bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-4 text-[11px] text-white/20 focus:outline-none focus:border-neon-green/50 transition-all"
-                        placeholder="https://..."
-                      />
-                    </div>
+                    <LogoAutocomplete 
+                      label="Logotipo del Equipo"
+                      value={editingTeam.logo_url || ''}
+                      onChange={(val) => handleModalChange('logo_url', val)}
+                      placeholder="Buscar equipo en el diccionario..."
+                    />
                   </div>
                 </div>
 
@@ -469,19 +460,11 @@ export default function AdminRankingsPage() {
                   <button onClick={() => saveTeam(team)} className="text-neon-green hover:underline">Guardar</button>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/10 shrink-0">
-                    {team.logo_url ? (
-                      <img src={team.logo_url} alt="Logo" className="h-6 w-6 object-contain" onError={(e) => e.currentTarget.src = 'https://via.placeholder.com/24'} />
-                    ) : (
-                      <Trophy className="h-4 w-4 text-white/10" />
-                    )}
-                  </div>
-                  <input 
-                    type="text"
+                  <LogoAutocomplete 
+                    label=""
                     value={team.logo_url || ''}
-                    onChange={(e) => handleInputChange(team.id, 'logo_url', e.target.value)}
-                    className="flex-1 bg-white/[0.03] border border-white/5 rounded-xl px-4 py-2 text-[10px] text-white/40 focus:outline-none focus:border-neon-green/30 transition-all"
-                    placeholder="URL del logo"
+                    onChange={(val) => handleInputChange(team.id, 'logo_url', val)}
+                    placeholder="Logo..."
                   />
                 </div>
               </div>

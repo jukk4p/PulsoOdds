@@ -1,54 +1,43 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { Zap, BarChart3, LogOut, Trophy } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { supabase } from "@/lib/supabase";
+import { Zap, Trophy, BarChart3 } from "lucide-react";
+
+const navItems = [
+  { label: "Picks", href: "/admin/picks", icon: Zap },
+  { label: "Rankings", href: "/admin/rankings", icon: Trophy },
+  { label: "Métricas", href: "/admin/stats", icon: BarChart3 },
+];
 
 export function AdminSidebar() {
   const pathname = usePathname();
-  const router = useRouter();
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push("/");
-  };
-
-  const links = [
-    { name: "Gestionar Picks", href: "/admin/picks", icon: Zap },
-    { name: "Clasificaciones", href: "/admin/rankings", icon: Trophy },
-    { name: "Métricas", href: "/admin/stats", icon: BarChart3 },
-  ];
 
   return (
-    <nav className="space-y-2">
-      {links.map((link) => {
-        const isActive = pathname === link.href;
+    <nav className="flex flex-col gap-2 p-6">
+      <div className="mb-10 px-4">
+        <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-text-muted opacity-50">Control Panel</h2>
+      </div>
+      
+      {navItems.map((item) => {
+        const isActive = pathname === item.href;
         return (
           <Link
-            key={link.href}
-            href={link.href}
+            key={item.href}
+            href={item.href}
             className={cn(
-              "flex items-center gap-3 px-4 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all",
+              "flex items-center gap-4 px-5 py-4 rounded-sm text-[11px] font-black uppercase tracking-widest transition-all duration-300",
               isActive 
-                ? "bg-neon-green text-deep-black shadow-[0_0_20px_rgba(0,255,135,0.2)]" 
-                : "text-white/40 hover:text-white hover:bg-white/5"
+                ? "bg-accent text-bg-base shadow-[0_10px_20px_-5px_rgba(200,255,0,0.3)]" 
+                : "text-text-muted hover:text-text-primary hover:bg-bg-surface border border-transparent hover:border-border-base"
             )}
           >
-            <link.icon className="h-4 w-4" />
-            {link.name}
+            <item.icon size={18} className={cn("transition-transform duration-500", isActive && "rotate-12")} />
+            {item.label}
           </Link>
         );
       })}
-
-      <button
-        onClick={handleLogout}
-        className="flex items-center gap-3 px-4 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest text-red-500/40 hover:text-red-500 hover:bg-red-500/5 transition-all mt-10"
-      >
-        <LogOut className="h-4 w-4" />
-        Cerrar Sesión
-      </button>
     </nav>
   );
 }
@@ -56,33 +45,29 @@ export function AdminSidebar() {
 export function AdminMobileNav() {
   const pathname = usePathname();
 
-  const tabs = [
-    { name: "Picks", href: "/admin/picks" },
-    { name: "Rankings", href: "/admin/rankings" },
-    { name: "Métricas", href: "/admin/stats" },
-  ];
-
   return (
-    <div className="md:hidden flex items-center justify-center gap-8 mb-10 border-b border-white/5 pb-4">
-      {tabs.map((tab) => {
-        const isActive = pathname === tab.href;
-        return (
-          <div key={tab.href} className="relative">
+    <div className="md:hidden fixed bottom-0 left-0 right-0 bg-bg-surface/95 backdrop-blur-xl border-t border-border-base px-8 py-5 z-50">
+      <div className="flex items-center justify-around max-w-md mx-auto">
+        {navItems.map((item) => {
+          const isActive = pathname === item.href;
+          return (
             <Link
-              href={tab.href}
+              key={item.href}
+              href={item.href}
               className={cn(
-                "px-2 py-2 text-[10px] font-black uppercase tracking-widest transition-colors",
-                isActive ? "text-neon-green" : "text-white/40"
+                "flex flex-col items-center gap-1.5 transition-all duration-300 relative",
+                isActive ? "text-accent" : "text-text-muted"
               )}
             >
-              {tab.name}
+              <item.icon size={22} />
+              <span className="text-[9px] font-black uppercase tracking-widest">{item.label}</span>
+              {isActive && (
+                <div className="absolute -top-1 w-8 h-1 bg-accent rounded-full blur-[2px]" />
+              )}
             </Link>
-            {isActive && (
-              <div className="absolute -bottom-4 left-0 right-0 h-0.5 bg-neon-green shadow-[0_0_10px_rgba(0,255,135,0.5)]" />
-            )}
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 }

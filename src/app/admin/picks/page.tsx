@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Trash2, CheckCircle, XCircle, MinusCircle, Plus, Search, ShieldCheck, TrendingUp, Sparkles, Pencil, X, Save, AlertCircle } from 'lucide-react';
+import { Trash2, CheckCircle, XCircle, MinusCircle, Plus, Search, ShieldCheck, TrendingUp, Sparkles, Pencil, X, Save, AlertCircle, ArrowUpDown, Wand2 } from 'lucide-react';
+
 import { cn, normalizeBettingPick, translateBettingTerm, substituteTeamNames, translateLeagueName, formatMatchName, formatTeamName, deepNormalize, simpleNormalize } from '@/lib/utils';
 import { LogoAutocomplete } from '@/components/admin/LogoAutocomplete';
 
@@ -174,6 +175,7 @@ function EditPickModal({ pick, isOpen, onClose, onSave }: { pick: any, isOpen: b
               <div className="space-y-1">
                 <LogoAutocomplete 
                   label="Logo de la Liga"
+                  type="leagues"
                   value={formData.league_logo || ''}
                   onChange={(val) => setFormData({ ...formData, league_logo: val })}
                   placeholder="Escribe para buscar liga..."
@@ -249,9 +251,7 @@ export default function AdminPicksPage() {
   const [editingPick, setEditingPick] = useState<any | null>(null);
   const [notification, setNotification] = useState<{ message: string, type: 'success' | 'info' | 'warning' } | null>(null);
   
-  // Estados para filtros de fecha
-  const [dateStart, setDateStart] = useState('');
-  const [dateEnd, setDateEnd] = useState('');
+
 
   // Un único estado controla TANTO el orden COMO el campo de fecha del filtro
   const [sortBy, setSortBy] = useState<'match_date' | 'created_at'>('match_date');
@@ -416,13 +416,12 @@ export default function AdminPicksPage() {
   };
 
   const handleCheckAssets = async () => {
-    const { MASTER_TEAMS } = await import('@/lib/masterDictionaries');
-    if (!confirm('¿Deseas sincronizar logos de equipos con el Diccionario Maestro para TODOS los registros?')) return;
+    const { MASTER_TEAMS, MASTER_LEAGUES } = await import('@/lib/masterDictionaries');
+    if (!confirm('¿Deseas sincronizar logos de equipos y ligas con el Diccionario Maestro para TODOS los registros?')) return;
     
     setLoading(true);
     let updatedCount = 0;
     
-    // Auditamos todos los picks, no solo los pendientes
     for (const p of picks) {
       const [h, a] = (p.match || "").split(/\s+vs\s+/i);
       const homeName = h?.trim();
@@ -431,9 +430,14 @@ export default function AdminPicksPage() {
       const masterHomeLogo = MASTER_TEAMS[homeName];
       const masterAwayLogo = MASTER_TEAMS[awayName];
       
+      // Normalizamos el nombre de la liga para buscar el logo maestro
+      const normalizedLeague = translateLeagueName(p.competition);
+      const masterLeagueLogo = MASTER_LEAGUES[normalizedLeague];
+      
       const updates: any = {};
       if (masterHomeLogo && p.home_logo !== masterHomeLogo) updates.home_logo = masterHomeLogo;
       if (masterAwayLogo && p.away_logo !== masterAwayLogo) updates.away_logo = masterAwayLogo;
+      if (masterLeagueLogo && p.league_logo !== masterLeagueLogo) updates.league_logo = masterLeagueLogo;
       
       if (Object.keys(updates).length > 0) {
         const { error } = await supabase.from('picks').update(updates).eq('id', p.id);
@@ -476,12 +480,72 @@ export default function AdminPicksPage() {
 
   const handleNewPick = () => showNotification("Módulo de creación manual próximamente.", 'info');
 
-  const handleCleanupDuplicates = async () => {
-    if (!confirm('¿Limpiar duplicados?')) return;
+  const handleCleanupDuplicates = async (silent = false) => {
+    if (!silent && !confirm('¿Ejecutar limpieza de duplicados? Se borrarán registros idénticos (mismo partido, mercado y fecha).')) return;
+    
     setLoading(true);
-    // Lógica simplificada para brevedad, ya estaba probada
-    showNotification("Limpieza de duplicados completada.", 'success');
-    setLoading(false);
+    try {
+      // Agrupamos por match, market y match_date
+      const groups = new Map();
+      picks.forEach(p => {
+        const key = `${p.match.toLowerCase()}-${p.market.toLowerCase()}-${new Date(p.match_date).getTime()}`;
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(p);
+      });
+
+      const idsToDelete: string[] = [];
+      groups.forEach((items) => {
+        if (items.length > 1) {
+          // Ordenamos por created_at descendente para quedarnos con el más reciente
+          items.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+          // Los que sobran van a la lista de eliminación
+          items.slice(1).forEach((p: any) => idsToDelete.push(p.id));
+        }
+      });
+
+      if (idsToDelete.length > 0) {
+        const { error } = await supabase.from('picks').delete().in('id', idsToDelete);
+        if (!error) {
+          if (!silent) showNotification(`Limpieza: se eliminaron ${idsToDelete.length} duplicados.`, 'success');
+          return idsToDelete.length;
+        }
+      } else {
+        if (!silent) showNotification("No se encontraron duplicados.", 'info');
+        return 0;
+      }
+    } catch (err) {
+      console.error(err);
+      if (!silent) showNotification("Error en la limpieza de duplicados.", 'warning');
+    } finally {
+      if (!silent) {
+        fetchPicks();
+        setLoading(false);
+      }
+    }
+    return 0;
+  };
+
+  const handleMasterMaintenance = async () => {
+    if (!confirm('¿Ejecutar Mantenimiento Maestro? (Logos + Mercados + Duplicados)')) return;
+    setLoading(true);
+    
+    try {
+      showNotification("Paso 1/3: Sincronizando Logos...", 'info');
+      await handleCheckAssets(); // Ya tiene sus notificaciones internas
+      
+      showNotification("Paso 2/3: Normalizando Datos...", 'info');
+      await handleTranslateAudit();
+      
+      showNotification("Paso 3/3: Limpiando Duplicados...", 'info');
+      const deleted = await handleCleanupDuplicates(true);
+      
+      showNotification("✨ Mantenimiento Maestro Completado con Éxito", 'success');
+      fetchPicks();
+    } catch (err) {
+      showNotification("Error durante el mantenimiento.", 'warning');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const filteredBySearch = useMemo(() => {
@@ -495,22 +559,9 @@ export default function AdminPicksPage() {
       
       if (!matchesText) return false;
 
-      // Filtro de Fecha — usa el mismo campo que el ordenamiento activo
-      const dateToCompare = new Date(p[sortBy]);
-      if (dateStart) {
-        const start = new Date(dateStart);
-        start.setHours(0, 0, 0, 0);
-        if (dateToCompare < start) return false;
-      }
-      if (dateEnd) {
-        const end = new Date(dateEnd);
-        end.setHours(23, 59, 59, 999);
-        if (dateToCompare > end) return false;
-      }
-
       return true;
     });
-  }, [picks, searchQuery, dateStart, dateEnd, sortBy]);
+  }, [picks, searchQuery, sortBy]);
 
   const counts = useMemo(() => ({
     all: filteredBySearch.length,
@@ -525,7 +576,7 @@ export default function AdminPicksPage() {
   }, [filteredBySearch, statusFilter]);
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8 pb-32">
+    <div className="max-w-5xl mx-auto space-y-8 pb-32">
       {/* --- NOTIFICACIÓN (TOAST) --- */}
       {notification && (
         <div className="fixed top-8 right-8 z-[200] animate-in fade-in slide-in-from-right-8 duration-500">
@@ -584,125 +635,70 @@ export default function AdminPicksPage() {
           </button>
         </div>
 
-        {/* Acciones Secundarias y Ordenamiento */}
-        <div className="flex flex-wrap items-center gap-4 bg-white/[0.02] p-2 rounded-[22px] border border-white/5">
-          {/* Selector de Orden */}
-          <div className="flex items-center gap-1 p-1 bg-white/[0.05] rounded-xl border border-white/10 shadow-inner flex-1 sm:flex-none justify-around sm:justify-start">
-            <button 
-              onClick={() => setSortBy('match_date')}
-              className={cn(
-                "p-3 rounded-lg transition-all",
-                sortBy === 'match_date' ? "text-neon-green" : "text-white/20 hover:text-white/40"
-              )}
-              title="Ordenar por fecha del partido"
-            >
-              <TrendingUp className="h-4 w-4" />
-            </button>
-            <button 
-              onClick={() => setSortBy('created_at')}
-              className={cn(
-                "p-3 rounded-lg transition-all",
-                sortBy === 'created_at' ? "text-neon-green" : "text-white/20 hover:text-white/40"
-              )}
-              title="Ordenar por recientes"
-            >
-              <Sparkles className="h-4 w-4" />
-            </button>
-          </div>
 
-          {/* Botones de Auditoría */}
-          <div className="flex items-center gap-1 p-1 bg-white/[0.05] rounded-xl border border-white/10 shadow-inner flex-1 sm:flex-none justify-around sm:justify-start">
-            <button 
-              onClick={handleCheckAssets} 
-              className="p-3 text-white/70 hover:text-white rounded-lg transition-all" 
-              title="Auditar logos"
-            >
-              <ShieldCheck className="h-4 w-4" />
-            </button>
-            <button 
-              onClick={handleCleanupDuplicates} 
-              className="p-3 text-orange-400/70 hover:text-orange-400 rounded-lg transition-all" 
-              title="Limpiar duplicados"
-            >
-              <Sparkles className="h-4 w-4" />
-            </button>
-            <button 
-              onClick={handleTranslateAudit} 
-              className="p-3 text-purple-400/70 hover:text-purple-400 rounded-lg transition-all" 
-              title="Normalizar datos"
-            >
-              <TrendingUp className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
       </div>
 
       {/* --- TOOLBAR --- */}
       <div className="flex flex-col gap-4 mx-4">
-        <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-4 bg-white/[0.02] p-3 rounded-[25px] border border-white/5 backdrop-blur-sm">
-          <div className="relative flex-1 group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20 group-focus-within:text-neon-green transition-colors" />
-            <input type="text" placeholder="BUSCAR POR EQUIPO, LIGA O MERCADO..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-[#111f2e]/50 border border-white/5 rounded-2xl py-3.5 pl-12 pr-4 text-[11px] font-black uppercase text-white placeholder:text-white/10 focus:outline-none" />
+        <div className="flex flex-col lg:flex-row items-center gap-4 bg-white/[0.02] p-2 rounded-[28px] border border-white/5 backdrop-blur-sm shadow-xl">
+          {/* Buscador - Ahora más compacto */}
+          <div className="relative w-full lg:w-64 group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/20 group-focus-within:text-neon-green transition-colors" />
+            <input 
+              type="text" 
+              placeholder="BUSCAR..." 
+              value={searchQuery} 
+              onChange={(e) => setSearchQuery(e.target.value)} 
+              className="w-full bg-[#111f2e]/50 border border-white/5 rounded-2xl py-2.5 pl-10 pr-4 text-[10px] font-black uppercase text-white placeholder:text-white/10 focus:outline-none transition-all focus:bg-[#111f2e]/80" 
+            />
           </div>
           
-          <div className="flex bg-deep-black/60 p-1.5 rounded-[20px] border border-white/5 overflow-x-auto no-scrollbar">
-            {[
-              { id: 'all', label: 'TODOS' },
-              { id: 'pending', label: 'PENDIENTES' },
-              { id: 'won', label: 'GANADOS' },
-              { id: 'lost', label: 'PERDIDOS' },
-              { id: 'void', label: 'NULOS' }
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setStatusFilter(tab.id)}
-                className={cn(
-                  "px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all whitespace-nowrap",
-                  statusFilter === tab.id ? "bg-neon-green text-deep-black" : "text-white/30 hover:text-white/60"
-                )}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Filtros de Fecha */}
-        <div className="flex flex-wrap items-end gap-4 bg-white/[0.01] p-4 rounded-[22px] border border-white/5">
-          <div className="flex flex-col justify-end">
-            <span className="text-[8px] font-black text-white/20 uppercase tracking-widest ml-1 mb-1">
-              {sortBy === 'match_date' ? 'Fecha Partido' : 'Fecha Registro'}
-            </span>
+          {/* Tabs de Estado - Centrados */}
+          <div className="flex-1 flex justify-center">
+            <div className="flex bg-deep-black/60 p-1 rounded-[20px] border border-white/5 overflow-x-auto no-scrollbar">
+              {[
+                { id: 'all', label: 'TODOS' },
+                { id: 'pending', label: 'PENDIENTES' },
+                { id: 'won', label: 'GANADOS' },
+                { id: 'lost', label: 'PERDIDOS' },
+                { id: 'void', label: 'NULOS' }
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setStatusFilter(tab.id)}
+                  className={cn(
+                    "px-4 py-2 rounded-xl text-[9px] font-black uppercase transition-all whitespace-nowrap",
+                    statusFilter === tab.id ? "bg-neon-green text-deep-black shadow-lg shadow-neon-green/20" : "text-white/30 hover:text-white/60"
+                  )}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
           </div>
 
-          <div className="flex items-center gap-3 flex-1 min-w-[280px]">
-            <div className="flex flex-col flex-1">
-              <span className="text-[8px] font-black text-white/20 uppercase ml-3 mb-1">Desde</span>
-              <input 
-                type="date" 
-                value={dateStart} 
-                onChange={(e) => setDateStart(e.target.value)}
-                className="bg-[#111f2e]/80 border border-white/5 rounded-xl px-4 py-2 text-[10px] text-white/60 focus:outline-none focus:border-neon-green/30 w-full"
-              />
-            </div>
-            <div className="flex flex-col flex-1">
-              <span className="text-[8px] font-black text-white/20 uppercase ml-3 mb-1">Hasta</span>
-              <input 
-                type="date" 
-                value={dateEnd} 
-                onChange={(e) => setDateEnd(e.target.value)}
-                className="bg-[#111f2e]/80 border border-white/5 rounded-xl px-4 py-2 text-[10px] text-white/60 focus:outline-none focus:border-neon-green/30 w-full"
-              />
-            </div>
-            {(dateStart || dateEnd) && (
-              <button 
-                onClick={() => { setDateStart(''); setDateEnd(''); }}
-                className="mt-4 p-2 text-white/20 hover:text-red-400 transition-colors"
-                title="Limpiar fechas"
-              >
-                <X size={14} />
-              </button>
-            )}
+          {/* Cápsula de Utilidades Inteligentes - Al final */}
+          <div className="flex items-center gap-1.5 p-1 bg-white/[0.03] rounded-2xl border border-white/5 shadow-inner">
+            <button 
+              onClick={() => setSortBy(prev => prev === 'match_date' ? 'created_at' : 'match_date')}
+              className={cn(
+                "flex items-center gap-2 px-3 py-2 rounded-xl transition-all font-black text-[9px] uppercase tracking-tighter border border-transparent",
+                sortBy === 'match_date' ? "text-neon-green bg-neon-green/5 border-neon-green/10" : "text-purple-400 bg-purple-400/5 border-purple-400/10"
+              )}
+              title={sortBy === 'match_date' ? "Próximos Partidos" : "Últimos Registros"}
+            >
+              <ArrowUpDown className="h-3 w-3" />
+              {sortBy === 'match_date' ? "Próximos" : "Recientes"}
+            </button>
+
+            <button 
+              onClick={handleMasterMaintenance} 
+              className="flex items-center gap-2 px-3 py-2 rounded-xl bg-neon-green text-deep-black hover:scale-[1.02] active:scale-95 transition-all font-black text-[9px] uppercase tracking-tighter shadow-lg shadow-neon-green/10" 
+              title="Optimizar Base (Logos + Mercados + Duplicados)"
+            >
+              <Wand2 className="h-3 w-3" />
+              Optimizar
+            </button>
           </div>
         </div>
       </div>

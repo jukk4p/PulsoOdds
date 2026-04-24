@@ -1,67 +1,81 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-neon-green: #00FF87;
-  --color-dark-grey: #1A1A2E;
-  --color-deep-black: #0A0A0F;
-  
-  --shadow-neon: 0 0 10px rgba(0, 255, 135, 0.3), 0 0 20px rgba(0, 255, 135, 0.1);
+  /* Fondo */
+  --color-bg-base: #0D0F12;
+  --color-bg-surface: #13161B;
+  --color-bg-surface-hover: #1A1E25;
+  --color-bg-subtle: #1E2229;
+
+  /* Acento eléctrico */
+  --color-accent: #C8FF00;
+  --color-accent-dim: rgba(200, 255, 0, 0.12);
+  --color-accent-glow: rgba(200, 255, 0, 0.06);
+
+  /* Semánticos */
+  --color-win: #22C55E;
+  --color-win-bg: rgba(34, 197, 94, 0.1);
+  --color-loss: #EF4444;
+  --color-loss-bg: rgba(239, 68, 68, 0.1);
+  --color-pending: #F59E0B;
+  --color-pending-bg: rgba(245, 158, 11, 0.1);
+  --color-void: #6B7280;
+
+  /* Tipografía */
+  --color-text-primary: #F1F5F9;
+  --color-text-secondary: #94A3B8;
+  --color-text-muted: #475569;
+
+  /* Bordes */
+  --color-border-base: rgba(255, 255, 255, 0.07);
+  --color-border-hover: rgba(255, 255, 255, 0.14);
+  --color-border-accent: rgba(200, 255, 0, 0.3);
+
+  /* Fuentes */
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --font-mono: var(--font-mono);
 }
 
 :root {
-  --background: #0d1b2a;
-  --foreground: #FFFFFF;
+  --background: #0D0F12;
+  --foreground: #F1F5F9;
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: inherit;
+  font-family: var(--font-body), sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
 @layer utilities {
-  .neon-border {
-    border: 1px solid rgba(0, 255, 135, 0.2);
-    box-shadow: var(--shadow-neon);
+  .electric-border {
+    border: 1px solid var(--color-border-base);
+    transition: all 200ms ease;
   }
   
-  .glass-card {
-    background: rgba(26, 26, 46, 0.6);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+  .electric-border:hover {
+    border-color: var(--color-border-accent);
+    transform: translateY(-2px);
   }
 
-  .text-neon {
-    color: #00FF87;
-    text-shadow: 0 0 8px rgba(0, 255, 135, 0.5);
+  .text-glow {
+    text-shadow: 0 0 12px rgba(200, 255, 0, 0.4);
   }
 
-  .animate-pulse-neon {
-    animation: pulse-neon 2s infinite ease-in-out;
-  }
-
-  .border-glow {
-    box-shadow: 0 0 15px rgba(0, 255, 135, 0.1);
-    border: 1px solid rgba(0, 255, 135, 0.3);
-  }
-
-  /* Hide scrollbar for Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
 
-  /* Hide scrollbar for IE, Edge and Firefox */
   .no-scrollbar {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }
 
-@keyframes pulse-neon {
-  0% { text-shadow: 0 0 10px rgba(0, 255, 135, 0.4); opacity: 0.9; }
-  50% { text-shadow: 0 0 25px rgba(0, 255, 135, 0.7), 0 0 40px rgba(0, 255, 135, 0.3); opacity: 1; }
-  100% { text-shadow: 0 0 10px rgba(0, 255, 135, 0.4); opacity: 0.9; }
+@keyframes pulse-electric {
+  0% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.8; }
 }

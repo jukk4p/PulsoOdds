@@ -23,7 +23,7 @@ export default async function PicksPage() {
   return (
     <div className="min-h-screen bg-deep-black pb-20">
       <header className="pt-20 pb-12 px-6">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-[900px] mx-auto">
           <h1 className="text-4xl md:text-5xl font-black text-white mb-4">
             PRONÓSTICOS <span className="text-neon-green">ACTIVOS</span>
           </h1>
@@ -34,7 +34,7 @@ export default async function PicksPage() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-[900px] mx-auto px-6">
         <PicksExplorer initialPicks={picks} />
       </div>
     </div>

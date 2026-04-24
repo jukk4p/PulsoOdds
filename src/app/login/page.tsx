@@ -32,87 +32,83 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-deep-black flex items-center justify-center p-6 relative overflow-hidden">
-      {/* Background Decorative Elements */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-neon-green/10 blur-[120px] rounded-full animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-neon-green/5 blur-[120px] rounded-full" />
-      </div>
+    <div className="relative min-h-screen bg-bg-base flex items-center justify-center p-4 overflow-hidden font-sans">
+      {/* Ambient Glows */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent/10 blur-[120px] rounded-full animate-pulse" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/5 blur-[120px] rounded-full" />
 
-      <div className="w-full max-w-md relative">
-        {/* Logo Block */}
-        <div className="text-center mb-10">
-          <Link href="/" className="inline-flex items-center gap-2 mb-6 group">
-            <div className="bg-neon-green p-1.5 rounded-lg rotate-12 group-hover:rotate-0 transition-all">
-              <Zap className="h-6 w-6 text-black fill-black" />
-            </div>
-            <span className="text-3xl font-black italic tracking-tighter text-white">
-              PULSO<span className="text-neon-green">ODDS</span>
-            </span>
-          </Link>
-          <h1 className="text-sm font-black uppercase tracking-[0.3em] text-white/40">Portal de Administración</h1>
+      <div className="relative w-full max-w-md">
+        {/* Logo Section */}
+        <div className="flex flex-col items-center mb-12 group">
+          <div className="bg-accent p-2 rounded-sm rotate-12 group-hover:rotate-0 transition-all duration-500 shadow-[0_0_20px_rgba(200,255,0,0.3)]">
+            <Zap className="h-10 w-10 text-bg-base fill-current" />
+          </div>
+          <h1 className="mt-6 text-4xl font-display font-black text-text-primary tracking-tighter uppercase">
+            PULSO<span className="text-accent">ODDS</span>
+          </h1>
+          <p className="text-text-muted text-[10px] font-black tracking-[0.4em] uppercase mt-2">Acceso de Analista</p>
         </div>
 
         {/* Login Card */}
-        <div className="glass-card p-8 rounded-[2rem] border border-white/5 bg-white/[0.02] backdrop-blur-3xl shadow-2xl">
+        <div className="bg-bg-surface border border-border-base rounded-lg p-8 md:p-10 shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-accent/20" />
+          
           <form onSubmit={handleLogin} className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Email de Acceso</label>
-              <div className="relative group">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20 group-focus-within:text-neon-green transition-colors" />
-                <input
+            <div className="space-y-2 group">
+              <label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1">Email</label>
+              <div className="relative">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted group-focus-within:text-accent transition-colors" />
+                <input 
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@pulsoodds.com"
                   required
-                  className="w-full bg-white/5 border border-white/5 rounded-xl py-4 pl-12 pr-4 text-white placeholder:text-white/10 focus:border-neon-green/30 focus:bg-white/[0.08] outline-none transition-all text-sm"
+                  className="w-full bg-bg-base border border-border-base rounded-sm py-4 pl-12 pr-4 text-text-primary placeholder:text-text-muted/30 focus:border-accent/40 focus:bg-bg-base transition-all text-xs font-mono font-bold"
+                  placeholder="usuario@pulsoodds.com"
                 />
               </div>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Contraseña</label>
-              <div className="relative group">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20 group-focus-within:text-neon-green transition-colors" />
-                <input
+            <div className="space-y-2 group">
+              <label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1">Contraseña</label>
+              <div className="relative">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted group-focus-within:text-accent transition-colors" />
+                <input 
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
                   required
-                  className="w-full bg-white/5 border border-white/5 rounded-xl py-4 pl-12 pr-4 text-white placeholder:text-white/10 focus:border-neon-green/30 focus:bg-white/[0.08] outline-none transition-all text-sm"
+                  className="w-full bg-bg-base border border-border-base rounded-sm py-4 pl-12 pr-4 text-text-primary placeholder:text-text-muted/30 focus:border-accent/40 focus:bg-bg-base transition-all text-xs font-mono font-bold"
+                  placeholder="••••••••"
                 />
               </div>
             </div>
 
             {error && (
-              <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-xl flex items-center gap-3 animate-in shake duration-300">
-                <div className="h-2 w-2 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]" />
-                <p className="text-xs font-bold text-red-500/80 tracking-tight">{error}</p>
+              <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-sm">
+                <p className="text-red-500 text-[10px] font-black uppercase tracking-widest text-center">{error}</p>
               </div>
             )}
 
-            <button
+            <button 
               type="submit"
               disabled={loading}
-              className="w-full bg-neon-green text-black font-black py-4 rounded-xl flex items-center justify-center gap-2 hover:shadow-[0_0_30px_rgba(0,255,135,0.4)] transition-all active:scale-[0.98] disabled:opacity-50 disabled:grayscale uppercase text-xs tracking-widest"
+              className="w-full bg-accent text-bg-base font-black py-5 rounded-sm flex items-center justify-center gap-3 hover:shadow-[0_0_40px_rgba(200,255,0,0.3)] transition-all active:scale-[0.98] disabled:opacity-50 disabled:grayscale uppercase text-[11px] tracking-[0.2em]"
             >
               {loading ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
               ) : (
                 <>
-                  Entrar al Centro de Mando
-                  <ArrowRight className="h-4 w-4" />
+                  Iniciar Sesión
+                  <Zap size={14} className="fill-current" />
                 </>
               )}
             </button>
           </form>
         </div>
-
-        {/* Footer info */}
-        <p className="text-center mt-8 text-[10px] text-white/20 font-medium uppercase tracking-[0.2em]">
-          Protegido por Supabase Protocol
+        
+        <p className="text-center mt-8 text-text-muted text-[10px] font-black uppercase tracking-widest opacity-30 font-mono">
+          © {new Date().getFullYear()} PULSOODDS SYSTEM V4.0
         </p>
       </div>
     </div>

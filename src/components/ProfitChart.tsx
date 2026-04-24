@@ -29,7 +29,6 @@ interface ProfitChartProps {
 }
 
 export function ProfitChart({ data }: ProfitChartProps) {
-  // Sort by date and calculate cumulative profit
   const sortedData = [...data].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   
   let currentCumulative = 0;
@@ -39,7 +38,6 @@ export function ProfitChart({ data }: ProfitChartProps) {
     return currentCumulative;
   });
 
-  // Start from zero
   labels.unshift('Inicio');
   cumulativeProfits.unshift(0);
 
@@ -47,16 +45,18 @@ export function ProfitChart({ data }: ProfitChartProps) {
     labels,
     datasets: [
       {
-        label: 'Evolución de Beneficios (Unidades)',
+        label: 'Unidades',
         data: cumulativeProfits,
-        borderColor: '#00FF87',
-        backgroundColor: 'rgba(0, 255, 135, 0.1)',
+        borderColor: '#C8FF00',
+        backgroundColor: 'rgba(200, 255, 0, 0.05)',
         fill: true,
         tension: 0.4,
-        pointRadius: 4,
-        pointBackgroundColor: '#00FF87',
-        pointBorderColor: '#0A0A0F',
-        pointBorderWidth: 2,
+        pointRadius: 0,
+        pointHoverRadius: 6,
+        pointHoverBackgroundColor: '#C8FF00',
+        pointHoverBorderColor: '#0D0F12',
+        pointHoverBorderWidth: 3,
+        borderWidth: 3,
       },
     ],
   };
@@ -64,18 +64,36 @@ export function ProfitChart({ data }: ProfitChartProps) {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
+    interaction: {
+      intersect: false,
+      mode: 'index' as const,
+    },
     plugins: {
       legend: {
         display: false,
       },
       tooltip: {
-        backgroundColor: '#1A1A2E',
-        titleColor: '#00FF87',
-        bodyColor: '#FFFFFF',
-        borderColor: 'rgba(0, 255, 135, 0.2)',
+        backgroundColor: 'rgba(10, 17, 26, 0.95)',
+        titleFont: {
+          family: 'JetBrains Mono',
+          size: 11,
+          weight: 'bold' as const,
+        },
+        bodyFont: {
+          family: 'JetBrains Mono',
+          size: 14,
+          weight: '900' as const,
+        },
+        titleColor: 'rgba(255, 255, 255, 0.5)',
+        bodyColor: '#C8FF00',
+        borderColor: 'rgba(200, 255, 0, 0.3)',
         borderWidth: 1,
-        padding: 12,
+        padding: 16,
         displayColors: false,
+        cornerRadius: 2,
+        callbacks: {
+          label: (context: any) => `${context.parsed.y > 0 ? '▲' : '▼'} ${context.parsed.y.toFixed(2)} UNIDADES`
+        }
       },
     },
     scales: {
@@ -84,7 +102,13 @@ export function ProfitChart({ data }: ProfitChartProps) {
           color: 'rgba(255, 255, 255, 0.05)',
         },
         ticks: {
-          color: 'rgba(255, 255, 255, 0.4)',
+          color: 'rgba(255, 255, 255, 0.3)',
+          font: {
+            family: 'JetBrains Mono',
+            size: 10,
+            weight: 'bold' as const,
+          },
+          callback: (value: any) => `${value > 0 ? '+' : ''}${value}u`
         },
       },
       x: {
@@ -92,17 +116,21 @@ export function ProfitChart({ data }: ProfitChartProps) {
           display: false,
         },
         ticks: {
-          color: 'rgba(255, 255, 255, 0.4)',
+          color: 'rgba(255, 255, 255, 0.2)',
+          font: {
+            family: 'JetBrains Mono',
+            size: 10,
+          },
           maxRotation: 0,
           autoSkip: true,
-          maxTicksLimit: 10,
+          maxTicksLimit: 8,
         },
       },
     },
   };
 
   return (
-    <div className="h-[400px] w-full">
+    <div className="h-full w-full">
       <Line data={chartData} options={options} />
     </div>
   );
