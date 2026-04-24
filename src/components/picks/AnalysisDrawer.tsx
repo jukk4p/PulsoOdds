@@ -5,7 +5,8 @@ import { cn, normalizeOdds, normalizeBettingPick } from "@/lib/utils";
 import { normalizeTeamName } from "@/lib/team-normalization";
 import { 
   X, Zap, TrendingUp, History, Info, 
-  BarChart3, ShieldAlert, Target
+  BarChart3, ShieldAlert, Target, AlertCircle, 
+  CheckCircle2, ShieldCheck
 } from "lucide-react";
 
 interface Pick {
@@ -106,6 +107,56 @@ export function AnalysisDrawer({ pick, isOpen, onClose }: AnalysisDrawerProps) {
   }
 
   if (!mounted || !pick) return null;
+
+  const getHumanVerdict = () => {
+    if (!pick) return null;
+    
+    const verdicts = [];
+    const ev = pick.ev || 0;
+    const confidence = pick.confianza || 70;
+    const stake = pick.stake || 1;
+
+    // Traduciendo el EV
+    if (ev > 0.15) verdicts.push({ icon: <Zap className="w-4 h-4 text-accent" />, text: "VALOR EXTREMO: La cuota está muy desajustada a nuestro favor." });
+    else if (ev > 0.05) verdicts.push({ icon: <TrendingUp className="w-4 h-4 text-accent" />, text: "CUOTA CON VALOR: El premio es mayor al riesgo real detectado." });
+
+    // Traduciendo la Confianza
+    if (confidence >= 88) verdicts.push({ icon: <CheckCircle2 className="w-4 h-4 text-accent" />, text: "ALTA PROBABILIDAD: Los datos históricos son muy favorables hoy." });
+    
+    // Traduciendo el Stake
+    if (stake <= 1.5) verdicts.push({ icon: <ShieldCheck className="w-4 h-4 text-text-muted" />, text: "GESTIÓN PRUDENTE: Recomendamos ir con calma pese al valor detectado." });
+
+    // Análisis inteligente del razonamiento (Keyword scanning)
+    const text = (pick.razonamiento || "").toLowerCase();
+    
+    if (text.includes("xg") || text.includes("expected goals") || text.includes("goles esperados")) {
+      verdicts.push({ 
+        icon: <Zap className="w-4 h-4 text-accent" />, 
+        text: "CALIDAD DE ATAQUE: La IA detecta que el equipo está generando jugadas de gol muy claras." 
+      });
+    }
+
+    if (text.includes("momentum") || text.includes("inercia") || text.includes("dominio")) {
+      verdicts.push({ 
+        icon: <TrendingUp className="w-4 h-4 text-accent" />, 
+        text: "INERCIA POSITIVA: El equipo tiene el control total del ritmo del partido." 
+      });
+    }
+
+    if (text.includes("defensivo") || text.includes("muro") || text.includes("solidez")) {
+      verdicts.push({ 
+        icon: <ShieldCheck className="w-4 h-4 text-accent" />, 
+        text: "SOLIDEZ DEFENSIVA: Es muy difícil que le marquen goles en este estado actual." 
+      });
+    }
+
+    if (verdicts.length === 0) verdicts.push({ icon: <Target className="w-4 h-4 text-accent" />, text: "PICK EQUILIBRADO: Oportunidad sólida basada en tendencia estadística." });
+
+    return verdicts;
+  };
+
+  const humanVerdicts = getHumanVerdict();
+
 
   const homeRaw = (pick.match || "").split(/\s+vs\s+/i)[0];
   const awayRaw = (pick.match || "").split(/\s+vs\s+/i)[1];
@@ -212,6 +263,23 @@ export function AnalysisDrawer({ pick, isOpen, onClose }: AnalysisDrawerProps) {
               </div>
             </div>
           </div>
+
+          {/* Veredicto Humano - Traductor de IA */}
+          {humanVerdicts && (
+            <div className="space-y-4">
+              <SectionHeader icon={<CheckCircle2 size={14} />} title="Veredicto Pulso" />
+              <div className="grid gap-3">
+                {humanVerdicts.map((v, i) => (
+                  <div key={i} className="flex items-start gap-4 p-4 rounded-lg bg-white/[0.03] border border-white/5">
+                    <div className="mt-0.5">{v.icon}</div>
+                    <p className="text-[11px] font-bold text-text-secondary leading-relaxed uppercase tracking-wide">
+                      {v.text}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Reasoning / Technical Analysis */}
           <div className="space-y-4">

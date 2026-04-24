@@ -23,11 +23,11 @@ export default async function PicksPage() {
   return (
     <div className="min-h-screen bg-deep-black pb-20">
       <header className="pt-20 pb-12 px-6">
-        <div className="max-w-[900px] mx-auto">
+        <div className="max-w-[900px] mx-auto text-center flex flex-col items-center">
           <h1 className="text-4xl md:text-5xl font-black text-white mb-6">
             PRONÓSTICOS <span className="text-neon-green">ACTIVOS</span>
           </h1>
-          <p className="text-white/60 max-w-2xl">
+          <p className="text-white/60 max-w-2xl text-center">
             Explora las mejores oportunidades del mercado analizadas por nuestro equipo de expertos. 
             Transparencia total en todos nuestros resultados.
           </p>

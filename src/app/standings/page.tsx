@@ -72,23 +72,25 @@ export default function StandingsPage() {
     <div className="min-h-screen bg-deep-black pt-28 pb-20 px-6">
       <div className="max-w-6xl mx-auto">
         
-        <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
-          <div>
-            <div className="flex items-center gap-3 mb-4">
+        <header className="flex flex-col items-center text-center gap-6 mb-16">
+          <div className="flex flex-col items-center">
+            <div className="flex items-center gap-3 mb-6">
               <div className="h-1.5 w-16 bg-accent" />
               <span className="text-[10px] font-black uppercase tracking-[0.4em] text-text-muted">Análisis Técnico</span>
+              <div className="h-1.5 w-16 bg-accent" />
             </div>
-            <h1 className="text-5xl md:text-7xl font-display font-black text-text-primary uppercase tracking-tighter leading-[0.85]">
+            <h1 className="text-5xl md:text-7xl font-display font-black text-text-primary uppercase tracking-tighter leading-[0.85] mb-8">
               Tablas de <br />
               <span className="text-accent text-glow">Clasificación</span>
             </h1>
-          </div>
-          
-          <div className="hidden md:flex flex-col items-end border-l border-border-base pl-8">
-            <span className="text-[10px] font-black text-text-muted uppercase tracking-[0.3em] mb-1">Última Sincronización</span>
-            <span className="text-sm font-mono font-black text-text-primary uppercase tracking-tighter">
-              {new Date().toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })}
-            </span>
+            
+            <div className="flex items-center gap-3 px-6 py-2 bg-white/[0.03] border border-white/10 rounded-full backdrop-blur-sm">
+              <span className="text-[9px] font-black text-text-muted uppercase tracking-[0.3em]">Última Sincronización</span>
+              <div className="w-1 h-1 rounded-full bg-accent animate-pulse" />
+              <span className="text-[11px] font-mono font-black text-text-primary uppercase tracking-tighter">
+                {new Date().toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+              </span>
+            </div>
           </div>
         </header>
 
