@@ -156,6 +156,7 @@ export function PicksExplorer({ initialPicks }: PicksExplorerProps) {
   };
 
   return (
+    <div className="space-y-10">
       {/* Search Bar Row */}
       <div className="relative group">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted/30 group-focus-within:text-accent transition-colors" />
@@ -183,6 +184,7 @@ export function PicksExplorer({ initialPicks }: PicksExplorerProps) {
           />
         </div>
       </div>
+    </div>
 
       {/* Results List */}
       <div className="space-y-16">
