@@ -5,6 +5,7 @@ import { MatchGroup } from "@/components/ui/MatchGroup";
 import { cn, simpleNormalize } from "@/lib/utils";
 import { CategoryFilter } from "./CategoryFilter";
 import { BetSlip } from "./BetSlip";
+import { BankrollManager } from "./BankrollManager";
 import { Search } from "lucide-react";
 
 function normalizeMatchKey(match: string): string {
@@ -168,15 +169,18 @@ export function PicksExplorer({ initialPicks }: PicksExplorerProps) {
           />
         </div>
 
-        <div className="relative group w-full lg:w-80">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted group-focus-within:text-accent transition-colors" />
-          <input 
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="BUSCAR EQUIPO O LIGA..."
-            className="w-full bg-bg-base border border-border-base rounded-sm py-3.5 pl-11 pr-4 text-[11px] font-black uppercase tracking-widest text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-all"
-          />
+        <div className="flex flex-col md:flex-row items-center gap-3 w-full lg:w-auto">
+          <BankrollManager />
+          <div className="relative group w-full md:w-80">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text-muted/50 group-focus-within:text-accent transition-colors" />
+            <input 
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="BUSCAR EQUIPO O LIGA..."
+              className="w-full bg-bg-surface/40 backdrop-blur-xl border border-white/5 rounded-sm py-2.5 pl-10 pr-4 text-[10px] font-black uppercase tracking-widest text-text-primary placeholder:text-text-muted/40 focus:outline-none focus:border-accent/50 transition-all"
+            />
+          </div>
         </div>
       </div>
 
