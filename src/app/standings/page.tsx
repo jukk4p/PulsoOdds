@@ -5,36 +5,56 @@ import { cn } from "@/lib/utils";
 import { Trophy, Info, Loader2 } from "lucide-react";
 
 const LEAGUES = [
-  "LaLiga EA Sports", "Premier League", "Bundesliga", "Serie A", "Ligue 1", "Eredivisie",
-  "LaLiga Hypermotion", "Championship", "2. Bundesliga", "Serie B", "Ligue 2"
+  "LaLiga", "LaLiga Hypermotion", "Premier League", "Bundesliga", "Serie A", "Ligue 1", 
+  "Eredivisie", "Championship", "2. Bundesliga", "Serie B", "Ligue 2", "Serie A / Brasil", "MLS"
 ];
 
 const LEAGUE_COLORS: Record<string, string> = {
-  "LaLiga EA Sports": "rgba(238, 37, 46, 0.4)",
+  "LaLiga": "rgba(238, 30, 41, 0.4)",
+  "LaLiga Hypermotion": "rgba(238, 30, 41, 0.4)",
   "Premier League": "rgba(61, 25, 91, 0.4)",
-  "Bundesliga": "rgba(211, 1, 12, 0.4)",
-  "Serie A": "rgba(0, 143, 215, 0.4)",
-  "Ligue 1": "rgba(218, 224, 37, 0.4)",
-  "Eredivisie": "rgba(245, 112, 0, 0.4)",
-  "LaLiga Hypermotion": "rgba(238, 37, 46, 0.2)",
-  "Championship": "rgba(255, 255, 255, 0.1)",
-  "2. Bundesliga": "rgba(211, 1, 12, 0.2)",
-  "Serie B": "rgba(0, 143, 215, 0.2)",
-  "Ligue 2": "rgba(218, 224, 37, 0.2)"
+  "Bundesliga": "rgba(209, 7, 19, 0.4)",
+  "Serie A": "rgba(0, 140, 206, 0.4)",
+  "Ligue 1": "rgba(218, 255, 57, 0.4)",
+  "Eredivisie": "rgba(242, 145, 0, 0.4)",
+  "Championship": "rgba(61, 25, 91, 0.4)",
+  "2. Bundesliga": "rgba(209, 7, 19, 0.4)",
+  "Serie B": "rgba(0, 140, 206, 0.4)",
+  "Ligue 2": "rgba(218, 255, 57, 0.4)",
+  "Serie A / Brasil": "rgba(0, 151, 57, 0.4)",
+  "MLS": "rgba(0, 0, 0, 0.4)"
 };
-// Mapeo de nombres de UI → nombres exactos en Supabase
+
+const LEAGUE_LOGOS: Record<string, string> = {
+  "LaLiga": "https://www.thesportsdb.com/images/media/league/logo/76n48p1690011504.png",
+  "LaLiga Hypermotion": "https://www.thesportsdb.com/images/media/league/logo/rts9v81690013063.png",
+  "Premier League": "https://www.thesportsdb.com/images/media/league/logo/77id3d1692288078.png",
+  "Bundesliga": "https://www.thesportsdb.com/images/media/league/logo/096t6m1583082531.png",
+  "Serie A": "https://www.thesportsdb.com/images/media/league/logo/9924551566205809.png",
+  "Ligue 1": "https://www.thesportsdb.com/images/media/league/logo/6w703q1586001099.png",
+  "Eredivisie": "https://www.thesportsdb.com/images/media/league/logo/81y6m01583084804.png",
+  "Championship": "https://www.thesportsdb.com/images/media/league/logo/puz5m91583100346.png",
+  "2. Bundesliga": "https://www.thesportsdb.com/images/media/league/logo/vptqu01583091910.png",
+  "Serie B": "https://www.thesportsdb.com/images/media/league/logo/2vj6r11583097143.png",
+  "Ligue 2": "https://www.thesportsdb.com/images/media/league/logo/18v8501586001258.png",
+  "Serie A / Brasil": "https://www.thesportsdb.com/images/media/league/logo/ndy1091678822003.png",
+  "MLS": "https://www.thesportsdb.com/images/media/league/logo/y5x9971597843825.png",
+};
+
 const LEAGUE_DB_NAMES: Record<string, string> = {
-  "LaLiga EA Sports":    "Spain - LaLiga",
+  "LaLiga":             "Spain - LaLiga",
+  "LaLiga Hypermotion": "Spain - LaLiga2",
   "Premier League":      "England - Premier League",
   "Bundesliga":          "Germany - Bundesliga",
   "Serie A":             "Italy - Serie A",
   "Ligue 1":             "France - Ligue 1",
   "Eredivisie":          "Netherlands - Eredivisie",
-  "LaLiga Hypermotion":  "Segunda División",
   "Championship":        "England - Championship",
   "2. Bundesliga":       "Germany - 2. Bundesliga",
   "Serie B":             "Italy - Serie B",
   "Ligue 2":             "France - Ligue 2",
+  "Serie A / Brasil":    "Brazil - Serie A",
+  "MLS":                 "USA - MLS",
 };
 
 export default function StandingsPage() {

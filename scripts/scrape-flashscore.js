@@ -22,7 +22,7 @@ const LEAGUES = [
   { name: "Serie B", apiName: "Italy - Serie B", slug: "italia/serie-b", id: "136" },
   { name: "Ligue 2", apiName: "France - Ligue 2", slug: "francia/ligue-2", id: "62" },
   { name: "Serie A Betano / Brasil", apiName: "Brazil - Brasileiro Serie A", slug: "brasil/serie-a-betano", id: "325" },
-  { name: "Flashscore.com MLS", apiName: "USA - MLS", slug: "usa/mls", id: "330" }
+  { name: "MLS", apiName: "USA - MLS", slug: "usa/mls", id: "330" }
 ];
 
 // Mapeo dinámico desde el diccionario maestro
@@ -42,21 +42,43 @@ function loadTeamDictionary() {
   try {
     const dictPath = path.join(__dirname, '../diccionario_maestro_equipos.md');
     if (!fs.existsSync(dictPath)) {
-        console.warn("⚠️ Diccionario maestro no encontrado.");
-        return;
+      console.warn("⚠️ Diccionario maestro no encontrado.");
+      return;
     }
 
     const content = fs.readFileSync(dictPath, 'utf8');
-    
-    // 1. Extraer logos de ligas
-    const leagueRegex = /### (.*?)\n!\[Logo .*?\]\((.*?)\)/g;
+
+    // 1. Extraer logos de ligas (soporte CRLF y LF)
+    const leagueRegex = /### (.*?)\r?\n!\[Logo .*?\]\((.*?)\)/g;
     let match;
     while ((match = leagueRegex.exec(content)) !== null) {
-        const name = match[1].trim();
-        const logo = match[2].trim();
-        LEAGUE_MAP[normalize(name)] = logo;
-        if (name === "LaLiga EA Sports") LEAGUE_MAP[normalize("La Liga")] = logo;
-        if (name === "LaLiga Hypermotion") LEAGUE_MAP[normalize("Segunda División")] = logo;
+      const name = match[1].trim();
+      const logo = match[2].trim();
+      LEAGUE_MAP[normalize(name)] = logo;
+
+      // Aliases para los apiName que usa el scraper en r.league (con soporte para nombres parciales)
+      if (name.includes("LaLiga EA Sports")) {
+        LEAGUE_MAP[normalize("La Liga")] = logo;
+        LEAGUE_MAP[normalize("Spain - LaLiga")] = logo;
+        LEAGUE_MAP[normalize("Spain LaLiga")] = logo;
+      }
+      if (name.includes("LaLiga Hypermotion")) {
+        LEAGUE_MAP[normalize("Segunda División")] = logo;
+        LEAGUE_MAP[normalize("Spain - LaLiga2")] = logo;
+      }
+      if (name.includes("Premier League")) LEAGUE_MAP[normalize("England - Premier League")] = logo;
+      if (name.includes("Bundesliga")) LEAGUE_MAP[normalize("Germany - Bundesliga")] = logo;
+      if (name.includes("Serie A") && !name.includes("Betano") && !name.includes("B")) {
+        LEAGUE_MAP[normalize("Italy - Serie A")] = logo;
+      }
+      if (name.includes("Ligue 1")) LEAGUE_MAP[normalize("France - Ligue 1")] = logo;
+      if (name.includes("Eredivisie")) LEAGUE_MAP[normalize("Netherlands - Eredivisie")] = logo;
+      if (name.includes("Championship")) LEAGUE_MAP[normalize("England - Championship")] = logo;
+      if (name.includes("2. Bundesliga")) LEAGUE_MAP[normalize("Germany - 2. Bundesliga")] = logo;
+      if (name.includes("Serie B")) LEAGUE_MAP[normalize("Italy - Serie B")] = logo;
+      if (name.includes("Ligue 2")) LEAGUE_MAP[normalize("France - Ligue 2")] = logo;
+      if (name.includes("Serie A Betano")) LEAGUE_MAP[normalize("Brazil - Brasileiro Serie A")] = logo;
+      if (name.includes("MLS")) LEAGUE_MAP[normalize("USA - MLS")] = logo;
     }
 
     // 2. Extraer mapeo de equipos por liga
@@ -64,38 +86,39 @@ function loadTeamDictionary() {
     const lines = content.split('\n');
     lines.forEach(line => {
       if (line.startsWith('### ')) {
-          currentLeague = normalize(line.replace('###', '').trim());
-          if (!TEAM_MAP[currentLeague]) TEAM_MAP[currentLeague] = {};
+        const rawLeague = line.replace('###', '').trim();
+        currentLeague = normalize(rawLeague);
+        if (!TEAM_MAP[currentLeague]) TEAM_MAP[currentLeague] = {};
       }
-      
+
       if (line.includes('|') && !line.includes('---') && !line.includes('Origen Sheets')) {
         // Ignorar el primer y último elemento vacío del split generado por los pipes '|' en los extremos
         const rawParts = line.split('|');
         const parts = rawParts.slice(1, -1).map(p => p.trim());
-        
+
         if (parts.length >= 3) {
-          const sheetName = parts[0]; 
-          let apiFull = parts[1];      
-          const publicName = parts[2].replace(/\*\*/g, ''); 
-          const logoPart = parts[3] || "";   
-          
+          const sheetName = parts[0];
+          let apiFull = parts[1];
+          const publicName = parts[2].replace(/\*\*/g, '');
+          const logoPart = parts[3] || "";
+
           const logoMatch = logoPart.match(/\((.*?)\)/);
           const logoUrl = logoMatch ? logoMatch[1] : "";
 
           // Extraer nombre limpio de la API (quitar IDs si existen)
-          const apiName = (apiFull && apiFull !== '-') 
+          const apiName = (apiFull && apiFull !== '-')
             ? apiFull.replace(/\s*\(\d+\)\s*$/, '').trim()
             : sheetName;
-            
+
           const data = { apiName, publicName, logo: logoUrl };
-          
+
           if (!TEAM_MAP[currentLeague]) TEAM_MAP[currentLeague] = {};
-          
+
           // Registramos TODAS las variantes posibles como llaves de búsqueda DENTRO DE SU LIGA
           if (sheetName) TEAM_MAP[currentLeague][normalize(sheetName)] = data;
           if (publicName) TEAM_MAP[currentLeague][normalize(publicName)] = data;
           if (apiName) TEAM_MAP[currentLeague][normalize(apiName)] = data;
-          
+
           // Caso especial para nombres comunes que Flashscore suele abreviar
           if (apiName.includes("Real ")) TEAM_MAP[currentLeague][normalize(apiName.replace("Real ", ""))] = data;
         }
@@ -110,19 +133,19 @@ function loadTeamDictionary() {
 function getTeamData(name, leagueName) {
   const norm = normalize(name);
   const leagueNorm = normalize(leagueName);
-  
+
   const leagueDict = TEAM_MAP[leagueNorm] || {};
 
   // 1. Match exacto en su liga
   if (leagueDict[norm]) return leagueDict[norm];
-  
+
   // 2. Intento de match por contención DENTRO DE SU LIGA
   for (const variant in leagueDict) {
-      if (variant.length > 4 && (variant.includes(norm) || norm.includes(variant))) {
-          return leagueDict[variant];
-      }
+    if (variant.length > 4 && (variant.includes(norm) || norm.includes(variant))) {
+      return leagueDict[variant];
+    }
   }
-  
+
   // 3. Fallback: Si no existe en la liga, usamos el original
   return { apiName: name, publicName: name, logo: "" };
 }
@@ -130,44 +153,59 @@ function getTeamData(name, leagueName) {
 async function scrapeLeague(context, league) {
   const page = await context.newPage();
   const url = `${BASE_URL}/${league.slug}/clasificacion/`;
-  
+
   console.log(`📡 Procesando: ${league.name}...`);
-  
+
   try {
     await page.goto(url, { waitUntil: 'networkidle', timeout: 45000 });
-    
+
     // Intentar esperar a la tabla con varios selectores posibles
     await Promise.race([
-        page.waitForSelector('.ui-table__row', { timeout: 15000 }),
-        page.waitForSelector('.table__row', { timeout: 15000 })
+      page.waitForSelector('.ui-table__row', { timeout: 15000 }),
+      page.waitForSelector('.table__row', { timeout: 15000 })
     ]);
 
-    const data = await page.evaluate(() => {
+    // Extraer título de la liga y LOGO de la liga (Búsqueda agresiva)
+    const leagueInfo = await page.evaluate(() => {
+      // Intentar varios selectores de logo de liga
+      const logoEl = document.querySelector('.heading__logo img, .heading__image, [class*="tournament"] img, [class*="heading"] img');
+      const nameEl = document.querySelector('h1, [class*="heading"], [class*="tournament-name"]');
+      
+      let logoUrl = logoEl?.src || "";
+      if (!logoUrl) {
+        // Fallback: buscar cualquier imagen que parezca un logo en la parte superior
+        const allImgs = Array.from(document.querySelectorAll('img'));
+        const possibleLogo = allImgs.find(img => img.src.includes('/data/') && (img.className.includes('logo') || img.className.includes('image')));
+        logoUrl = possibleLogo?.src || "";
+      }
+
+      return {
+        name: nameEl?.innerText.trim() || "",
+        logo: logoUrl
+      };
+    });
+
+    const liga_logo_scraped = leagueInfo.logo;
+
+    const scrapedData = await page.evaluate(() => {
       const rows = Array.from(document.querySelectorAll('.ui-table__row, .table__row'));
       return rows.map(row => {
-        // Selectores modernos de Flashscore
         const rankEl = row.querySelector('.ui-table__cell--rank, .tableCellRank');
         const teamEl = row.querySelector('.ui-table__cell--team, .tableCellParticipant__name');
+        const logoEl = row.querySelector('.tableCellParticipant__image img, [class*="participant__image"]');
         
         const cells = Array.from(row.querySelectorAll('.ui-table__cell, .table__cell'));
         
-        // Mapeo de celdas por posición típica
-        // 0: rank, 1: team, 2: pj, 3: pg, 4: pe, 5: pp, 6: goles, 7: diff, 8: pts, 9: forma
-        
-        // Extraer racha (Forma)
-        // Extraer racha (Forma) - Lógica blindada tipo Scraper Pro
         let form = "";
         const rowText = row.innerText.trim();
         const formMatch = rowText.match(/\b([GEPVEDWL\?](?:\s+[GEPVEDWL\?])*)\s*$/i);
         
         if (formMatch) {
-            // Método 1: Regex sobre el texto de la fila (limpia saltos de línea y unifica letras)
             form = formMatch[1].replace(/\s+/g, '').toUpperCase()
                      .replace(/W|V/g, 'G')
                      .replace(/D/g, 'E')
                      .replace(/L/g, 'P');
         } else {
-            // Método 2: Fallback por selectores actualizados de Flashscore
             const icons = row.querySelectorAll('[class*="formIcon"], [class*="tableCellFormIcon"]');
             icons.forEach(icon => {
                 const text = icon.innerText.trim().toUpperCase();
@@ -181,6 +219,7 @@ async function scrapeLeague(context, league) {
         return {
           pos: rankEl?.innerText.replace('.', '').trim() || "0",
           team: teamEl?.innerText.trim() || "Unknown",
+          teamLogo: logoEl?.src || "",
           pj: cells[2]?.innerText.trim() || "0",
           g: cells[3]?.innerText.trim() || "0",
           e: cells[4]?.innerText.trim() || "0",
@@ -194,7 +233,9 @@ async function scrapeLeague(context, league) {
 
     await page.close();
     
-    return data.map(r => {
+    console.log(`✅ ${league.name}: ${scrapedData.length} equipos.`);
+    
+    return scrapedData.map(r => {
       const teamData = getTeamData(r.team, league.name);
       const finalLeagueName = league.apiName || league.name;
       
@@ -202,8 +243,10 @@ async function scrapeLeague(context, league) {
         ...r,
         team: teamData.apiName,
         publicName: teamData.publicName,
-        teamLogo: teamData.logo,
-        league: finalLeagueName
+        // Prioridad: 1. Scrapeado, 2. Diccionario
+        teamLogo: r.teamLogo || teamData.logo,
+        league: finalLeagueName,
+        leagueLogo: liga_logo_scraped
       };
     });
 
@@ -228,7 +271,7 @@ async function run() {
   console.log("========================================\n");
 
   loadTeamDictionary();
-  
+
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({
     userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
@@ -239,8 +282,8 @@ async function run() {
   for (const league of LEAGUES) {
     const data = await scrapeLeague(context, league);
     if (data.length > 0) {
-        console.log(`✅ ${league.name}: ${data.length} equipos.`);
-        allData = allData.concat(data);
+      console.log(`✅ ${league.name}: ${data.length} equipos.`);
+      allData = allData.concat(data);
     }
   }
 
@@ -248,14 +291,13 @@ async function run() {
 
   if (allData.length > 0) {
     // Generar CSV
-    // A:Liga, B:Pos, C:Equipo, D:PJ, E:PG, F:PE, G:PP, H:Goles, I:Pts, J:Forma, K:Logo Liga, L:Logo Equipo, M:Nombre Público
-    const header = '"Liga","Pos","Equipo","PJ","PG","PE","PP","Goles","Pts","Forma","Logo Liga","Logo Equipo","Nombre Público"\n';
+    // A:Liga, B:Pos, C:Nombre Publico, D:Equipo, E:PJ, F:PG, G:PE, H:PP, I:Goles, J:Pts, K:Forma, L:Logo Liga, M:Logo Equipo
+    const header = '"Liga","Pos","Nombre Publico","Equipo","PJ","PG","PE","PP","Goles","Pts","Forma","Logo Liga","Logo Equipo"\n';
     const csvRows = allData.map(r => {
       const leagueNorm = normalize(r.league);
-      const leagueLogo = LEAGUE_MAP[leagueNorm] || "";
-      
-      // r.g, r.e, r.p son PG, PE, PP
-      return `"${r.league}","${r.pos}","${r.team}","${r.pj}","${r.g}","${r.e}","${r.p}","${r.goals}","${r.pts}","${r.form}","${leagueLogo}","${r.teamLogo}","${r.publicName}"`;
+      const leagueLogo = r.leagueLogo || LEAGUE_MAP[leagueNorm] || "";
+
+      return `"${r.league}","${r.pos}","${r.publicName}","${r.team}","${r.pj}","${r.g}","${r.e}","${r.p}","${r.goals}","${r.pts}","${r.form}","${leagueLogo}","${r.teamLogo}"`;
     }).join('\n');
 
     const csvContent = header + csvRows;
@@ -265,22 +307,22 @@ async function run() {
 
     // --- GENERAR JSON PARA LA WEB ---
     const webData = allData.map(r => {
-        const leagueNorm = normalize(r.league);
-        const leagueLogo = LEAGUE_MAP[leagueNorm] || "";
-        return {
-            liga: r.league,
-            pos: parseInt(r.pos),
-            equipo: r.publicName, // Nombre público para la web
-            pj: parseInt(r.pj),
-            pg: parseInt(r.g),
-            pe: parseInt(r.e),
-            pp: parseInt(r.p),
-            goles: r.goals,
-            pts: parseInt(r.pts),
-            forma: r.form,
-            logo_liga: leagueLogo,
-            logo_equipo: r.teamLogo
-        };
+      const leagueNorm = normalize(r.league);
+      const leagueLogo = r.leagueLogo || LEAGUE_MAP[leagueNorm] || "";
+      return {
+        liga: r.league,
+        pos: parseInt(r.pos),
+        equipo: r.publicName, // Nombre público para la web
+        pj: parseInt(r.pj),
+        pg: parseInt(r.g),
+        pe: parseInt(r.e),
+        pp: parseInt(r.p),
+        goles: r.goals,
+        pts: parseInt(r.pts),
+        forma: r.form,
+        logo_liga: leagueLogo,
+        logo_equipo: r.teamLogo
+      };
     });
 
     const jsonPath = path.join(__dirname, '../public/standings.json');
@@ -311,7 +353,7 @@ async function run() {
       }
     }
   }
-  
+
   console.log("\n========================================");
   console.log(`🎉 ¡PROCESO COMPLETADO!`);
   console.log("========================================\n");

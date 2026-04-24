@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Trash2, CheckCircle, XCircle, MinusCircle, Plus, Search, ShieldCheck, TrendingUp, Sparkles, Pencil, X, Save, AlertCircle } from 'lucide-react';
 import { cn, normalizeBettingPick, translateBettingTerm, substituteTeamNames, translateLeagueName, formatMatchName, formatTeamName, deepNormalize, simpleNormalize } from '@/lib/utils';
+import { LogoAutocomplete } from '@/components/admin/LogoAutocomplete';
 
 // ==========================================
 // COMPONENTE: MODAL DE EDICIÓN TOTAL
@@ -38,13 +39,13 @@ function EditPickModal({ pick, isOpen, onClose, onSave }: { pick: any, isOpen: b
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-deep-black/80 backdrop-blur-md animate-in fade-in duration-300">
       <div className="bg-[#0a1219] border border-white/10 rounded-[28px] w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl shadow-black/80 ring-1 ring-white/5">
         {/* Header */}
-        <div className="p-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-neon-green/10 flex items-center justify-center border border-neon-green/30">
-              <Pencil className="h-5 w-5 text-neon-green" />
+        <div className="p-4 md:p-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+          <div className="flex items-center gap-2 md:gap-3">
+            <div className="h-8 w-8 md:h-10 md:w-10 rounded-xl bg-neon-green/10 flex items-center justify-center border border-neon-green/30">
+              <Pencil className="h-4 w-4 md:h-5 md:w-5 text-neon-green" />
             </div>
             <div>
-              <h2 className="text-xl font-black text-white tracking-tighter uppercase italic">Edición Total del Pick</h2>
+              <h2 className="text-base md:text-xl font-black text-white tracking-tighter uppercase italic">Edición Total</h2>
               <div className="flex items-center gap-4">
                 <p className="text-[10px] text-white/30 uppercase font-bold tracking-widest">ID: {pick.id}</p>
                 <div className="h-3 w-[1px] bg-white/10" />
@@ -60,171 +61,156 @@ function EditPickModal({ pick, isOpen, onClose, onSave }: { pick: any, isOpen: b
         </div>
 
         {/* Content - Scrollable */}
-        <div className="flex-1 overflow-y-auto p-8 space-y-8 no-scrollbar">
+        <div className="flex-1 overflow-y-auto p-5 md:p-6 space-y-5 no-scrollbar">
 
           {/* Sección 1: Datos Principales */}
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-neon-green uppercase tracking-widest ml-1">Partido / Evento</label>
+          <div className="grid md:grid-cols-3 gap-3 md:gap-4">
+            <div className="space-y-1">
+              <label className="text-[9px] font-black text-neon-green uppercase tracking-widest ml-1">Partido / Evento</label>
               <input
                 value={formData.match || ''}
                 onChange={e => setFormData({ ...formData, match: e.target.value })}
-                className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-neon-green/50 transition-all"
+                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-neon-green/50 transition-all"
               />
             </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-neon-green uppercase tracking-widest ml-1">Competición / Liga</label>
+            <div className="space-y-1">
+              <label className="text-[9px] font-black text-neon-green uppercase tracking-widest ml-1">Competición / Liga</label>
               <input
                 value={formData.competition || ''}
                 onChange={e => setFormData({ ...formData, competition: e.target.value })}
-                className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-neon-green/50 transition-all"
+                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-neon-green/50 transition-all"
               />
             </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-neon-green uppercase tracking-widest ml-1">Fecha del Partido</label>
+            <div className="space-y-1">
+              <label className="text-[9px] font-black text-neon-green uppercase tracking-widest ml-1">Fecha del Partido</label>
               <input
                 type="datetime-local"
                 value={formData.match_date ? new Date(new Date(formData.match_date).getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().slice(0, 16) : ''}
                 onChange={e => setFormData({ ...formData, match_date: e.target.value })}
-                className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-neon-green/50 transition-all font-mono"
+                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-neon-green/50 transition-all font-mono"
               />
             </div>
           </div>
 
           {/* Sección 2: Mercado y Selección */}
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-neon-green uppercase tracking-widest ml-1">Mercado (Ej: 1X2, BTTS...)</label>
+          <div className="grid md:grid-cols-2 gap-3 md:gap-4">
+            <div className="space-y-1">
+              <label className="text-[9px] font-black text-neon-green uppercase tracking-widest ml-1">Mercado (Ej: 1X2, BTTS...)</label>
               <input
                 value={formData.market || ''}
                 onChange={e => setFormData({ ...formData, market: e.target.value })}
-                className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-neon-green/50 transition-all"
+                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-neon-green/50 transition-all"
               />
             </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-neon-green uppercase tracking-widest ml-1">Pronóstico (Pick)</label>
+            <div className="space-y-1">
+              <label className="text-[9px] font-black text-neon-green uppercase tracking-widest ml-1">Pronóstico (Pick)</label>
               <input
                 value={formData.pick || ''}
                 onChange={e => setFormData({ ...formData, pick: e.target.value })}
-                className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-neon-green/50 transition-all font-black text-neon-green italic"
+                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-neon-green/50 transition-all font-black text-neon-green italic"
               />
             </div>
           </div>
 
           {/* Sección 3: Números */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-neon-green uppercase tracking-widest ml-1">Cuota</label>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+            <div className="space-y-1">
+              <label className="text-[9px] font-black text-neon-green uppercase tracking-widest ml-1">Cuota</label>
               <input
                 type="number" step="0.01"
                 value={formData.odds || 0}
                 onChange={e => setFormData({ ...formData, odds: parseFloat(e.target.value) || 0 })}
-                className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-neon-green/50 transition-all font-mono"
+                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-neon-green/50 transition-all font-mono"
               />
             </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-neon-green uppercase tracking-widest ml-1">Stake (1-5)</label>
+            <div className="space-y-1">
+              <label className="text-[9px] font-black text-neon-green uppercase tracking-widest ml-1">Stake (1-5)</label>
               <input
                 type="number" step="1"
                 value={formData.stake || 0}
                 onChange={e => setFormData({ ...formData, stake: parseInt(e.target.value) || 0 })}
-                className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-neon-green/50 transition-all font-mono"
+                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-neon-green/50 transition-all font-mono"
               />
             </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-neon-green uppercase tracking-widest ml-1">Confianza (%)</label>
+            <div className="space-y-1">
+              <label className="text-[9px] font-black text-neon-green uppercase tracking-widest ml-1">Confianza (%)</label>
               <input
                 type="number"
                 value={formData.confianza || 0}
                 onChange={e => setFormData({ ...formData, confianza: parseInt(e.target.value) })}
-                className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-neon-green/50 transition-all font-mono"
+                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-neon-green/50 transition-all font-mono"
               />
             </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-neon-green uppercase tracking-widest ml-1">Bookmaker</label>
+            <div className="space-y-1">
+              <label className="text-[9px] font-black text-neon-green uppercase tracking-widest ml-1">Bookmaker</label>
               <input
                 value={formData.bookmaker || ''}
                 onChange={e => setFormData({ ...formData, bookmaker: e.target.value })}
-                className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-neon-green/50 transition-all"
+                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-neon-green/50 transition-all"
               />
             </div>
           </div>
 
           {/* Sección 4: Activos Visuales (Logos) */}
-          <div className="space-y-4 bg-white/[0.02] p-6 rounded-[20px] border border-white/5">
-            <h3 className="text-xs font-black text-white/40 uppercase tracking-[0.3em] mb-4">Sincronización de Logos</h3>
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="space-y-2">
-                <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">Logo Local (Home)</label>
-                <div className="flex gap-3">
-                  <input
-                    value={formData.home_logo || ''}
-                    onChange={e => setFormData({ ...formData, home_logo: e.target.value })}
-                    className="flex-1 bg-white/5 border border-white/10 rounded-xl p-3 text-[11px] text-white/60 focus:outline-none focus:border-neon-green/50 transition-all"
-                  />
-                  <div className="h-10 w-10 bg-white rounded-lg p-1 flex items-center justify-center shrink-0 border border-white/10">
-                    <img src={formData.home_logo || "https://img.icons8.com/ios-filled/100/ffffff/shield.png"} alt="" className="h-full w-full object-contain" />
-                  </div>
-                </div>
+          <div className="bg-white/[0.02] p-3 md:p-4 rounded-[16px] border border-white/5">
+            <h3 className="text-[9px] font-black text-white/30 uppercase tracking-[0.3em] mb-3">Sincronización de Logos</h3>
+            <div className="grid md:grid-cols-3 gap-3 md:gap-4">
+              <div className="space-y-1">
+                <LogoAutocomplete 
+                  label="Logo Local (Home)"
+                  value={formData.home_logo || ''}
+                  onChange={(val) => setFormData({ ...formData, home_logo: val })}
+                  placeholder="Escribe para buscar equipo..."
+                />
               </div>
-              <div className="space-y-2">
-                <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">Logo Visitante (Away)</label>
-                <div className="flex gap-3">
-                  <input
-                    value={formData.away_logo || ''}
-                    onChange={e => setFormData({ ...formData, away_logo: e.target.value })}
-                    className="flex-1 bg-white/5 border border-white/10 rounded-xl p-3 text-[11px] text-white/60 focus:outline-none focus:border-neon-green/50 transition-all"
-                  />
-                  <div className="h-10 w-10 bg-white rounded-lg p-1 flex items-center justify-center shrink-0 border border-white/10">
-                    <img src={formData.away_logo || "https://img.icons8.com/ios-filled/100/ffffff/shield.png"} alt="" className="h-full w-full object-contain" />
-                  </div>
-                </div>
+              <div className="space-y-1">
+                <LogoAutocomplete 
+                  label="Logo Visitante (Away)"
+                  value={formData.away_logo || ''}
+                  onChange={(val) => setFormData({ ...formData, away_logo: val })}
+                  placeholder="Escribe para buscar equipo..."
+                />
               </div>
-              <div className="space-y-2">
-                <label className="text-[9px] font-black text-white/20 uppercase tracking-widest">Logo de la Liga</label>
-                <div className="flex gap-3">
-                  <input
-                    value={formData.league_logo || ''}
-                    onChange={e => setFormData({ ...formData, league_logo: e.target.value })}
-                    className="flex-1 bg-white/5 border border-white/10 rounded-xl p-3 text-[11px] text-white/60 focus:outline-none focus:border-neon-green/50 transition-all"
-                  />
-                  <div className="h-10 w-10 bg-white rounded-lg p-1 flex items-center justify-center shrink-0 border border-white/10">
-                    <img src={formData.league_logo || "https://img.icons8.com/ios-filled/100/ffffff/trophy.png"} alt="" className="h-full w-full object-contain" />
-                  </div>
-                </div>
+              <div className="space-y-1">
+                <LogoAutocomplete 
+                  label="Logo de la Liga"
+                  value={formData.league_logo || ''}
+                  onChange={(val) => setFormData({ ...formData, league_logo: val })}
+                  placeholder="Escribe para buscar liga..."
+                />
               </div>
             </div>
           </div>
 
           {/* Sección 5: Análisis y Argumentación */}
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-neon-green uppercase tracking-widest ml-1">Razonamiento Detallado</label>
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <label className="text-[9px] font-black text-neon-green uppercase tracking-widest ml-1">Razonamiento Detallado</label>
               <textarea
                 value={formData.razonamiento || ''}
                 onChange={e => setFormData({ ...formData, razonamiento: e.target.value })}
-                rows={4}
-                className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white/80 focus:outline-none focus:border-neon-green/50 transition-all leading-relaxed resize-none"
+                rows={3}
+                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white/80 focus:outline-none focus:border-neon-green/50 transition-all leading-relaxed resize-none"
               />
             </div>
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-neon-green uppercase tracking-widest ml-1">Puntos Fuertes (JSON Array)</label>
+            <div className="grid md:grid-cols-2 gap-3 md:gap-4">
+              <div className="space-y-1">
+                <label className="text-[9px] font-black text-neon-green uppercase tracking-widest ml-1">Puntos Fuertes (JSON Array)</label>
                 <textarea
                   value={formData.factores || ''}
                   onChange={e => setFormData({ ...formData, factores: e.target.value })}
-                  rows={3}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-[11px] text-white/60 focus:outline-none focus:border-neon-green/50 transition-all font-mono resize-none"
+                  rows={2}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-[10px] text-white/60 focus:outline-none focus:border-neon-green/50 transition-all font-mono resize-none"
                   placeholder='["Factor 1", "Factor 2"]'
                 />
               </div>
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-orange-500 uppercase tracking-widest ml-1">Riesgos / Alertas (JSON Array)</label>
+              <div className="space-y-1">
+                <label className="text-[9px] font-black text-orange-500 uppercase tracking-widest ml-1">Riesgos / Alertas (JSON Array)</label>
                 <textarea
                   value={formData.alertas || ''}
                   onChange={e => setFormData({ ...formData, alertas: e.target.value })}
-                  rows={3}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-[11px] text-white/60 focus:outline-none focus:border-orange-500/50 transition-all font-mono resize-none"
+                  rows={2}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-[10px] text-white/60 focus:outline-none focus:border-orange-500/50 transition-all font-mono resize-none"
                   placeholder='["Riesgo 1", "Riesgo 2"]'
                 />
               </div>
@@ -234,19 +220,19 @@ function EditPickModal({ pick, isOpen, onClose, onSave }: { pick: any, isOpen: b
         </div>
 
         {/* Footer */}
-        <div className="p-6 bg-white/[0.02] border-t border-white/5 flex items-center justify-end gap-4">
+        <div className="px-4 py-3 md:px-6 md:py-4 bg-white/[0.02] border-t border-white/5 flex flex-col md:flex-row items-center justify-end gap-2 md:gap-3">
           <button
             onClick={onClose}
-            className="px-6 py-3 rounded-xl text-xs font-black text-white/30 uppercase tracking-widest hover:text-white transition-all"
+            className="w-full md:w-auto px-5 py-2 rounded-lg text-[10px] font-black text-white/30 uppercase tracking-widest hover:text-white transition-all order-2 md:order-1"
           >
             Descartar
           </button>
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="bg-neon-green text-deep-black px-8 py-3 rounded-xl font-black uppercase italic tracking-tighter text-sm shadow-lg shadow-neon-green/20 ring-1 ring-neon-green/50 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2 disabled:opacity-50"
+            className="w-full md:w-auto bg-neon-green text-deep-black px-6 py-2.5 rounded-lg font-black uppercase italic tracking-tighter text-xs shadow-lg shadow-neon-green/20 ring-1 ring-neon-green/50 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50 order-1 md:order-2"
           >
-            {isSaving ? "Guardando..." : <><Save size={16} /> Guardar Pick</>}
+            {isSaving ? "Guardando..." : <><Save size={14} /> Guardar Pick</>}
           </button>
         </div>
       </div>
@@ -262,6 +248,13 @@ export default function AdminPicksPage() {
   const [selectedPicks, setSelectedPicks] = useState<Set<string>>(new Set());
   const [editingPick, setEditingPick] = useState<any | null>(null);
   const [notification, setNotification] = useState<{ message: string, type: 'success' | 'info' | 'warning' } | null>(null);
+  
+  // Estados para filtros de fecha
+  const [dateStart, setDateStart] = useState('');
+  const [dateEnd, setDateEnd] = useState('');
+
+  // Un único estado controla TANTO el orden COMO el campo de fecha del filtro
+  const [sortBy, setSortBy] = useState<'match_date' | 'created_at'>('match_date');
 
   // Auto-hide notification
   useEffect(() => {
@@ -277,11 +270,18 @@ export default function AdminPicksPage() {
 
   const fetchPicks = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from('picks')
-      .select('*')
-      .order('match_date', { ascending: true })
-      .order('created_at', { ascending: false });
+    let query = supabase.from('picks').select('*');
+
+    if (sortBy === 'match_date') {
+      query = query
+        .order('match_date', { ascending: true })
+        .order('created_at', { ascending: false });
+    } else {
+      query = query
+        .order('created_at', { ascending: false });
+    }
+
+    const { data, error } = await query;
 
     if (!error) {
       setPicks(data || []);
@@ -292,7 +292,7 @@ export default function AdminPicksPage() {
 
   useEffect(() => {
     fetchPicks();
-  }, []);
+  }, [sortBy]);
 
   const toggleSelectAll = () => {
     if (selectedPicks.size === filteredPicks.length && filteredPicks.length > 0) {
@@ -486,12 +486,31 @@ export default function AdminPicksPage() {
 
   const filteredBySearch = useMemo(() => {
     const q = simpleNormalize(searchQuery);
-    return picks.filter(p =>
-      simpleNormalize(p.match).includes(q) ||
-      simpleNormalize(p.market).includes(q) ||
-      simpleNormalize(p.competition).includes(q)
-    );
-  }, [picks, searchQuery]);
+    return picks.filter(p => {
+      // Filtro de Texto
+      const matchesText = 
+        simpleNormalize(p.match).includes(q) ||
+        simpleNormalize(p.market).includes(q) ||
+        simpleNormalize(p.competition).includes(q);
+      
+      if (!matchesText) return false;
+
+      // Filtro de Fecha — usa el mismo campo que el ordenamiento activo
+      const dateToCompare = new Date(p[sortBy]);
+      if (dateStart) {
+        const start = new Date(dateStart);
+        start.setHours(0, 0, 0, 0);
+        if (dateToCompare < start) return false;
+      }
+      if (dateEnd) {
+        const end = new Date(dateEnd);
+        end.setHours(23, 59, 59, 999);
+        if (dateToCompare > end) return false;
+      }
+
+      return true;
+    });
+  }, [picks, searchQuery, dateStart, dateEnd, sortBy]);
 
   const counts = useMemo(() => ({
     all: filteredBySearch.length,
@@ -553,67 +572,138 @@ export default function AdminPicksPage() {
       )}
 
       {/* --- HEADER --- */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-4">
-        <div>
-          <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase italic leading-none">CENTRO DE <span className="text-neon-green">CONTROL</span></h1>
-          <p className="text-white/30 text-[11px] mt-3 tracking-[0.2em] uppercase font-black">Panel v8.5 · {picks.length} picks</p>
+      <div className="flex flex-col gap-6 px-4">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase italic leading-none">CENTRO DE <span className="text-neon-green">CONTROL</span></h1>
+            <p className="text-white/30 text-[11px] mt-3 tracking-[0.2em] uppercase font-black">Panel v8.5 · {picks.length} picks</p>
+          </div>
+          
+          <button onClick={handleNewPick} className="bg-neon-green text-deep-black font-black px-6 py-3.5 rounded-2xl text-xs uppercase tracking-tighter flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-neon-green/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-green/80 ring-1 ring-neon-green/50 w-full md:w-auto">
+            <Plus className="h-4 w-4" /> Nuevo Pick
+          </button>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1 p-1.5 bg-white/[0.05] rounded-2xl border border-white/10 shadow-inner">
+
+        {/* Acciones Secundarias y Ordenamiento */}
+        <div className="flex flex-wrap items-center gap-4 bg-white/[0.02] p-2 rounded-[22px] border border-white/5">
+          {/* Selector de Orden */}
+          <div className="flex items-center gap-1 p-1 bg-white/[0.05] rounded-xl border border-white/10 shadow-inner flex-1 sm:flex-none justify-around sm:justify-start">
+            <button 
+              onClick={() => setSortBy('match_date')}
+              className={cn(
+                "p-3 rounded-lg transition-all",
+                sortBy === 'match_date' ? "text-neon-green" : "text-white/20 hover:text-white/40"
+              )}
+              title="Ordenar por fecha del partido"
+            >
+              <TrendingUp className="h-4 w-4" />
+            </button>
+            <button 
+              onClick={() => setSortBy('created_at')}
+              className={cn(
+                "p-3 rounded-lg transition-all",
+                sortBy === 'created_at' ? "text-neon-green" : "text-white/20 hover:text-white/40"
+              )}
+              title="Ordenar por recientes"
+            >
+              <Sparkles className="h-4 w-4" />
+            </button>
+          </div>
+
+          {/* Botones de Auditoría */}
+          <div className="flex items-center gap-1 p-1 bg-white/[0.05] rounded-xl border border-white/10 shadow-inner flex-1 sm:flex-none justify-around sm:justify-start">
             <button 
               onClick={handleCheckAssets} 
-              className="p-3 text-white/70 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 rounded-xl transition-all" 
-              title="Auditar logos e imágenes"
-              aria-label="Auditar logos e imágenes"
+              className="p-3 text-white/70 hover:text-white rounded-lg transition-all" 
+              title="Auditar logos"
             >
               <ShieldCheck className="h-4 w-4" />
             </button>
             <button 
               onClick={handleCleanupDuplicates} 
-              className="p-3 text-orange-400/70 hover:text-orange-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400/50 rounded-xl transition-all" 
-              title="Limpiar picks duplicados"
-              aria-label="Limpiar picks duplicados"
+              className="p-3 text-orange-400/70 hover:text-orange-400 rounded-lg transition-all" 
+              title="Limpiar duplicados"
             >
               <Sparkles className="h-4 w-4" />
             </button>
             <button 
               onClick={handleTranslateAudit} 
-              className="p-3 text-purple-400/70 hover:text-purple-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400/50 rounded-xl transition-all" 
-              title="Auditoría de traducción y normalización"
-              aria-label="Auditoría de traducción y normalización"
+              className="p-3 text-purple-400/70 hover:text-purple-400 rounded-lg transition-all" 
+              title="Normalizar datos"
             >
               <TrendingUp className="h-4 w-4" />
             </button>
           </div>
-          <button onClick={handleNewPick} className="bg-neon-green text-deep-black font-black px-6 py-3.5 rounded-2xl text-xs uppercase tracking-tighter flex items-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-neon-green/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-green/80 ring-1 ring-neon-green/50"><Plus className="h-4 w-4" /> Nuevo Pick</button>
         </div>
       </div>
 
       {/* --- TOOLBAR --- */}
-      <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-4 bg-white/[0.02] p-3 rounded-[25px] border border-white/5 backdrop-blur-sm mx-4">
-        <div className="relative flex-1 group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20 group-focus-within:text-neon-green transition-colors" />
-          <input type="text" placeholder="BUSCAR..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-[#111f2e]/50 border border-white/5 rounded-2xl py-3.5 pl-12 pr-4 text-[11px] font-black uppercase text-white placeholder:text-white/10 focus:outline-none" />
+      <div className="flex flex-col gap-4 mx-4">
+        <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-4 bg-white/[0.02] p-3 rounded-[25px] border border-white/5 backdrop-blur-sm">
+          <div className="relative flex-1 group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20 group-focus-within:text-neon-green transition-colors" />
+            <input type="text" placeholder="BUSCAR POR EQUIPO, LIGA O MERCADO..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-[#111f2e]/50 border border-white/5 rounded-2xl py-3.5 pl-12 pr-4 text-[11px] font-black uppercase text-white placeholder:text-white/10 focus:outline-none" />
+          </div>
+          
+          <div className="flex bg-deep-black/60 p-1.5 rounded-[20px] border border-white/5 overflow-x-auto no-scrollbar">
+            {[
+              { id: 'all', label: 'TODOS' },
+              { id: 'pending', label: 'PENDIENTES' },
+              { id: 'won', label: 'GANADOS' },
+              { id: 'lost', label: 'PERDIDOS' },
+              { id: 'void', label: 'NULOS' }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setStatusFilter(tab.id)}
+                className={cn(
+                  "px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all whitespace-nowrap",
+                  statusFilter === tab.id ? "bg-neon-green text-deep-black" : "text-white/30 hover:text-white/60"
+                )}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </div>
-        <div className="flex bg-deep-black/60 p-1.5 rounded-[20px] border border-white/5 overflow-x-auto no-scrollbar">
-          {[
-            { id: 'all', label: 'TODOS' },
-            { id: 'pending', label: 'PENDIENTES' },
-            { id: 'won', label: 'GANADOS' },
-            { id: 'lost', label: 'PERDIDOS' },
-            { id: 'void', label: 'NULOS' }
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setStatusFilter(tab.id)}
-              className={cn(
-                "px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all whitespace-nowrap",
-                statusFilter === tab.id ? "bg-neon-green text-deep-black" : "text-white/30 hover:text-white/60"
-              )}
-            >
-              {tab.label}
-            </button>
-          ))}
+
+        {/* Filtros de Fecha */}
+        <div className="flex flex-wrap items-end gap-4 bg-white/[0.01] p-4 rounded-[22px] border border-white/5">
+          <div className="flex flex-col justify-end">
+            <span className="text-[8px] font-black text-white/20 uppercase tracking-widest ml-1 mb-1">
+              {sortBy === 'match_date' ? 'Fecha Partido' : 'Fecha Registro'}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-3 flex-1 min-w-[280px]">
+            <div className="flex flex-col flex-1">
+              <span className="text-[8px] font-black text-white/20 uppercase ml-3 mb-1">Desde</span>
+              <input 
+                type="date" 
+                value={dateStart} 
+                onChange={(e) => setDateStart(e.target.value)}
+                className="bg-[#111f2e]/80 border border-white/5 rounded-xl px-4 py-2 text-[10px] text-white/60 focus:outline-none focus:border-neon-green/30 w-full"
+              />
+            </div>
+            <div className="flex flex-col flex-1">
+              <span className="text-[8px] font-black text-white/20 uppercase ml-3 mb-1">Hasta</span>
+              <input 
+                type="date" 
+                value={dateEnd} 
+                onChange={(e) => setDateEnd(e.target.value)}
+                className="bg-[#111f2e]/80 border border-white/5 rounded-xl px-4 py-2 text-[10px] text-white/60 focus:outline-none focus:border-neon-green/30 w-full"
+              />
+            </div>
+            {(dateStart || dateEnd) && (
+              <button 
+                onClick={() => { setDateStart(''); setDateEnd(''); }}
+                className="mt-4 p-2 text-white/20 hover:text-red-400 transition-colors"
+                title="Limpiar fechas"
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -656,6 +746,9 @@ export default function AdminPicksPage() {
                           <span className="text-[9px] font-black text-neon-green/30">{pick.match_date ? new Date(pick.match_date).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' }) : '--/--'}</span>
                           <span className="text-[9px] font-medium text-white/20">{pick.match_date ? new Date(pick.match_date).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) : '--:--'}</span>
                         </div>
+                        <span className="text-[8px] font-black text-white/30 uppercase tracking-tighter mt-1.5 px-1.5 py-0.5 bg-white/[0.03] rounded border border-white/[0.05]">
+                          REG: {new Date(pick.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' })} {new Date(pick.created_at).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                        </span>
                       </div>
                     </div>
 
@@ -700,9 +793,11 @@ export default function AdminPicksPage() {
                       </div>
                     </div>
 
-                    <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 lg:py-0 border-b lg:border-b-0 lg:border-r border-white/[0.03] min-w-[180px]">
-                      <span className="text-[8px] font-bold text-white/10 uppercase tracking-widest mb-0.5">{translateBettingTerm(pick.market)}</span>
-                      <span className="text-white/60 font-black uppercase text-[10px] italic tracking-tight text-center">{substituteTeamNames(normalizeBettingPick(pick.pick), pick.match)}</span>
+                    <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 lg:py-0 min-w-[160px]">
+                      <span className="text-[8px] font-black text-white/20 uppercase tracking-[0.2em] mb-1">{translateBettingTerm(pick.market)}</span>
+                      <span className="text-white font-black uppercase text-xs italic tracking-tighter text-center leading-none">
+                        {substituteTeamNames(normalizeBettingPick(pick.pick), pick.match)}
+                      </span>
                     </div>
 
                     <div className="flex lg:flex-col items-center justify-between lg:justify-center lg:w-32 px-6 py-4 lg:py-0 bg-white/[0.005]">
@@ -712,10 +807,11 @@ export default function AdminPicksPage() {
                       </div>
                       <div className="flex flex-col items-end lg:items-center lg:mt-2">
                         <div className={cn(
-                          "px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-[0.15em] border",
-                          pick.status === 'won' ? "bg-neon-green/5 text-neon-green/40 border-neon-green/10" : 
-                          pick.status === 'lost' ? "bg-red-500/5 text-red-500/40 border-red-500/10" :
-                          "bg-white/5 text-white/20 border-white/5"
+                          "px-3 py-1 rounded-md text-[9px] font-black uppercase tracking-[0.15em] border shadow-sm",
+                          pick.status === 'won' ? "bg-neon-green/10 text-neon-green border-neon-green/30 shadow-neon-green/5" : 
+                          pick.status === 'lost' ? "bg-red-500/10 text-red-500 border-red-500/30 shadow-red-500/5" :
+                          pick.status === 'void' ? "bg-white/10 text-white/60 border-white/20" :
+                          "bg-blue-500/10 text-blue-400 border-blue-500/20" // Pendiente en azul/cian suave
                         )}>
                           {statusLabels[pick.status] || pick.status.toUpperCase()}
                         </div>
@@ -757,6 +853,14 @@ export default function AdminPicksPage() {
                         title="Perdido"
                       >
                         <XCircle className="h-3.5 w-3.5" />
+                      </button>
+
+                      <button
+                        onClick={() => updateStatus(pick.id, 'void')}
+                        className="h-9 w-9 flex items-center justify-center rounded-lg text-white/20 hover:text-white hover:bg-white/10 transition-all"
+                        title="Nulo / Void"
+                      >
+                        <MinusCircle className="h-3.5 w-3.5" />
                       </button>
 
                       <button

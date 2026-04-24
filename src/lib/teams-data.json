@@ -1,0 +1,1549 @@
+[
+  {
+    "name": "Barcelona",
+    "league": "LaLiga EA Sports",
+    "logo": "https://static.flashscore.com/res/image/data/jZ8dSYS0-fcDVLdrL.png",
+    "localLogo": "/logos/teams/barcelona.png",
+    "isLeague": false
+  },
+  {
+    "name": "Real Madrid",
+    "league": "LaLiga EA Sports",
+    "logo": "https://static.flashscore.com/res/image/data/CGPhnpne-ttfpEDUq.png",
+    "localLogo": "/logos/teams/real-madrid.png",
+    "isLeague": false
+  },
+  {
+    "name": "Villarreal",
+    "league": "LaLiga EA Sports",
+    "logo": "https://static.flashscore.com/res/image/data/EBxZSOjT-fJvsXNaF.png",
+    "localLogo": "/logos/teams/villarreal.png",
+    "isLeague": false
+  },
+  {
+    "name": "Atlético de Madrid",
+    "league": "LaLiga EA Sports",
+    "logo": "https://static.flashscore.com/res/image/data/Kv2QSkhT-GhHiNvXF.png",
+    "localLogo": "/logos/teams/atletico-de-madrid.png",
+    "isLeague": false
+  },
+  {
+    "name": "Real Betis",
+    "league": "LaLiga EA Sports",
+    "logo": "https://static.flashscore.com/res/image/data/YV7lpDU0-zkU5wiAr.png",
+    "localLogo": "/logos/teams/real-betis.png",
+    "isLeague": false
+  },
+  {
+    "name": "Celta de Vigo",
+    "league": "LaLiga EA Sports",
+    "logo": "https://static.flashscore.com/res/image/data/INW8oRBN-SOY3p1Si.png",
+    "localLogo": "/logos/teams/celta-de-vigo.png",
+    "isLeague": false
+  },
+  {
+    "name": "Real Sociedad",
+    "league": "LaLiga EA Sports",
+    "logo": "https://static.flashscore.com/res/image/data/rcAkl5le-vJb36ZBF.png",
+    "localLogo": "/logos/teams/real-sociedad.png",
+    "isLeague": false
+  },
+  {
+    "name": "Getafe",
+    "league": "LaLiga EA Sports",
+    "logo": "https://static.flashscore.com/res/image/data/hGMWMdT0-YmCZKGcR.png",
+    "localLogo": "/logos/teams/getafe.png",
+    "isLeague": false
+  },
+  {
+    "name": "Athletic Club",
+    "league": "LaLiga EA Sports",
+    "logo": "https://static.flashscore.com/res/image/data/GUtNYAWH-vJb36ZBF.png",
+    "localLogo": "/logos/teams/athletic-club.png",
+    "isLeague": false
+  },
+  {
+    "name": "Osasuna",
+    "league": "LaLiga EA Sports",
+    "logo": "https://static.flashscore.com/res/image/data/UTfY3r86-Yu8w588N.png",
+    "localLogo": "/logos/teams/osasuna.png",
+    "isLeague": false
+  },
+  {
+    "name": "Girona",
+    "league": "LaLiga EA Sports",
+    "logo": "https://static.flashscore.com/res/image/data/6mZj79BN-vPm0hQMN.png",
+    "localLogo": "/logos/teams/girona.png",
+    "isLeague": false
+  },
+  {
+    "name": "Espanyol",
+    "league": "LaLiga EA Sports",
+    "logo": "https://static.flashscore.com/res/image/data/QeCoIpXH-Msjm1Bq4.png",
+    "localLogo": "/logos/teams/espanyol.png",
+    "isLeague": false
+  },
+  {
+    "name": "Valencia",
+    "league": "LaLiga EA Sports",
+    "logo": "https://static.flashscore.com/res/image/data/8Cqphq8k-MHrRLNUo.png",
+    "localLogo": "/logos/teams/valencia.png",
+    "isLeague": false
+  },
+  {
+    "name": "Mallorca",
+    "league": "LaLiga EA Sports",
+    "logo": "https://static.flashscore.com/res/image/data/WKsw8cne-rmDEjevK.png",
+    "localLogo": "/logos/teams/mallorca.png",
+    "isLeague": false
+  },
+  {
+    "name": "Rayo Vallecano",
+    "league": "LaLiga EA Sports",
+    "logo": "https://static.flashscore.com/res/image/data/QyKcNfhT-EPWyZtpb.png",
+    "localLogo": "/logos/teams/rayo-vallecano.png",
+    "isLeague": false
+  },
+  {
+    "name": "Sevilla",
+    "league": "LaLiga EA Sports",
+    "logo": "https://static.flashscore.com/res/image/data/EcTGi086-tIT0KyhE.png",
+    "localLogo": "/logos/teams/sevilla.png",
+    "isLeague": false
+  },
+  {
+    "name": "Alavés",
+    "league": "LaLiga EA Sports",
+    "logo": "https://static.flashscore.com/res/image/data/4rBxR4R0-4U3vjZKk.png",
+    "localLogo": "/logos/teams/alaves.png",
+    "isLeague": false
+  },
+  {
+    "name": "Elche",
+    "league": "LaLiga EA Sports",
+    "logo": "https://static.flashscore.com/res/image/data/EVxB82BN-YmCZKGcR.png",
+    "localLogo": "/logos/teams/elche.png",
+    "isLeague": false
+  },
+  {
+    "name": "Levante",
+    "league": "LaLiga EA Sports",
+    "logo": "https://static.flashscore.com/res/image/data/0dmWDDBN-QqzX7amJ.png",
+    "localLogo": "/logos/teams/levante.png",
+    "isLeague": false
+  },
+  {
+    "name": "Real Oviedo",
+    "league": "LaLiga EA Sports",
+    "logo": "https://static.flashscore.com/res/image/data/8CuFFxlC-Y7pkY0PJ.png",
+    "localLogo": "/logos/teams/real-oviedo.png",
+    "isLeague": false
+  },
+  {
+    "name": "Arsenal",
+    "league": "Premier League",
+    "logo": "https://static.flashscore.com/res/image/data/0n1ffK6k-vcNAdtF9.png",
+    "localLogo": "/logos/teams/arsenal.png",
+    "isLeague": false
+  },
+  {
+    "name": "Manchester City",
+    "league": "Premier League",
+    "logo": "https://static.flashscore.com/res/image/data/0vgscFU0-lQuhqN8N.png",
+    "localLogo": "/logos/teams/manchester-city.png",
+    "isLeague": false
+  },
+  {
+    "name": "Manchester Utd",
+    "league": "Premier League",
+    "logo": "https://static.flashscore.com/res/image/data/GhGV3qjT-UPrTWfIe.png",
+    "localLogo": "/logos/teams/manchester-utd.png",
+    "isLeague": false
+  },
+  {
+    "name": "Aston Villa",
+    "league": "Premier League",
+    "logo": "https://static.flashscore.com/res/image/data/UHchCEVH-UTYC4Dd6.png",
+    "localLogo": "/logos/teams/aston-villa.png",
+    "isLeague": false
+  },
+  {
+    "name": "Liverpool",
+    "league": "Premier League",
+    "logo": "https://static.flashscore.com/res/image/data/nBClzyne-f97XIGZs.png",
+    "localLogo": "/logos/teams/liverpool.png",
+    "isLeague": false
+  },
+  {
+    "name": "Brighton",
+    "league": "Premier League",
+    "logo": "https://static.flashscore.com/res/image/data/G0q9xjRq-b92lfEJC.png",
+    "localLogo": "/logos/teams/brighton.png",
+    "isLeague": false
+  },
+  {
+    "name": "Chelsea",
+    "league": "Premier League",
+    "logo": "https://static.flashscore.com/res/image/data/lMxEQ8me-IROrZEJb.png",
+    "localLogo": "/logos/teams/chelsea.png",
+    "isLeague": false
+  },
+  {
+    "name": "Brentford",
+    "league": "Premier League",
+    "logo": "https://static.flashscore.com/res/image/data/SjSCLv86-r9Mudk7j.png",
+    "localLogo": "/logos/teams/brentford.png",
+    "isLeague": false
+  },
+  {
+    "name": "Bournemouth",
+    "league": "Premier League",
+    "logo": "https://static.flashscore.com/res/image/data/C60HMWTH-fVlIcxl3.png",
+    "localLogo": "/logos/teams/bournemouth.png",
+    "isLeague": false
+  },
+  {
+    "name": "Everton",
+    "league": "Premier League",
+    "logo": "https://static.flashscore.com/res/image/data/EBfZuwme-bRmKmISE.png",
+    "localLogo": "/logos/teams/everton.png",
+    "isLeague": false
+  },
+  {
+    "name": "Sunderland",
+    "league": "Premier League",
+    "logo": "https://static.flashscore.com/res/image/data/rPPdotBN-0d34NJCO.png",
+    "localLogo": "/logos/teams/sunderland.png",
+    "isLeague": false
+  },
+  {
+    "name": "Fulham",
+    "league": "Premier League",
+    "logo": "https://static.flashscore.com/res/image/data/fkbYUWme-ImMEe0UF.png",
+    "localLogo": "/logos/teams/fulham.png",
+    "isLeague": false
+  },
+  {
+    "name": "Crystal Palace",
+    "league": "Premier League",
+    "logo": "https://static.flashscore.com/res/image/data/GfkvlLmC-drybTCiH.png",
+    "localLogo": "/logos/teams/crystal-palace.png",
+    "isLeague": false
+  },
+  {
+    "name": "Newcastle",
+    "league": "Premier League",
+    "logo": "https://static.flashscore.com/res/image/data/UXo7VXPq-2Vnc5VQf.png",
+    "localLogo": "/logos/teams/newcastle.png",
+    "isLeague": false
+  },
+  {
+    "name": "Leeds Utd",
+    "league": "Premier League",
+    "logo": "https://static.flashscore.com/res/image/data/lvs4WW5k-MTp25XgE.png",
+    "localLogo": "/logos/teams/leeds-utd.png",
+    "isLeague": false
+  },
+  {
+    "name": "Nottingham Forest",
+    "league": "Premier League",
+    "logo": "https://static.flashscore.com/res/image/data/86ODdyle-ImKwLTtA.png",
+    "localLogo": "/logos/teams/nottingham-forest.png",
+    "isLeague": false
+  },
+  {
+    "name": "West Ham",
+    "league": "Premier League",
+    "logo": "https://static.flashscore.com/res/image/data/YeSfKGlC-Q9DJHs4l.png",
+    "localLogo": "/logos/teams/west-ham.png",
+    "isLeague": false
+  },
+  {
+    "name": "Tottenham",
+    "league": "Premier League",
+    "logo": "https://static.flashscore.com/res/image/data/v3SzDxVH-Ig5FKJZ5.png",
+    "localLogo": "/logos/teams/tottenham.png",
+    "isLeague": false
+  },
+  {
+    "name": "Burnley",
+    "league": "Premier League",
+    "logo": "https://static.flashscore.com/res/image/data/xO3nES96-6PhTI7J6.png",
+    "localLogo": "/logos/teams/burnley.png",
+    "isLeague": false
+  },
+  {
+    "name": "Wolves",
+    "league": "Premier League",
+    "logo": "https://static.flashscore.com/res/image/data/MV7MiUmC-ABWS7fBq.png",
+    "localLogo": "/logos/teams/wolves.png",
+    "isLeague": false
+  },
+  {
+    "name": "Bayern Múnich",
+    "league": "Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/lWGBVoA6-SvLFaVNH.png",
+    "localLogo": "/logos/teams/bayern-munich.png",
+    "isLeague": false
+  },
+  {
+    "name": "Borussia Dortmund",
+    "league": "Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/xSfDCO76-WrjrBuU2.png",
+    "localLogo": "/logos/teams/borussia-dortmund.png",
+    "isLeague": false
+  },
+  {
+    "name": "RB Leipzig",
+    "league": "Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/fNS5fTmC-WvvSE8Dm.png",
+    "localLogo": "/logos/teams/rb-leipzig.png",
+    "isLeague": false
+  },
+  {
+    "name": "Stuttgart",
+    "league": "Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/fgQWGn86-f1Z3XxZa.png",
+    "localLogo": "/logos/teams/stuttgart.png",
+    "isLeague": false
+  },
+  {
+    "name": "Hoffenheim",
+    "league": "Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/IyZBMF7k-n7lWn9DL.png",
+    "localLogo": "/logos/teams/hoffenheim.png",
+    "isLeague": false
+  },
+  {
+    "name": "Bayer Leverkusen",
+    "league": "Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/dWZYQIPq-WrjrBuU2.png",
+    "localLogo": "/logos/teams/bayer-leverkusen.png",
+    "isLeague": false
+  },
+  {
+    "name": "Friburgo",
+    "league": "Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/0pdxCFiT-86lnAaq9.png",
+    "localLogo": "/logos/teams/friburgo.png",
+    "isLeague": false
+  },
+  {
+    "name": "Eintracht Fráncfort",
+    "league": "Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/2aegVtQq-86lnAaq9.png",
+    "localLogo": "/logos/teams/eintracht-francfort.png",
+    "isLeague": false
+  },
+  {
+    "name": "Augsburgo",
+    "league": "Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/Qgbz4piC-Qmnf8wEL.png",
+    "localLogo": "/logos/teams/augsburgo.png",
+    "isLeague": false
+  },
+  {
+    "name": "Mainz",
+    "league": "Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/tbR3gUTH-EoYxhN5r.png",
+    "localLogo": "/logos/teams/mainz.png",
+    "isLeague": false
+  },
+  {
+    "name": "Union Berlin",
+    "league": "Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/0OMJUule-ncmj9JbF.png",
+    "localLogo": "/logos/teams/union-berlin.png",
+    "isLeague": false
+  },
+  {
+    "name": "Colonia",
+    "league": "Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/KMphsCCN-86lnAaq9.png",
+    "localLogo": "/logos/teams/colonia.png",
+    "isLeague": false
+  },
+  {
+    "name": "Borussia M'gladbach",
+    "league": "Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/tjlAHwhT-84sATBUR.png",
+    "localLogo": "/logos/teams/borussia-mgladbach.png",
+    "isLeague": false
+  },
+  {
+    "name": "Hamburgo",
+    "league": "Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/dWB5gKjC-86lnAaq9.png",
+    "localLogo": "/logos/teams/hamburgo.png",
+    "isLeague": false
+  },
+  {
+    "name": "Werder Bremen",
+    "league": "Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/pIavfLS0-EVomMG4o.png",
+    "localLogo": "/logos/teams/werder-bremen.png",
+    "isLeague": false
+  },
+  {
+    "name": "St. Pauli",
+    "league": "Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/QHdIUX96-lrmFNGea.png",
+    "localLogo": "/logos/teams/st-pauli.png",
+    "isLeague": false
+  },
+  {
+    "name": "Wolfsburgo",
+    "league": "Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/2cDrWAS0-KjF1j4v3.png",
+    "localLogo": "/logos/teams/wolfsburgo.png",
+    "isLeague": false
+  },
+  {
+    "name": "Heidenheim",
+    "league": "Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/UH4XQKBN-bNiAN2lt.png",
+    "localLogo": "/logos/teams/heidenheim.png",
+    "isLeague": false
+  },
+  {
+    "name": "Inter",
+    "league": "Serie A",
+    "logo": "https://static.flashscore.com/res/image/data/fLNbBiQq-O8c8nWOb.png",
+    "localLogo": "/logos/teams/inter.png",
+    "isLeague": false
+  },
+  {
+    "name": "AC Milan",
+    "league": "Serie A",
+    "logo": "https://static.flashscore.com/res/image/data/WOOHTbSq-IDaxBs9o.png",
+    "localLogo": "/logos/teams/ac-milan.png",
+    "isLeague": false
+  },
+  {
+    "name": "Nápoles",
+    "league": "Serie A",
+    "logo": "https://static.flashscore.com/res/image/data/tSuMfRjT-Stb48WaO.png",
+    "localLogo": "/logos/teams/napoles.png",
+    "isLeague": false
+  },
+  {
+    "name": "Juventus",
+    "league": "Serie A",
+    "logo": "https://static.flashscore.com/res/image/data/AufWJrhT-0nz5yHcE.png",
+    "localLogo": "/logos/teams/juventus.png",
+    "isLeague": false
+  },
+  {
+    "name": "Como",
+    "league": "Serie A",
+    "logo": "https://static.flashscore.com/res/image/data/4pxypIS0-hpmw8K1h.png",
+    "localLogo": "/logos/teams/como.png",
+    "isLeague": false
+  },
+  {
+    "name": "Roma",
+    "league": "Serie A",
+    "logo": "https://static.flashscore.com/res/image/data/j31Z1pne-GtNb9h2q.png",
+    "localLogo": "/logos/teams/roma.png",
+    "isLeague": false
+  },
+  {
+    "name": "Atalanta",
+    "league": "Serie A",
+    "logo": "https://static.flashscore.com/res/image/data/z3aHqFBN-rg6usZns.png",
+    "localLogo": "/logos/teams/atalanta.png",
+    "isLeague": false
+  },
+  {
+    "name": "Bolonia",
+    "league": "Serie A",
+    "logo": "https://static.flashscore.com/res/image/data/6ovaa9T0-McvX4bye.png",
+    "localLogo": "/logos/teams/bolonia.png",
+    "isLeague": false
+  },
+  {
+    "name": "Lazio",
+    "league": "Serie A",
+    "logo": "https://static.flashscore.com/res/image/data/4CLpo27k-EaFfQ9z6.png",
+    "localLogo": "/logos/teams/lazio.png",
+    "isLeague": false
+  },
+  {
+    "name": "Sassuolo",
+    "league": "Serie A",
+    "logo": "https://static.flashscore.com/res/image/data/QckzxM7k-6ZDR6zEL.png",
+    "localLogo": "/logos/teams/sassuolo.png",
+    "isLeague": false
+  },
+  {
+    "name": "Udinese",
+    "league": "Serie A",
+    "logo": "https://static.flashscore.com/res/image/data/277EtfPq-SYw7EcY6.png",
+    "localLogo": "/logos/teams/udinese.png",
+    "isLeague": false
+  },
+  {
+    "name": "Torino",
+    "league": "Serie A",
+    "logo": "https://static.flashscore.com/res/image/data/dhGobOA6-0lwy4Ij1.png",
+    "localLogo": "/logos/teams/torino.png",
+    "isLeague": false
+  },
+  {
+    "name": "Genoa",
+    "league": "Serie A",
+    "logo": "https://static.flashscore.com/res/image/data/S48z3Poe-hCD6m1R3.png",
+    "localLogo": "/logos/teams/genoa.png",
+    "isLeague": false
+  },
+  {
+    "name": "Parma",
+    "league": "Serie A",
+    "logo": "https://static.flashscore.com/res/image/data/WI9nVggT-fydXzLY6.png",
+    "localLogo": "/logos/teams/parma.png",
+    "isLeague": false
+  },
+  {
+    "name": "Fiorentina",
+    "league": "Serie A",
+    "logo": "https://static.flashscore.com/res/image/data/fZhEFLjT-6XKdgOM6.png",
+    "localLogo": "/logos/teams/fiorentina.png",
+    "isLeague": false
+  },
+  {
+    "name": "Cagliari",
+    "league": "Serie A",
+    "logo": "https://static.flashscore.com/res/image/data/tSQII3hT-McvX4bye.png",
+    "localLogo": "/logos/teams/cagliari.png",
+    "isLeague": false
+  },
+  {
+    "name": "Cremonese",
+    "league": "Serie A",
+    "logo": "https://static.flashscore.com/res/image/data/bwCjhwB6-8b0QRXR3.png",
+    "localLogo": "/logos/teams/cremonese.png",
+    "isLeague": false
+  },
+  {
+    "name": "Lecce",
+    "league": "Serie A",
+    "logo": "https://static.flashscore.com/res/image/data/fPabg0DN-McvX4bye.png",
+    "localLogo": "/logos/teams/lecce.png",
+    "isLeague": false
+  },
+  {
+    "name": "Verona",
+    "league": "Serie A",
+    "logo": "https://static.flashscore.com/res/image/data/YDLnjflC-Kxh373f3.png",
+    "localLogo": "/logos/teams/verona.png",
+    "isLeague": false
+  },
+  {
+    "name": "Pisa",
+    "league": "Serie A",
+    "logo": "https://static.flashscore.com/res/image/data/vPrevkT0-GMOw3SI3.png",
+    "localLogo": "/logos/teams/pisa.png",
+    "isLeague": false
+  },
+  {
+    "name": "PSG",
+    "league": "Ligue 1",
+    "logo": "https://static.flashscore.com/res/image/data/fJgGn26k-A7UDDuOO.png",
+    "localLogo": "/logos/teams/psg.png",
+    "isLeague": false
+  },
+  {
+    "name": "Lens",
+    "league": "Ligue 1",
+    "logo": "https://static.flashscore.com/res/image/data/tAec9KQq-rTEFAmVL.png",
+    "localLogo": "/logos/teams/lens.png",
+    "isLeague": false
+  },
+  {
+    "name": "Lyon",
+    "league": "Ligue 1",
+    "logo": "https://static.flashscore.com/res/image/data/bkuX6RS0-GU4hlIMk.png",
+    "localLogo": "/logos/teams/lyon.png",
+    "isLeague": false
+  },
+  {
+    "name": "Lille",
+    "league": "Ligue 1",
+    "logo": "https://static.flashscore.com/res/image/data/Q34pXImC-UDticXKP.png",
+    "localLogo": "/logos/teams/lille.png",
+    "isLeague": false
+  },
+  {
+    "name": "Stade Rennais",
+    "league": "Ligue 1",
+    "logo": "https://static.flashscore.com/res/image/data/pnrF2X76-Y5eozcI6.png",
+    "localLogo": "/logos/teams/stade-rennais.png",
+    "isLeague": false
+  },
+  {
+    "name": "Marsella",
+    "league": "Ligue 1",
+    "logo": "https://static.flashscore.com/res/image/data/t6Kb5X76-AcP8ZdxL.png",
+    "localLogo": "/logos/teams/marsella.png",
+    "isLeague": false
+  },
+  {
+    "name": "Mónaco",
+    "league": "Ligue 1",
+    "logo": "https://static.flashscore.com/res/image/data/n3jLkyne-0SFGJsPk.png",
+    "localLogo": "/logos/teams/monaco.png",
+    "isLeague": false
+  },
+  {
+    "name": "Estrasburgo",
+    "league": "Ligue 1",
+    "logo": "https://static.flashscore.com/res/image/data/2XOhzSQq-lAc5wKNp.png",
+    "localLogo": "/logos/teams/estrasburgo.png",
+    "isLeague": false
+  },
+  {
+    "name": "Lorient",
+    "league": "Ligue 1",
+    "logo": "https://static.flashscore.com/res/image/data/0r9EzUS0-fD3aI7sJ.png",
+    "localLogo": "/logos/teams/lorient.png",
+    "isLeague": false
+  },
+  {
+    "name": "Paris FC",
+    "league": "Ligue 1",
+    "logo": "https://static.flashscore.com/res/image/data/S85qoCiT-lnmOWDAl.png",
+    "localLogo": "/logos/teams/paris-fc.png",
+    "isLeague": false
+  },
+  {
+    "name": "Toulouse",
+    "league": "Ligue 1",
+    "logo": "https://static.flashscore.com/res/image/data/AskYUH8k-COxgbCEm.png",
+    "localLogo": "/logos/teams/toulouse.png",
+    "isLeague": false
+  },
+  {
+    "name": "Brest",
+    "league": "Ligue 1",
+    "logo": "https://static.flashscore.com/res/image/data/lWu2w4ne-prdkpc50.png",
+    "localLogo": "/logos/teams/brest.png",
+    "isLeague": false
+  },
+  {
+    "name": "Angers",
+    "league": "Ligue 1",
+    "logo": "https://static.flashscore.com/res/image/data/IN9Ib7jT-z9nPuk2r.png",
+    "localLogo": "/logos/teams/angers.png",
+    "isLeague": false
+  },
+  {
+    "name": "Le Havre",
+    "league": "Ligue 1",
+    "logo": "https://static.flashscore.com/res/image/data/SdQTDNR0-4v5cIBqb.png",
+    "localLogo": "/logos/teams/le-havre.png",
+    "isLeague": false
+  },
+  {
+    "name": "Niza",
+    "league": "Ligue 1",
+    "logo": "https://static.flashscore.com/res/image/data/bJCGymle-00sqJmg8.png",
+    "localLogo": "/logos/teams/niza.png",
+    "isLeague": false
+  },
+  {
+    "name": "Auxerre",
+    "league": "Ligue 1",
+    "logo": "https://static.flashscore.com/res/image/data/4tdLdYlC-StfGPPS1.png",
+    "localLogo": "/logos/teams/auxerre.png",
+    "isLeague": false
+  },
+  {
+    "name": "Nantes",
+    "league": "Ligue 1",
+    "logo": "https://static.flashscore.com/res/image/data/vTVURLne-YBWLmubi.png",
+    "localLogo": "/logos/teams/nantes.png",
+    "isLeague": false
+  },
+  {
+    "name": "Metz",
+    "league": "Ligue 1",
+    "logo": "https://static.flashscore.com/res/image/data/SCdF7fjT-pztT5vMl.png",
+    "localLogo": "/logos/teams/metz.png",
+    "isLeague": false
+  },
+  {
+    "name": "PSV",
+    "league": "Eredivisie",
+    "logo": "https://static.flashscore.com/res/image/data/fefX7RQq-j5zA1baQ.png",
+    "localLogo": "/logos/teams/psv.png",
+    "isLeague": false
+  },
+  {
+    "name": "Feyenoord",
+    "league": "Eredivisie",
+    "logo": "https://static.flashscore.com/res/image/data/Ag6J0jT0-Wz6bfhxO.png",
+    "localLogo": "/logos/teams/feyenoord.png",
+    "isLeague": false
+  },
+  {
+    "name": "Nijmegen",
+    "league": "Eredivisie",
+    "logo": "https://static.flashscore.com/res/image/data/C8FCtESq-4vob7cTR.png",
+    "localLogo": "/logos/teams/nijmegen.png",
+    "isLeague": false
+  },
+  {
+    "name": "Twente",
+    "league": "Eredivisie",
+    "logo": "https://static.flashscore.com/res/image/data/Uo9lu6le-4vob7cTR.png",
+    "localLogo": "/logos/teams/twente.png",
+    "isLeague": false
+  },
+  {
+    "name": "Ajax",
+    "league": "Eredivisie",
+    "logo": "https://static.flashscore.com/res/image/data/hEQxyYA6-bZZPiwAI.png",
+    "localLogo": "/logos/teams/ajax.png",
+    "isLeague": false
+  },
+  {
+    "name": "AZ Alkmaar",
+    "league": "Eredivisie",
+    "logo": "https://static.flashscore.com/res/image/data/v9zOEImC-4vob7cTR.png",
+    "localLogo": "/logos/teams/az-alkmaar.png",
+    "isLeague": false
+  },
+  {
+    "name": "Utrecht",
+    "league": "Eredivisie",
+    "logo": "https://static.flashscore.com/res/image/data/hWQdBH7k-4vob7cTR.png",
+    "localLogo": "/logos/teams/utrecht.png",
+    "isLeague": false
+  },
+  {
+    "name": "Heerenveen",
+    "league": "Eredivisie",
+    "logo": "https://static.flashscore.com/res/image/data/lIIfTBWH-4vob7cTR.png",
+    "localLogo": "/logos/teams/heerenveen.png",
+    "isLeague": false
+  },
+  {
+    "name": "Groningen",
+    "league": "Eredivisie",
+    "logo": "https://static.flashscore.com/res/image/data/AJOIh8jT-Mm3KkBrA.png",
+    "localLogo": "/logos/teams/groningen.png",
+    "isLeague": false
+  },
+  {
+    "name": "Sparta Rotterdam",
+    "league": "Eredivisie",
+    "logo": "https://static.flashscore.com/res/image/data/MHUzob96-rTjpk23j.png",
+    "localLogo": "/logos/teams/sparta-rotterdam.png",
+    "isLeague": false
+  },
+  {
+    "name": "G.A. Eagles",
+    "league": "Eredivisie",
+    "logo": "https://static.flashscore.com/res/image/data/4IPDw4ne-CYLEXeh5.png",
+    "localLogo": "/logos/teams/ga-eagles.png",
+    "isLeague": false
+  },
+  {
+    "name": "Sittard",
+    "league": "Eredivisie",
+    "logo": "https://static.flashscore.com/res/image/data/2Z2jcUT0-EFoqxv3t.png",
+    "localLogo": "/logos/teams/sittard.png",
+    "isLeague": false
+  },
+  {
+    "name": "Zwolle",
+    "league": "Eredivisie",
+    "logo": "https://static.flashscore.com/res/image/data/jDtO0Y5k-I5cvvkCB.png",
+    "localLogo": "/logos/teams/zwolle.png",
+    "isLeague": false
+  },
+  {
+    "name": "FC Volendam",
+    "league": "Eredivisie",
+    "logo": "https://static.flashscore.com/res/image/data/8tDUPO86-WYtEUtB2.png",
+    "localLogo": "/logos/teams/fc-volendam.png",
+    "isLeague": false
+  },
+  {
+    "name": "Excelsior",
+    "league": "Eredivisie",
+    "logo": "https://static.flashscore.com/res/image/data/82r5rXU0-GOuuvzfL.png",
+    "localLogo": "/logos/teams/excelsior.png",
+    "isLeague": false
+  },
+  {
+    "name": "Telstar",
+    "league": "Eredivisie",
+    "logo": "https://static.flashscore.com/res/image/data/d46y71iT-xxe4Fem8.png",
+    "localLogo": "/logos/teams/telstar.png",
+    "isLeague": false
+  },
+  {
+    "name": "Breda",
+    "league": "Eredivisie",
+    "logo": "https://static.flashscore.com/res/image/data/IVhDS6UH-voRxy8ml.png",
+    "localLogo": "/logos/teams/breda.png",
+    "isLeague": false
+  },
+  {
+    "name": "Heracles",
+    "league": "Eredivisie",
+    "logo": "https://static.flashscore.com/res/image/data/MqiB1mme-vuxu3x67.png",
+    "localLogo": "/logos/teams/heracles.png",
+    "isLeague": false
+  },
+  {
+    "name": "R. Racing Club",
+    "league": "LaLiga Hypermotion",
+    "logo": "https://static.flashscore.com/res/image/data/UcT1DDUH-MsWrauH8.png",
+    "localLogo": "/logos/teams/r-racing-club.png",
+    "isLeague": false
+  },
+  {
+    "name": "Deportivo de La Coruña",
+    "league": "LaLiga Hypermotion",
+    "logo": "https://static.flashscore.com/res/image/data/t4lB3X76-UZkpPVoT.png",
+    "localLogo": "/logos/teams/deportivo-de-la-coruna.png",
+    "isLeague": false
+  },
+  {
+    "name": "Almería",
+    "league": "LaLiga Hypermotion",
+    "logo": "https://static.flashscore.com/res/image/data/Eeg4cBjC-nDyT2xMM.png",
+    "localLogo": "/logos/teams/almeria.png",
+    "isLeague": false
+  },
+  {
+    "name": "Castellón",
+    "league": "LaLiga Hypermotion",
+    "logo": "https://static.flashscore.com/res/image/data/AowBBF6k-zBFXR8iF.png",
+    "localLogo": "/logos/teams/castellon.png",
+    "isLeague": false
+  },
+  {
+    "name": "Málaga",
+    "league": "LaLiga Hypermotion",
+    "logo": "https://static.flashscore.com/res/image/data/4jmiYe8k-MTxwaw7C.png",
+    "localLogo": "/logos/teams/malaga.png",
+    "isLeague": false
+  },
+  {
+    "name": "Burgos CF",
+    "league": "LaLiga Hypermotion",
+    "logo": "https://static.flashscore.com/res/image/data/8G2Evj86-0ME49KyM.png",
+    "localLogo": "/logos/teams/burgos-cf.png",
+    "isLeague": false
+  },
+  {
+    "name": "Las Palmas",
+    "league": "LaLiga Hypermotion",
+    "logo": "https://static.flashscore.com/res/image/data/n3rngiU0-d6gaf9ua.png",
+    "localLogo": "/logos/teams/las-palmas.png",
+    "isLeague": false
+  },
+  {
+    "name": "Eibar",
+    "league": "LaLiga Hypermotion",
+    "logo": "https://static.flashscore.com/res/image/data/drsSo7UH-rL2rkgzd.png",
+    "localLogo": "/logos/teams/eibar.png",
+    "isLeague": false
+  },
+  {
+    "name": "Andorra",
+    "league": "LaLiga Hypermotion",
+    "logo": "https://static.flashscore.com/res/image/data/SMiBGH8k-p6WBruc4.png",
+    "localLogo": "/logos/teams/andorra.png",
+    "isLeague": false
+  },
+  {
+    "name": "Real Sporting",
+    "league": "LaLiga Hypermotion",
+    "logo": "https://static.flashscore.com/res/image/data/ziVpaDjC-IDZgZhUt.png",
+    "localLogo": "/logos/teams/real-sporting.png",
+    "isLeague": false
+  },
+  {
+    "name": "Córdoba",
+    "league": "LaLiga Hypermotion",
+    "logo": "https://static.flashscore.com/res/image/data/fTto7LkC-4YF9PAyB.png",
+    "localLogo": "/logos/teams/cordoba.png",
+    "isLeague": false
+  },
+  {
+    "name": "AD Ceuta",
+    "league": "LaLiga Hypermotion",
+    "logo": "https://static.flashscore.com/res/image/data/r1QAXB7k-xpqBFn5c.png",
+    "localLogo": "/logos/teams/ad-ceuta.png",
+    "isLeague": false
+  },
+  {
+    "name": "Albacete",
+    "league": "LaLiga Hypermotion",
+    "logo": "https://static.flashscore.com/res/image/data/Iw3DqQoe-4297a0ys.png",
+    "localLogo": "/logos/teams/albacete.png",
+    "isLeague": false
+  },
+  {
+    "name": "Granada",
+    "league": "LaLiga Hypermotion",
+    "logo": "https://static.flashscore.com/res/image/data/QmKG7dT0-pEzOUfJL.png",
+    "localLogo": "/logos/teams/granada.png",
+    "isLeague": false
+  },
+  {
+    "name": "Leganés",
+    "league": "LaLiga Hypermotion",
+    "logo": "https://static.flashscore.com/res/image/data/C4WkaSlC-Q3zX1dyT.png",
+    "localLogo": "/logos/teams/leganes.png",
+    "isLeague": false
+  },
+  {
+    "name": "Real Sociedad B",
+    "league": "LaLiga Hypermotion",
+    "logo": "https://static.flashscore.com/res/image/data/MwK5O35k-U144u08h.png",
+    "localLogo": "/logos/teams/real-sociedad-b.png",
+    "isLeague": false
+  },
+  {
+    "name": "Real Valladolid",
+    "league": "LaLiga Hypermotion",
+    "logo": "https://static.flashscore.com/res/image/data/GvWsl3Sq-WWPrsZWC.png",
+    "localLogo": "/logos/teams/real-valladolid.png",
+    "isLeague": false
+  },
+  {
+    "name": "Cádiz",
+    "league": "LaLiga Hypermotion",
+    "logo": "https://static.flashscore.com/res/image/data/rPA6TR86-EPWyZtpb.png",
+    "localLogo": "/logos/teams/cadiz.png",
+    "isLeague": false
+  },
+  {
+    "name": "Real Zaragoza",
+    "league": "LaLiga Hypermotion",
+    "logo": "https://static.flashscore.com/res/image/data/xr7nb0ne-EykfZB0Q.png",
+    "localLogo": "/logos/teams/real-zaragoza.png",
+    "isLeague": false
+  },
+  {
+    "name": "Huesca",
+    "league": "LaLiga Hypermotion",
+    "logo": "https://static.flashscore.com/res/image/data/pMpCvJkC-EkA5g8Rs.png",
+    "localLogo": "/logos/teams/huesca.png",
+    "isLeague": false
+  },
+  {
+    "name": "Mirandés",
+    "league": "LaLiga Hypermotion",
+    "logo": "https://static.flashscore.com/res/image/data/ngL92xT0-ns1CJmLE.png",
+    "localLogo": "/logos/teams/mirandes.png",
+    "isLeague": false
+  },
+  {
+    "name": "Cultural Leonesa",
+    "league": "LaLiga Hypermotion",
+    "logo": "https://static.flashscore.com/res/image/data/nqcf2egT-WAOkzK99.png",
+    "localLogo": "/logos/teams/cultural-leonesa.png",
+    "isLeague": false
+  },
+  {
+    "name": "Coventry",
+    "league": "Championship",
+    "logo": "https://static.flashscore.com/res/image/data/QHmiKlDN-UuasdTpt.png",
+    "localLogo": "/logos/teams/coventry.png",
+    "isLeague": false
+  },
+  {
+    "name": "Millwall",
+    "league": "Championship",
+    "logo": "https://static.flashscore.com/res/image/data/KE2n7iVH-4UX5t7jk.png",
+    "localLogo": "/logos/teams/millwall.png",
+    "isLeague": false
+  },
+  {
+    "name": "Ipswich",
+    "league": "Championship",
+    "logo": "https://static.flashscore.com/res/image/data/r9vl4eQq-0C98slBk.png",
+    "localLogo": "/logos/teams/ipswich.png",
+    "isLeague": false
+  },
+  {
+    "name": "Southampton",
+    "league": "Championship",
+    "logo": "https://static.flashscore.com/res/image/data/2VvVDtSq-raLYxovi.png",
+    "localLogo": "/logos/teams/southampton.png",
+    "isLeague": false
+  },
+  {
+    "name": "Middlesbrough",
+    "league": "Championship",
+    "logo": "https://static.flashscore.com/res/image/data/p6waIw86-ImMEe0UF.png",
+    "localLogo": "/logos/teams/middlesbrough.png",
+    "isLeague": false
+  },
+  {
+    "name": "Wrexham",
+    "league": "Championship",
+    "logo": "https://static.flashscore.com/res/image/data/bHt6w87k-OxoAKHbA.png",
+    "localLogo": "/logos/teams/wrexham.png",
+    "isLeague": false
+  },
+  {
+    "name": "Hull",
+    "league": "Championship",
+    "logo": "https://static.flashscore.com/res/image/data/WGeGdCSq-bJFnYpTt.png",
+    "localLogo": "/logos/teams/hull.png",
+    "isLeague": false
+  },
+  {
+    "name": "Derby",
+    "league": "Championship",
+    "logo": "https://static.flashscore.com/res/image/data/xrSu4XPq-4YcXd6yA.png",
+    "localLogo": "/logos/teams/derby.png",
+    "isLeague": false
+  },
+  {
+    "name": "Norwich",
+    "league": "Championship",
+    "logo": "https://static.flashscore.com/res/image/data/GvTpbCjC-tCGtX12c.png",
+    "localLogo": "/logos/teams/norwich.png",
+    "isLeague": false
+  },
+  {
+    "name": "Swansea",
+    "league": "Championship",
+    "logo": "https://static.flashscore.com/res/image/data/GxgUhame-Ozj3JWKn.png",
+    "localLogo": "/logos/teams/swansea.png",
+    "isLeague": false
+  },
+  {
+    "name": "Bristol City",
+    "league": "Championship",
+    "logo": "https://static.flashscore.com/res/image/data/CGC2jhT0-OdaWmcNh.png",
+    "localLogo": "/logos/teams/bristol-city.png",
+    "isLeague": false
+  },
+  {
+    "name": "QPR",
+    "league": "Championship",
+    "logo": "https://static.flashscore.com/res/image/data/hdnBLqiC-z9YsXKZd.png",
+    "localLogo": "/logos/teams/qpr.png",
+    "isLeague": false
+  },
+  {
+    "name": "Sheffield Utd",
+    "league": "Championship",
+    "logo": "https://static.flashscore.com/res/image/data/8nXNvlA6-bgElVuX9.png",
+    "localLogo": "/logos/teams/sheffield-utd.png",
+    "isLeague": false
+  },
+  {
+    "name": "Birmingham",
+    "league": "Championship",
+    "logo": "https://static.flashscore.com/res/image/data/04SrzD5k-fuIfr9AH.png",
+    "localLogo": "/logos/teams/birmingham.png",
+    "isLeague": false
+  },
+  {
+    "name": "Watford",
+    "league": "Championship",
+    "logo": "https://static.flashscore.com/res/image/data/pYQ39lBN-QHkJrpz6.png",
+    "localLogo": "/logos/teams/watford.png",
+    "isLeague": false
+  },
+  {
+    "name": "Preston",
+    "league": "Championship",
+    "logo": "https://static.flashscore.com/res/image/data/pzTKMome-KSOT8pKJ.png",
+    "localLogo": "/logos/teams/preston.png",
+    "isLeague": false
+  },
+  {
+    "name": "Stoke",
+    "league": "Championship",
+    "logo": "https://static.flashscore.com/res/image/data/ObQhVYne-vLLQfvnm.png",
+    "localLogo": "/logos/teams/stoke.png",
+    "isLeague": false
+  },
+  {
+    "name": "West Brom",
+    "league": "Championship",
+    "logo": "https://static.flashscore.com/res/image/data/QsGXnZjC-ImMEe0UF.png",
+    "localLogo": "/logos/teams/west-brom.png",
+    "isLeague": false
+  },
+  {
+    "name": "Portsmouth",
+    "league": "Championship",
+    "logo": "https://static.flashscore.com/res/image/data/nHzBM186-nkTKkN30.png",
+    "localLogo": "/logos/teams/portsmouth.png",
+    "isLeague": false
+  },
+  {
+    "name": "Charlton",
+    "league": "Championship",
+    "logo": "https://static.flashscore.com/res/image/data/jg6JyX7k-6FckE7BN.png",
+    "localLogo": "/logos/teams/charlton.png",
+    "isLeague": false
+  },
+  {
+    "name": "Blackburn",
+    "league": "Championship",
+    "logo": "https://static.flashscore.com/res/image/data/AHfWnRCN-ImMEe0UF.png",
+    "localLogo": "/logos/teams/blackburn.png",
+    "isLeague": false
+  },
+  {
+    "name": "Oxford Utd",
+    "league": "Championship",
+    "logo": "https://static.flashscore.com/res/image/data/Ige65FiT-6qsP6K6r.png",
+    "localLogo": "/logos/teams/oxford-utd.png",
+    "isLeague": false
+  },
+  {
+    "name": "Leicester",
+    "league": "Championship",
+    "logo": "https://static.flashscore.com/res/image/data/CvL5rhhT-UNZg5BP0.png",
+    "localLogo": "/logos/teams/leicester.png",
+    "isLeague": false
+  },
+  {
+    "name": "Sheffield Wed",
+    "league": "Championship",
+    "logo": "https://static.flashscore.com/res/image/data/GpiRvDoe-fNIX23Pi.png",
+    "localLogo": "/logos/teams/sheffield-wed.png",
+    "isLeague": false
+  },
+  {
+    "name": "Schalke",
+    "league": "2. Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/jy0u6bgT-I7p2Damb.png",
+    "localLogo": "/logos/teams/schalke.png",
+    "isLeague": false
+  },
+  {
+    "name": "Paderborn",
+    "league": "2. Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/6ufhxjSq-Qmnf8wEL.png",
+    "localLogo": "/logos/teams/paderborn.png",
+    "isLeague": false
+  },
+  {
+    "name": "Elversberg",
+    "league": "2. Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/lbqNa1le-QsgNMFNg.png",
+    "localLogo": "/logos/teams/elversberg.png",
+    "isLeague": false
+  },
+  {
+    "name": "Hannover",
+    "league": "2. Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/b9LkrIA6-n7lWn9DL.png",
+    "localLogo": "/logos/teams/hannover.png",
+    "isLeague": false
+  },
+  {
+    "name": "Darmstadt",
+    "league": "2. Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/hbrmZHCN-hnEPJbbt.png",
+    "localLogo": "/logos/teams/darmstadt.png",
+    "isLeague": false
+  },
+  {
+    "name": "Hertha BSC",
+    "league": "2. Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/j1FIuRAN-M145xF2s.png",
+    "localLogo": "/logos/teams/hertha-bsc.png",
+    "isLeague": false
+  },
+  {
+    "name": "Kaiserslautern",
+    "league": "2. Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/O4FpbtT0-xW7EDdNP.png",
+    "localLogo": "/logos/teams/kaiserslautern.png",
+    "isLeague": false
+  },
+  {
+    "name": "Karlsruher",
+    "league": "2. Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/rahX5g7k-Qmnf8wEL.png",
+    "localLogo": "/logos/teams/karlsruher.png",
+    "isLeague": false
+  },
+  {
+    "name": "Núremberg",
+    "league": "2. Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/YiDhmqT0-ncmj9JbF.png",
+    "localLogo": "/logos/teams/nuremberg.png",
+    "isLeague": false
+  },
+  {
+    "name": "Bochum",
+    "league": "2. Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/IRiimykC-86lnAaq9.png",
+    "localLogo": "/logos/teams/bochum.png",
+    "isLeague": false
+  },
+  {
+    "name": "Dynamo Dresden",
+    "league": "2. Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/MZhxRG76-8l5ir9ck.png",
+    "localLogo": "/logos/teams/dynamo-dresden.png",
+    "isLeague": false
+  },
+  {
+    "name": "Kiel",
+    "league": "2. Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/8K98UZoe-EcK7yLm6.png",
+    "localLogo": "/logos/teams/kiel.png",
+    "isLeague": false
+  },
+  {
+    "name": "Magdeburgo",
+    "league": "2. Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/KdCB7r8k-MeuncTkU.png",
+    "localLogo": "/logos/teams/magdeburgo.png",
+    "isLeague": false
+  },
+  {
+    "name": "Greuther Fürth",
+    "league": "2. Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/zmJdMLle-KfqGWN71.png",
+    "localLogo": "/logos/teams/greuther-furth.png",
+    "isLeague": false
+  },
+  {
+    "name": "Arminia Bielefeld",
+    "league": "2. Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/tbqzXYS0-GOBDm2OL.png",
+    "localLogo": "/logos/teams/arminia-bielefeld.png",
+    "isLeague": false
+  },
+  {
+    "name": "Braunschweig",
+    "league": "2. Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/bZS1GF96-rBP4Wuhs.png",
+    "localLogo": "/logos/teams/braunschweig.png",
+    "isLeague": false
+  },
+  {
+    "name": "Fortuna Düsseldorf",
+    "league": "2. Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/4dR7FIjT-Qmnf8wEL.png",
+    "localLogo": "/logos/teams/fortuna-dusseldorf.png",
+    "isLeague": false
+  },
+  {
+    "name": "Preussen Münster",
+    "league": "2. Bundesliga",
+    "logo": "https://static.flashscore.com/res/image/data/CrTJM3Sq-l0tw4N82.png",
+    "localLogo": "/logos/teams/preussen-munster.png",
+    "isLeague": false
+  },
+  {
+    "name": "Venezia",
+    "league": "Serie B",
+    "logo": "https://static.flashscore.com/res/image/data/4lQfQQmC-Io3W04n8.png",
+    "localLogo": "/logos/teams/venezia.png",
+    "isLeague": false
+  },
+  {
+    "name": "Frosinone",
+    "league": "Serie B",
+    "logo": "https://static.flashscore.com/res/image/data/p0q5GtjC-t4GQxEM5.png",
+    "localLogo": "/logos/teams/frosinone.png",
+    "isLeague": false
+  },
+  {
+    "name": "Monza",
+    "league": "Serie B",
+    "logo": "https://static.flashscore.com/res/image/data/Mk897YAN-8zvPU7k3.png",
+    "localLogo": "/logos/teams/monza.png",
+    "isLeague": false
+  },
+  {
+    "name": "Palermo",
+    "league": "Serie B",
+    "logo": "https://static.flashscore.com/res/image/data/nkpmxOBN-fL3dmxxd.png",
+    "localLogo": "/logos/teams/palermo.png",
+    "isLeague": false
+  },
+  {
+    "name": "Catanzaro",
+    "league": "Serie B",
+    "logo": "https://static.flashscore.com/res/image/data/CITDXu8k-IFYgFznf.png",
+    "localLogo": "/logos/teams/catanzaro.png",
+    "isLeague": false
+  },
+  {
+    "name": "Modena",
+    "league": "Serie B",
+    "logo": "https://static.flashscore.com/res/image/data/nq8HIa5k-OY47DkeT.png",
+    "localLogo": "/logos/teams/modena.png",
+    "isLeague": false
+  },
+  {
+    "name": "Juve Stabia",
+    "league": "Serie B",
+    "logo": "https://static.flashscore.com/res/image/data/299kpoiT-xrK1g9MA.png",
+    "localLogo": "/logos/teams/juve-stabia.png",
+    "isLeague": false
+  },
+  {
+    "name": "Cesena",
+    "league": "Serie B",
+    "logo": "https://static.flashscore.com/res/image/data/4djRU87k-25XOeEt1.png",
+    "localLogo": "/logos/teams/cesena.png",
+    "isLeague": false
+  },
+  {
+    "name": "Carrarese",
+    "league": "Serie B",
+    "logo": "https://static.flashscore.com/res/image/data/lf1fmHoe-EojqsKvr.png",
+    "localLogo": "/logos/teams/carrarese.png",
+    "isLeague": false
+  },
+  {
+    "name": "Avellino",
+    "league": "Serie B",
+    "logo": "https://static.flashscore.com/res/image/data/dluUXyRq-zyayiEr5.png",
+    "localLogo": "/logos/teams/avellino.png",
+    "isLeague": false
+  },
+  {
+    "name": "Sudtirol",
+    "league": "Serie B",
+    "logo": "https://static.flashscore.com/res/image/data/2Xf8oTjT-UJeBD3ZT.png",
+    "localLogo": "/logos/teams/sudtirol.png",
+    "isLeague": false
+  },
+  {
+    "name": "Mantova",
+    "league": "Serie B",
+    "logo": "https://static.flashscore.com/res/image/data/GSnwGvWH-4vkZ9lY0.png",
+    "localLogo": "/logos/teams/mantova.png",
+    "isLeague": false
+  },
+  {
+    "name": "Padova",
+    "league": "Serie B",
+    "logo": "https://static.flashscore.com/res/image/data/C0Gf1Pne-0lwy4Ij1.png",
+    "localLogo": "/logos/teams/padova.png",
+    "isLeague": false
+  },
+  {
+    "name": "Sampdoria",
+    "league": "Serie B",
+    "logo": "https://static.flashscore.com/res/image/data/WQp3CvUH-WdmUvPiG.png",
+    "localLogo": "/logos/teams/sampdoria.png",
+    "isLeague": false
+  },
+  {
+    "name": "Empoli",
+    "league": "Serie B",
+    "logo": "https://static.flashscore.com/res/image/data/8ftWPVPq-KbH8aCLf.png",
+    "localLogo": "/logos/teams/empoli.png",
+    "isLeague": false
+  },
+  {
+    "name": "Entella",
+    "league": "Serie B",
+    "logo": "https://static.flashscore.com/res/image/data/hbM9tPVH-EcAnNUJp.png",
+    "localLogo": "/logos/teams/entella.png",
+    "isLeague": false
+  },
+  {
+    "name": "Bari",
+    "league": "Serie B",
+    "logo": "https://static.flashscore.com/res/image/data/OCZAFtU0-plT8zlNA.png",
+    "localLogo": "/logos/teams/bari.png",
+    "isLeague": false
+  },
+  {
+    "name": "Pescara",
+    "league": "Serie B",
+    "logo": "https://static.flashscore.com/res/image/data/YP7Usg8k-MuBSTKf8.png",
+    "localLogo": "/logos/teams/pescara.png",
+    "isLeague": false
+  },
+  {
+    "name": "Spezia",
+    "league": "Serie B",
+    "logo": "https://static.flashscore.com/res/image/data/08qns8VH-zJVdqELi.png",
+    "localLogo": "/logos/teams/spezia.png",
+    "isLeague": false
+  },
+  {
+    "name": "Reggiana",
+    "league": "Serie B",
+    "logo": "https://static.flashscore.com/res/image/data/h4Rp5mAN-xpwwMV0F.png",
+    "localLogo": "/logos/teams/reggiana.png",
+    "isLeague": false
+  },
+  {
+    "name": "Troyes",
+    "league": "Ligue 2",
+    "logo": "https://static.flashscore.com/res/image/data/nySLfpiC-McvX4bye.png",
+    "localLogo": "/logos/teams/troyes.png",
+    "isLeague": false
+  },
+  {
+    "name": "Saint-Étienne",
+    "league": "Ligue 2",
+    "logo": "https://static.flashscore.com/res/image/data/SvNL7CBN-8Ca53MKO.png",
+    "localLogo": "/logos/teams/saint-etienne.png",
+    "isLeague": false
+  },
+  {
+    "name": "Le Mans",
+    "league": "Ligue 2",
+    "logo": "https://static.flashscore.com/res/image/data/Gn28qiBN-pztT5vMl.png",
+    "localLogo": "/logos/teams/le-mans.png",
+    "isLeague": false
+  },
+  {
+    "name": "Reims",
+    "league": "Ligue 2",
+    "logo": "https://static.flashscore.com/res/image/data/fgcfKf86-x6KhF69U.png",
+    "localLogo": "/logos/teams/reims.png",
+    "isLeague": false
+  },
+  {
+    "name": "Red Star",
+    "league": "Ligue 2",
+    "logo": "https://static.flashscore.com/res/image/data/fT80UIA6-pEpm230o.png",
+    "localLogo": "/logos/teams/red-star.png",
+    "isLeague": false
+  },
+  {
+    "name": "Rodez",
+    "league": "Ligue 2",
+    "logo": "https://static.flashscore.com/res/image/data/GAe6vS7k-lrqg4wyC.png",
+    "localLogo": "/logos/teams/rodez.png",
+    "isLeague": false
+  },
+  {
+    "name": "Montpellier",
+    "league": "Ligue 2",
+    "logo": "https://static.flashscore.com/res/image/data/ANGNZlQq-n3xBmVJB.png",
+    "localLogo": "/logos/teams/montpellier.png",
+    "isLeague": false
+  },
+  {
+    "name": "Annecy",
+    "league": "Ligue 2",
+    "logo": "https://static.flashscore.com/res/image/data/vqudxvme-S8MHjQAJ.png",
+    "localLogo": "/logos/teams/annecy.png",
+    "isLeague": false
+  },
+  {
+    "name": "Pau FC",
+    "league": "Ligue 2",
+    "logo": "https://static.flashscore.com/res/image/data/hYhYK6jC-4hEPxFlP.png",
+    "localLogo": "/logos/teams/pau-fc.png",
+    "isLeague": false
+  },
+  {
+    "name": "Dunkerque",
+    "league": "Ligue 2",
+    "logo": "https://static.flashscore.com/res/image/data/EZvaO4BN-O8yOVkI8.png",
+    "localLogo": "/logos/teams/dunkerque.png",
+    "isLeague": false
+  },
+  {
+    "name": "EA Guingamp",
+    "league": "Ligue 2",
+    "logo": "https://static.flashscore.com/res/image/data/23voFsDN-nDL04Hmj.png",
+    "localLogo": "/logos/teams/ea-guingamp.png",
+    "isLeague": false
+  },
+  {
+    "name": "Boulogne",
+    "league": "Ligue 2",
+    "logo": "https://static.flashscore.com/res/image/data/bkQjzw7k-b9h6TfOO.png",
+    "localLogo": "/logos/teams/boulogne.png",
+    "isLeague": false
+  },
+  {
+    "name": "Grenoble",
+    "league": "Ligue 2",
+    "logo": "https://static.flashscore.com/res/image/data/vmEDOI6k-Q3bg4qfQ.png",
+    "localLogo": "/logos/teams/grenoble.png",
+    "isLeague": false
+  },
+  {
+    "name": "Clermont",
+    "league": "Ligue 2",
+    "logo": "https://static.flashscore.com/res/image/data/WSP3LX96-GnvTujfj.png",
+    "localLogo": "/logos/teams/clermont.png",
+    "isLeague": false
+  },
+  {
+    "name": "Nancy",
+    "league": "Ligue 2",
+    "logo": "https://static.flashscore.com/res/image/data/bwZ427R0-Q15G9lAm.png",
+    "localLogo": "/logos/teams/nancy.png",
+    "isLeague": false
+  },
+  {
+    "name": "Laval",
+    "league": "Ligue 2",
+    "logo": "https://static.flashscore.com/res/image/data/nLm3y8S0-vHcbmpKn.png",
+    "localLogo": "/logos/teams/laval.png",
+    "isLeague": false
+  },
+  {
+    "name": "Bastia",
+    "league": "Ligue 2",
+    "logo": "https://static.flashscore.com/res/image/data/joJrcijT-h6Qq9yDN.png",
+    "localLogo": "/logos/teams/bastia.png",
+    "isLeague": false
+  },
+  {
+    "name": "Amiens",
+    "league": "Ligue 2",
+    "logo": "https://static.flashscore.com/res/image/data/SYoFLN86-lriTEOfc.png",
+    "localLogo": "/logos/teams/amiens.png",
+    "isLeague": false
+  },
+  {
+    "name": "Chapecoense",
+    "league": "Serie A Betano / Brasil",
+    "logo": "https://static.flashscore.com/res/image/data/v9EKoUeM-CYex0lQl.png",
+    "localLogo": "/logos/teams/chapecoense.png",
+    "isLeague": false
+  },
+  {
+    "name": "Juventude",
+    "league": "Serie A Betano / Brasil",
+    "logo": "https://static.flashscore.com/res/image/data/CA0V6qXg-v5wBaFPD.png",
+    "localLogo": "/logos/teams/juventude.png",
+    "isLeague": false
+  },
+  {
+    "name": "UEFA Champions League",
+    "league": "LIGA / COMPETICIÓN",
+    "logo": "https://static.flashscore.com/res/image/data/fNS5fTmC-WvvSE8Dm.png",
+    "localLogo": "/logos/teams/uefa-champions-league.png",
+    "isLeague": true
+  },
+  {
+    "name": "UEFA Europa League",
+    "league": "LIGA / COMPETICIÓN",
+    "logo": "https://static.flashscore.com/res/image/data/lxUusmmd-nyYh4pi6.png",
+    "localLogo": "/logos/teams/uefa-europa-league.png",
+    "isLeague": true
+  },
+  {
+    "name": "UEFA Conference League",
+    "league": "LIGA / COMPETICIÓN",
+    "logo": "https://static.flashscore.com/res/image/data/6a9THkA7-fmGCnzrf.png",
+    "localLogo": "/logos/teams/uefa-conference-league.png",
+    "isLeague": true
+  }
+]

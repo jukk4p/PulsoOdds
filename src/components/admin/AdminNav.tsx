@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Zap, BarChart3, LogOut } from "lucide-react";
+import { Zap, BarChart3, LogOut, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
 
@@ -17,6 +17,7 @@ export function AdminSidebar() {
 
   const links = [
     { name: "Gestionar Picks", href: "/admin/picks", icon: Zap },
+    { name: "Clasificaciones", href: "/admin/rankings", icon: Trophy },
     { name: "Métricas", href: "/admin/stats", icon: BarChart3 },
   ];
 
@@ -57,6 +58,7 @@ export function AdminMobileNav() {
 
   const tabs = [
     { name: "Picks", href: "/admin/picks" },
+    { name: "Rankings", href: "/admin/rankings" },
     { name: "Métricas", href: "/admin/stats" },
   ];
 

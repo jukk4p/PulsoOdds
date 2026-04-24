@@ -57,8 +57,10 @@ export function MatchGroup({ picks, selectedPickIds = [], onTogglePick }: MatchG
           {/* MOBILE HEADER BAR: League Only */}
           <div className="md:hidden flex items-center justify-center w-full mb-2">
             <div className="flex items-center gap-2">
-              <div className="w-5 h-5 rounded bg-white/90 flex items-center justify-center p-0.5 shadow-sm shrink-0">
-                <img src={getLeagueLogo(firstPick.competition, firstPick.competition_logo)} alt="" className="w-full h-full object-contain" />
+              <div className="w-5 h-5 rounded bg-white/90 flex items-center justify-center p-0.5 shadow-sm shrink-0 overflow-hidden">
+                {getLeagueLogo(firstPick.competition, firstPick.competition_logo) && (
+                  <img src={getLeagueLogo(firstPick.competition, firstPick.competition_logo)} alt="" className="w-full h-full object-contain" />
+                )}
               </div>
               <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.1em] truncate max-w-[150px] leading-none mt-[1px]">
                 {translateLeagueName(firstPick.competition).split(' - ').pop()}
@@ -68,8 +70,10 @@ export function MatchGroup({ picks, selectedPickIds = [], onTogglePick }: MatchG
 
           {/* DESKTOP COL 1: League (Hidden on Mobile) */}
           <div className="hidden md:flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-white/90 flex items-center justify-center p-1.5 shadow-lg shrink-0">
-              <img src={getLeagueLogo(firstPick.competition, firstPick.competition_logo)} alt="" className="w-full h-full object-contain" />
+            <div className="w-8 h-8 rounded-lg bg-white/90 flex items-center justify-center p-1.5 shadow-lg shrink-0 overflow-hidden">
+              {getLeagueLogo(firstPick.competition, firstPick.competition_logo) && (
+                <img src={getLeagueLogo(firstPick.competition, firstPick.competition_logo)} alt="" className="w-full h-full object-contain" />
+              )}
             </div>
             <div className="flex items-center">
               <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] leading-none mt-[1px]">
@@ -84,7 +88,9 @@ export function MatchGroup({ picks, selectedPickIds = [], onTogglePick }: MatchG
               <span className="text-[10px] md:text-sm font-black uppercase text-white/80 tracking-tight text-right truncate max-w-[70px] md:max-w-none">
                 {homeName}
               </span>
-              <img src={firstPick.home_logo} alt="" className="h-6 w-6 md:h-9 md:w-9 object-contain filter brightness-90 grayscale-[0.2] shrink-0" />
+              {firstPick.home_logo && (
+                <img src={firstPick.home_logo} alt="" className="h-6 w-6 md:h-9 md:w-9 object-contain filter brightness-90 grayscale-[0.2] shrink-0" />
+              )}
             </div>
             <div className="flex flex-col items-center justify-center shrink-0 mx-1 md:mx-2">
               <span className="text-[8px] md:text-[9px] font-black text-white/10 italic leading-none mb-1.5">VS</span>
@@ -99,7 +105,9 @@ export function MatchGroup({ picks, selectedPickIds = [], onTogglePick }: MatchG
               </span>
             </div>
             <div className="flex items-center gap-2 md:gap-4 flex-1 justify-start min-w-0">
-              <img src={firstPick.away_logo} alt="" className="h-6 w-6 md:h-9 md:w-9 object-contain filter brightness-90 grayscale-[0.2] shrink-0" />
+              {firstPick.away_logo && (
+                <img src={firstPick.away_logo} alt="" className="h-6 w-6 md:h-9 md:w-9 object-contain filter brightness-90 grayscale-[0.2] shrink-0" />
+              )}
               <span className="text-[10px] md:text-sm font-black uppercase text-white/80 tracking-tight text-left truncate max-w-[70px] md:max-w-none">
                 {awayName}
               </span>
