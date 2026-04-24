@@ -24,7 +24,7 @@ export default async function PicksPage() {
     <div className="min-h-screen bg-deep-black pb-20">
       <header className="pt-20 pb-12 px-6">
         <div className="max-w-[900px] mx-auto text-center flex flex-col items-center">
-          <h1 className="text-4xl md:text-5xl font-black text-white mb-6">
+          <h1 className="text-2xl md:text-4xl font-black text-white mb-6 uppercase tracking-tighter">
             PRONÓSTICOS <span className="text-neon-green">ACTIVOS</span>
           </h1>
           <p className="text-white/60 max-w-2xl text-center">

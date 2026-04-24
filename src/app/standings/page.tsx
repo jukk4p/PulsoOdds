@@ -79,7 +79,7 @@ export default function StandingsPage() {
               <span className="text-[10px] font-black uppercase tracking-[0.4em] text-text-muted">Análisis Técnico</span>
               <div className="h-1.5 w-16 bg-accent" />
             </div>
-            <h1 className="text-5xl md:text-7xl font-display font-black text-text-primary uppercase tracking-tighter leading-[0.85] mb-8">
+            <h1 className="text-3xl md:text-5xl font-display font-black text-text-primary uppercase tracking-tighter leading-[0.85] mb-8">
               Tablas de <br />
               <span className="text-accent text-glow">Clasificación</span>
             </h1>
