@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn, normalizeOdds, normalizeBettingPick } from "@/lib/utils";
 import { getTeamLogo, getLeagueLogo } from "@/lib/logos";
-import { Zap, Clock, ChevronDown } from "lucide-react";
+import { Zap, Clock, ChevronDown, Calculator } from "lucide-react";
+import { BankrollManager } from "./BankrollManager";
 
 interface Pick {
   id: string;
@@ -32,6 +33,17 @@ interface MatchGroupProps {
 
 export function MatchGroup({ picks, selectedPickIds = [], onTogglePick }: MatchGroupProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [bankroll, setBankroll] = useState<number | null>(null);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("pulso_bankroll");
+    if (saved) setBankroll(Number(saved));
+
+    const handleUpdate = (e: any) => setBankroll(Number(e.detail));
+    window.addEventListener("bankroll-updated", handleUpdate);
+    return () => window.removeEventListener("bankroll-updated", handleUpdate);
+  }, []);
+
   const firstPick = picks[0];
   
   const matchDate = new Date(firstPick.match_date);
@@ -140,6 +152,7 @@ export function MatchGroup({ picks, selectedPickIds = [], onTogglePick }: MatchG
                 pick={pick} 
                 isSelected={selectedPickIds.includes(pick.id)}
                 onToggle={() => onTogglePick?.(pick.id)}
+                bankroll={bankroll}
               />
             ))}
           </div>
@@ -149,10 +162,11 @@ export function MatchGroup({ picks, selectedPickIds = [], onTogglePick }: MatchG
   );
 }
 
-function SelectionRow({ pick, isSelected, onToggle }: { pick: Pick, isSelected: boolean, onToggle: () => void }) {
+function SelectionRow({ pick, isSelected, onToggle, bankroll }: { pick: Pick, isSelected: boolean, onToggle: () => void, bankroll: number | null }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const confidenceValue = pick.confianza || pick.stake * 10;
   const isTopPick = (normalizeOdds(pick.odds) >= 1.50) && (confidenceValue >= 85);
+  const calculatedBet = bankroll ? (bankroll * (pick.stake / 100)).toFixed(2) : null;
 
   return (
     <div className="flex flex-col w-full">
@@ -186,7 +200,20 @@ function SelectionRow({ pick, isSelected, onToggle }: { pick: Pick, isSelected: 
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-8">
+          {calculatedBet && Number(calculatedBet) > 0 && (
+            <div className="hidden md:flex flex-col items-end gap-0.5">
+              <span className="text-[9px] font-black text-accent uppercase tracking-widest">APUESTA SUGERIDA</span>
+              <div className="flex items-center gap-1.5 text-text-primary">
+                <Calculator className="w-3 h-3 text-accent" />
+                <span className="text-xs font-black tabular-nums">
+                  {Number(calculatedBet).toLocaleString()}€
+                </span>
+              </div>
+            </div>
+          )}
+
+          <div className="flex items-center gap-4">
           <button 
             onClick={(e) => { e.stopPropagation(); onToggle(); }}
             className={cn(
@@ -211,8 +238,9 @@ function SelectionRow({ pick, isSelected, onToggle }: { pick: Pick, isSelected: 
           </button>
         </div>
       </div>
+    </div>
 
-      {isExpanded && (
+    {isExpanded && (
         <div className="px-8 pb-6 pt-1 animate-in fade-in duration-300">
           <div className="bg-bg-surface/50 rounded-lg p-5 border border-border-base/50">
             <div className="flex items-center justify-between mb-4 border-b border-border-base pb-3">
@@ -231,6 +259,17 @@ function SelectionRow({ pick, isSelected, onToggle }: { pick: Pick, isSelected: 
                 </div>
               </div>
             </div>
+
+            {calculatedBet && Number(calculatedBet) > 0 && (
+              <div className="md:hidden flex items-center justify-between mb-4 p-3 rounded bg-accent/5 border border-accent/20">
+                <div className="flex items-center gap-2">
+                  <Calculator size={14} className="text-accent" />
+                  <span className="text-[10px] font-black uppercase tracking-widest text-text-muted">APUESTA SUGERIDA</span>
+                </div>
+                <span className="text-sm font-black text-accent">{Number(calculatedBet).toLocaleString()}€</span>
+              </div>
+            )}
+
             <p className="text-xs md:text-sm text-text-secondary leading-relaxed italic font-medium">
               {pick.razonamiento || "Análisis técnico de alta precisión para este mercado."}
             </p>
