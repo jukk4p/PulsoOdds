@@ -125,7 +125,7 @@ export default async function Home() {
               <h2 className="text-4xl font-display font-black uppercase tracking-tight">
                 Top <span className="text-accent">Picks</span>
               </h2>
-              <p className="text-text-secondary mt-2 font-medium">Pronósticos de alta confianza seleccionados para hoy</p>
+              <p className="text-text-secondary mt-2 font-medium">Oportunidades destacadas bajo nuestro análisis técnico</p>
             </div>
             <Link 
               href="/picks" 
