@@ -837,7 +837,7 @@ export default function AdminPicksPage() {
 
                       <button
                         onClick={() => updateStatus(pick.id, 'won')}
-                        className="h-9 w-9 flex items-center justify-center rounded-lg text-neon-green/30 hover:text-neon-green hover:bg-neon-green/10 transition-all"
+                        className="h-9 w-9 flex items-center justify-center rounded-lg text-neon-green hover:text-white hover:bg-neon-green/20 transition-all"
                         title="Ganado"
                       >
                         <CheckCircle className="h-3.5 w-3.5" />
