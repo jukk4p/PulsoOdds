@@ -23,6 +23,7 @@ interface Pick {
   away_logo?: string;
   confianza?: number;
   competition_logo?: string;
+  is_top?: boolean;
 }
 
 interface MatchGroupProps {
@@ -179,7 +180,7 @@ function SelectionRow({
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const confidenceValue = pick.confianza || pick.stake * 10;
-  const isTopPick = (normalizeOdds(pick.odds) >= 1.50) && (confidenceValue >= 85);
+  const isTopPick = pick.is_top || ((normalizeOdds(pick.odds) >= 1.50) && (confidenceValue >= 85));
   const calculatedBet = bankroll ? (bankroll * (pick.stake / 100)).toFixed(2) : null;
 
   return (
