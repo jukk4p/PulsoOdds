@@ -69,10 +69,12 @@ apieventos.json
 *.rar
 Scraper pro/
 public/standings.json
+Equipos_Liga_Logos.xlsx
+append.json
+/openspec/
 
 # Carpeta de pruebas y docs locales
 Pruebas/
 diccionario_maestro_*.md
 guia_maestra_*.md
 logos.md
-Equipos_Liga_Logos.xlsx
