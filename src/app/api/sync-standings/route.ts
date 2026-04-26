@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { normalizeTeamName, normalizeLeagueName } from "@/lib/team-normalization";
-import { createSlug } from "@/lib/utils";
+import { normalizeTeamName, normalizeLeagueName, clean } from "@/lib/team-normalization";
 
 // Configuración de Supabase con Service Role
 const supabase = createClient(
@@ -28,73 +27,85 @@ export async function GET(request: Request) {
     
     const csvData = await response.text();
     const rows = csvData.split('\n').map(row => {
-      // Manejo simple de CSV que puede tener comas dentro de celdas (aunque api-sports URLs no suelen tenerlas)
       return row.split(',').map(cell => cell.trim().replace(/^"|"$/g, ''));
     });
 
-    // Detección dinámica de columnas
     const header = rows[0].map(h => h.toLowerCase());
     const colIdx = {
       league: header.indexOf("liga"),
       pos: header.indexOf("pos"),
       team: header.indexOf("equipo"),
+      publicName: header.indexOf("nombre publico"),
       pj: header.indexOf("pj"),
-      g: header.indexOf("pg") !== -1 ? header.indexOf("pg") : (header.indexOf("g") !== -1 ? header.indexOf("g") : header.indexOf("pg")),
-      e: header.indexOf("pe") !== -1 ? header.indexOf("pe") : (header.indexOf("e") !== -1 ? header.indexOf("e") : header.indexOf("pe")),
-      p: header.indexOf("pp") !== -1 ? header.indexOf("pp") : (header.indexOf("p") !== -1 ? header.indexOf("p") : header.indexOf("pp")),
+      g: header.indexOf("pg"),
+      e: header.indexOf("pe"),
+      p: header.indexOf("pp"),
       goals: header.indexOf("goles"),
       pts: header.indexOf("pts"),
       form: header.indexOf("forma"),
-      logo: header.indexOf("logo equipo")
+      logoTeam: header.indexOf("logo equipo"),
+      logoLeague: header.indexOf("logo liga")
     };
 
-    if (colIdx.pos === -1 || colIdx.team === -1 || colIdx.league === -1) {
-      throw new Error(`Columnas críticas no encontradas. Cabecera detectada: ${header.join(", ")}`);
-    }
-
-    // Filtrar filas que tienen posición (evita cabeceras repetidas si las hay)
     const teams = rows.slice(1).filter(row => row[colIdx.pos] && !isNaN(parseInt(row[colIdx.pos])));
+
+    // ── 1. LIMPIEZA PREVIA ──────────────────────────────────────────────────────
+    // Borramos todo para evitar duplicados residuales de nombres antiguos
+    if (teams.length > 20) {
+      await supabase.from('standings').delete().neq('pos', -1);
+    }
 
     const results: Record<string, number> = {};
 
     for (const row of teams) {
-      const leagueName = normalizeLeagueName(row[colIdx.league]);
+      const apiLeague = normalizeLeagueName(row[colIdx.league]); // Usamos el ID de la API para filtrar
       const pos = parseInt(row[colIdx.pos]);
-      const teamName = normalizeTeamName(row[colIdx.team]);
+      
+      const rawTeam = row[colIdx.team] || "";
+      const rawPublic = row[colIdx.publicName] || "";
+      
+      // LA TRINIDAD DE DATOS (Limpios de IDs):
+      const apiName = (row[colIdx.team] || "").replace(/\s*\(\d+\)$/g, "").trim(); 
+      const publicName = normalizeTeamName(rawPublic || rawTeam); 
+
       const pj = parseInt(row[colIdx.pj]) || 0;
       const g = parseInt(row[colIdx.g]) || 0;
       const e = parseInt(row[colIdx.e]) || 0;
       const p = parseInt(row[colIdx.p]) || 0;
       const goals = row[colIdx.goals] || "0:0";
       const pts = parseInt(row[colIdx.pts]) || 0;
-      const form = row[colIdx.form] || "";
-      const dg = (g * 2) - (p * 2);
+      const form = (row[colIdx.form] || "").toUpperCase();
 
-      // Zona de competición
       let zone = null;
-      if (pos <= 4) zone = "champions";
-      else if (pos <= 6) zone = "europa";
-      else if (pos >= 18 && (leagueName === "La Liga" || leagueName === "Premier League")) zone = "relegation";
-
-      // Logo: Prioridad al del Excel, si no, genérico
-      const logoUrl = row[colIdx.logo] || `https://media.api-sports.io/football/teams/generic.png`;
+      if (apiLeague === "Spain - LaLiga") {
+        if (pos <= 4) zone = "champions";
+        else if (pos <= 6) zone = "europa";
+        else if (pos === 7) zone = "conference";
+        else if (pos >= 18) zone = "relegation";
+      }
 
       await supabase
         .from('standings')
         .upsert({
-          league: leagueName,
+          league: apiLeague,
           pos,
-          team: teamName,
-          logo: logoUrl,
-          pj, g, e, p, dg, pts, zone,
+          team: apiName,         // GUARDAMOS EL NOMBRE CRUDO DE LA API
+          public_name: publicName, // GUARDAMOS EL NOMBRE PÚBLICO
+          logo_team: row[colIdx.logoTeam] || "",
+          logo_league: row[colIdx.logoLeague] || "",
+          pj, 
+          pg: g, 
+          pe: e, 
+          pp: p, 
+          pts, 
+          zone,
           goals,
-          form,
-          team_slug: createSlug(teamName)
+          form
         }, { 
           onConflict: 'league,team' 
         });
       
-      results[leagueName] = (results[leagueName] || 0) + 1;
+      results[apiLeague] = (results[apiLeague] || 0) + 1;
     }
 
     return NextResponse.json({ 

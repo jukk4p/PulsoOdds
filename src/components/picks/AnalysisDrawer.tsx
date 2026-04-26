@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { cn, normalizeOdds, normalizeBettingPick } from "@/lib/utils";
-import { normalizeTeamName } from "@/lib/team-normalization";
+import { normalizeTeamName, normalizeLeagueName } from "@/lib/team-normalization";
 import { 
   X, Zap, TrendingUp, History, Info, 
   BarChart3, ShieldAlert, Target, AlertCircle, 
@@ -58,39 +58,53 @@ export function AnalysisDrawer({ pick, isOpen, onClose }: AnalysisDrawerProps) {
     setIsLoadingForm(true);
     try {
       const slugList = [pick.home_slug, pick.away_slug].filter(Boolean);
+      
+      // NORMALIZAMOS la liga para que coincida con lo que guardamos en Supabase
+      const normalizedLeague = normalizeLeagueName(pick.competition);
+      
       const url = slugList.length > 0 
         ? `/api/standings?slugs=${encodeURIComponent(slugList.join(','))}`
-        : `/api/standings?league=${encodeURIComponent(pick.competition)}`;
+        : `/api/standings?league=${encodeURIComponent(normalizedLeague)}`;
         
-      const res = await fetch(url);
-      const data = await res.json();
+      let res = await fetch(url);
+      let data = await res.json();
+      
+      // FALLBACK: Si no hay datos para esa liga, intentamos buscar en TODAS las ligas
+      if (!Array.isArray(data) || data.length === 0) {
+        console.log("⚠️ No se encontraron standings por liga, intentando búsqueda global...");
+        const fallbackRes = await fetch(`/api/standings`);
+        data = await fallbackRes.json();
+      }
       
       if (Array.isArray(data)) {
         const homeSlug = pick.home_slug;
         const awaySlug = pick.away_slug;
         
-        // Nombres crudos para fallback
-        const homeRaw = (pick.match || "").split(/\s+vs\s+/i)[0];
-        const awayRaw = (pick.match || "").split(/\s+vs\s+/i)[1];
-        const homeNormalized = normalizeTeamName(homeRaw).toLowerCase();
-        const awayNormalized = normalizeTeamName(awayRaw).toLowerCase();
+        // Nombres crudos del Pick
+        const [homeRaw, awayRaw] = (pick.match || "").split(/\s+vs\s+/i);
+        
+        // Normalizamos ambos para comparar "manzanas con manzanas"
+        const homeNorm = normalizeTeamName(homeRaw).toLowerCase();
+        const awayNorm = normalizeTeamName(awayRaw).toLowerCase();
 
         // 1. Intentar match por Slug (Prioridad)
         let homeData = homeSlug ? data.find(s => s.team_slug === homeSlug) : null;
         let awayData = awaySlug ? data.find(s => s.team_slug === awaySlug) : null;
 
-        // 2. Fallback por Nombre Normalizado (si el slug falló o no existe)
+        // 2. Fallback por Nombre Normalizado (Búsqueda agresiva)
         if (!homeData) {
           homeData = data.find(s => {
-            const sNormalized = normalizeTeamName(s.team).toLowerCase();
-            return sNormalized === homeNormalized || sNormalized.includes(homeNormalized) || homeNormalized.includes(sNormalized);
+            const teamNorm = normalizeTeamName(s.team).toLowerCase();
+            const publicNorm = s.public_name ? normalizeTeamName(s.public_name).toLowerCase() : "";
+            return teamNorm === homeNorm || publicNorm === homeNorm || teamNorm.includes(homeNorm) || homeNorm.includes(teamNorm);
           });
         }
 
         if (!awayData) {
           awayData = data.find(s => {
-            const sNormalized = normalizeTeamName(s.team).toLowerCase();
-            return sNormalized === awayNormalized || sNormalized.includes(awayNormalized) || awayNormalized.includes(sNormalized);
+            const teamNorm = normalizeTeamName(s.team).toLowerCase();
+            const publicNorm = s.public_name ? normalizeTeamName(s.public_name).toLowerCase() : "";
+            return teamNorm === awayNorm || publicNorm === awayNorm || teamNorm.includes(awayNorm) || awayNorm.includes(teamNorm);
           });
         }
 
@@ -117,14 +131,14 @@ export function AnalysisDrawer({ pick, isOpen, onClose }: AnalysisDrawerProps) {
     const stake = pick.stake || 1;
 
     // Traduciendo el EV
-    if (ev > 0.15) verdicts.push({ icon: <Zap className="w-4 h-4 text-accent" />, text: "VALOR EXTREMO: La cuota está muy desajustada a nuestro favor." });
-    else if (ev > 0.05) verdicts.push({ icon: <TrendingUp className="w-4 h-4 text-accent" />, text: "CUOTA CON VALOR: El premio es mayor al riesgo real detectado." });
+    if (ev > 0.15) verdicts.push({ icon: <Zap className="w-4 h-4 text-accent" />, text: "VALOR EXTREMO: Cuota muy desajustada a nuestro favor." });
+    else if (ev > 0.05) verdicts.push({ icon: <TrendingUp className="w-4 h-4 text-accent" />, text: "CUOTA CON VALOR: El premio supera el riesgo detectado." });
 
     // Traduciendo la Confianza
-    if (confidence >= 88) verdicts.push({ icon: <CheckCircle2 className="w-4 h-4 text-accent" />, text: "ALTA PROBABILIDAD: Los datos históricos son muy favorables hoy." });
+    if (confidence >= 88) verdicts.push({ icon: <CheckCircle2 className="w-4 h-4 text-accent" />, text: "ALTA PROBABILIDAD: Datos históricos muy favorables." });
     
     // Traduciendo el Stake
-    if (stake <= 1.5) verdicts.push({ icon: <ShieldCheck className="w-4 h-4 text-text-muted" />, text: "GESTIÓN PRUDENTE: Recomendamos ir con calma pese al valor detectado." });
+    if (stake <= 1.5) verdicts.push({ icon: <ShieldCheck className="w-4 h-4 text-text-muted" />, text: "APUESTA CON PRUDENCIA: Recomendamos ir con calma." });
 
     // Análisis inteligente del razonamiento (Keyword scanning)
     const text = (pick.razonamiento || "").toLowerCase();
@@ -132,31 +146,42 @@ export function AnalysisDrawer({ pick, isOpen, onClose }: AnalysisDrawerProps) {
     if (text.includes("xg") || text.includes("expected goals") || text.includes("goles esperados")) {
       verdicts.push({ 
         icon: <Zap className="w-4 h-4 text-accent" />, 
-        text: "CALIDAD DE ATAQUE: La IA detecta que el equipo está generando jugadas de gol muy claras." 
+        text: "PELIGRO GENERADO: El equipo crea jugadas de gol claras." 
       });
     }
 
     if (text.includes("momentum") || text.includes("inercia") || text.includes("dominio")) {
       verdicts.push({ 
         icon: <TrendingUp className="w-4 h-4 text-accent" />, 
-        text: "INERCIA POSITIVA: El equipo tiene el control total del ritmo del partido." 
+        text: "PRESIÓN OFENSIVA: El equipo tiene el control del ritmo." 
       });
     }
 
     if (text.includes("defensivo") || text.includes("muro") || text.includes("solidez")) {
       verdicts.push({ 
         icon: <ShieldCheck className="w-4 h-4 text-accent" />, 
-        text: "SOLIDEZ DEFENSIVA: Es muy difícil que le marquen goles en este estado actual." 
+        text: "SOLIDEZ DEFENSIVA: Muy difícil que le marquen goles hoy." 
       });
     }
 
-    if (verdicts.length === 0) verdicts.push({ icon: <Target className="w-4 h-4 text-accent" />, text: "PICK EQUILIBRADO: Oportunidad sólida basada en tendencia estadística." });
+    if (verdicts.length === 0) verdicts.push({ icon: <Target className="w-4 h-4 text-accent" />, text: "PICK EQUILIBRADO: Oportunidad sólida por tendencia." });
 
     return verdicts;
   };
 
   const humanVerdicts = getHumanVerdict();
 
+
+  const humanizeReasoning = (text: string | undefined) => {
+    if (!text) return "Nuestro algoritmo detecta una ineficiencia en las cuotas basadas en el rendimiento histórico de ambos equipos en este mercado específico.";
+    
+    return text
+      .replace(/\b(xg|expected goals|goles esperados)\b/gi, "Peligro Generado")
+      .replace(/\b(momentum|inercia|empuje)\b/gi, "Presión Ofensiva")
+      .replace(/\b(ev\+|ev|valor esperado positivo|valor esperado)\b/gi, "Ventaja de Cuota")
+      .replace(/\b(handicap asiatico)\b/gi, "Margen de Victoria")
+      .replace(/\b(profit)\b/gi, "Beneficio");
+  };
 
   const homeRaw = (pick.match || "").split(/\s+vs\s+/i)[0];
   const awayRaw = (pick.match || "").split(/\s+vs\s+/i)[1];
@@ -286,7 +311,7 @@ export function AnalysisDrawer({ pick, isOpen, onClose }: AnalysisDrawerProps) {
             <SectionHeader icon={<Zap size={14} />} title="Análisis del Experto" />
             <div className="prose prose-invert max-w-none">
               <p className="text-sm text-text-secondary leading-relaxed italic border-l-2 border-accent pl-4 py-1">
-                {pick.razonamiento || "Nuestro algoritmo detecta una ineficiencia en las cuotas basadas en el rendimiento histórico de ambos equipos en este mercado específico."}
+                {humanizeReasoning(pick.razonamiento)}
               </p>
             </div>
           </div>

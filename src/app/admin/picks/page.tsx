@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Trash2, CheckCircle, XCircle, MinusCircle, Plus, Search, ShieldCheck, TrendingUp, Sparkles, Pencil, X, Save, AlertCircle, ArrowUpDown, Wand2 } from 'lucide-react';
 
-import { cn, normalizeBettingPick, translateBettingTerm, substituteTeamNames, translateLeagueName, formatMatchName, formatTeamName, deepNormalize, simpleNormalize } from '@/lib/utils';
+import { cn, normalizeBettingPick, translateBettingTerm, substituteTeamNames, translateLeagueName, formatMatchName, formatTeamName, deepNormalize, simpleNormalize, formatDateSpain, formatTimeSpain } from '@/lib/utils';
 import { LogoAutocomplete } from '@/components/admin/LogoAutocomplete';
 
 // ==========================================
@@ -739,11 +739,9 @@ export default function AdminPicksPage() {
                             : translateLeagueName(pick.competition)}
                         </span>
                         <div className="flex items-center gap-1">
-                          <span className="text-[9px] font-black text-neon-green/30">{pick.match_date ? new Date(pick.match_date).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' }) : '--/--'}</span>
+                          <span className="text-[9px] font-black text-neon-green/30">{formatDateSpain(pick.match_date).split(',')[1]?.trim() || '--/--'}</span>
                           <span className="text-[9px] font-medium text-white/20">
-                            {pick.match_date && new Date(pick.match_date).getHours() !== 0 
-                              ? new Date(pick.match_date).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) 
-                              : 'H. Pendiente'}
+                            {formatTimeSpain(pick.match_date)}
                           </span>
                         </div>
                         <span className="text-[8px] font-black text-white/30 uppercase tracking-tighter mt-1.5 px-1.5 py-0.5 bg-white/[0.03] rounded border border-white/[0.05]">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { cn, normalizeOdds, normalizeBettingPick } from "@/lib/utils";
+import { cn, normalizeOdds, normalizeBettingPick, formatTimeSpain, formatDateSpain } from "@/lib/utils";
 import { getTeamLogo, getLeagueLogo } from "@/lib/logos";
 import { Zap, Clock, ChevronDown, Calculator } from "lucide-react";
 import { BankrollManager } from "../picks/BankrollManager";
@@ -48,10 +48,10 @@ export function MatchGroup({ picks, selectedPickIds = [], onTogglePick, onOpenAn
 
   const firstPick = picks[0];
   
-  const matchDate = new Date(firstPick.match_date);
-  const formattedTime = firstPick.kickoff || matchDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false });
-  const formattedDateFull = matchDate.toLocaleDateString('es-ES', { weekday: 'short', day: '2-digit', month: 'short' })
-    .replace('.', '').replace(/^\w/, (c) => c.toUpperCase());
+  const formattedTime = formatTimeSpain(firstPick.match_date);
+  const formattedDateFull = formatDateSpain(firstPick.match_date)
+    .split(',')[1]?.trim() // Sacamos solo el "25 de abril"
+    .replace(/^\w/, (c) => c.toUpperCase()) || "";
 
   const [homeRaw, awayRaw] = (firstPick.match || "").split(/\s+vs\s+/i);
   

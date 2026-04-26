@@ -182,8 +182,9 @@ export function PicksExplorer({ initialPicks }: PicksExplorerProps) {
           {/* Search Toggle */}
           <button 
             onClick={() => setIsSearchOpen(!isSearchOpen)}
+            title="Buscar evento"
             className={cn(
-              "p-2.5 rounded-full border transition-all duration-300",
+              "p-2.5 rounded-full border transition-all duration-300 hover:scale-110 active:scale-95",
               isSearchOpen ? "bg-accent border-accent text-bg-base" : "bg-white/5 border-white/10 text-text-muted hover:border-accent/50"
             )}
           >

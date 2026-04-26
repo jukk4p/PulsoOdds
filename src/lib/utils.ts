@@ -442,3 +442,28 @@ export function calculateStats(picks: any[]): PickStats {
 
   return { totalStake, totalProfit, roi, winRate, currentStreak };
 }
+
+/**
+ * Formatea una fecha completa al estilo de España (Europe/Madrid)
+ */
+export function formatDateSpain(date: string | Date | null): string {
+  if (!date) return "Fecha no disponible";
+  const d = typeof date === 'string' ? new Date(date) : date;
+  return d.toLocaleDateString('es-ES', { 
+    timeZone: 'Europe/Madrid', 
+    weekday: 'long', 
+    day: '2-digit', 
+    month: 'long' 
+  });
+}
+
+export function formatTimeSpain(date: string | Date | null): string {
+  if (!date) return "--:--";
+  const d = typeof date === 'string' ? new Date(date) : date;
+  return d.toLocaleTimeString('es-ES', { 
+    timeZone: 'Europe/Madrid', 
+    hour: '2-digit', 
+    minute: '2-digit', 
+    hour12: false 
+  });
+}
