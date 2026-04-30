@@ -31,7 +31,7 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
 
   return (
     <div className={cn(
-      "px-3 py-1 rounded-md border text-[10px] font-black uppercase tracking-[0.2em] leading-none",
+      "px-2 py-0.5 rounded-md border text-[9px] font-black uppercase tracking-widest leading-none",
       classes,
       className
     )}>

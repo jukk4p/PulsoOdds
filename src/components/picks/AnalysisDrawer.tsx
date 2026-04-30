@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { cn, normalizeOdds, normalizeBettingPick } from "@/lib/utils";
+import { cn, normalizeOdds, normalizeBettingPick, formatMatchName } from "@/lib/utils";
 import { normalizeTeamName, normalizeLeagueName } from "@/lib/team-normalization";
 import { 
   X, Zap, TrendingUp, History, Info, 
@@ -214,7 +214,7 @@ export function AnalysisDrawer({ pick, isOpen, onClose }: AnalysisDrawerProps) {
               Análisis Avanzado
             </span>
             <h2 className="text-lg font-black text-white uppercase italic">
-              {pick.match}
+              {formatMatchName(pick.match)}
             </h2>
           </div>
           <button 
@@ -254,7 +254,7 @@ export function AnalysisDrawer({ pick, isOpen, onClose }: AnalysisDrawerProps) {
               {/* Home Team Form */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-text-primary uppercase tracking-tight">{homeRaw}</span>
+                  <span className="text-xs font-bold text-text-primary uppercase tracking-tight">{normalizeTeamName(homeRaw)}</span>
                   <div className="flex gap-1.5">
                     {isLoadingForm ? (
                       <div className="flex gap-1.5 animate-pulse">
@@ -272,7 +272,7 @@ export function AnalysisDrawer({ pick, isOpen, onClose }: AnalysisDrawerProps) {
               {/* Away Team Form */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-text-primary uppercase tracking-tight">{awayRaw}</span>
+                  <span className="text-xs font-bold text-text-primary uppercase tracking-tight">{normalizeTeamName(awayRaw)}</span>
                   <div className="flex gap-1.5">
                     {isLoadingForm ? (
                       <div className="flex gap-1.5 animate-pulse">

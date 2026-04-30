@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn, normalizeTeamName, normalizeBettingPick } from "@/lib/utils";
 import { getTeamLogo } from "@/lib/logos";
 import { StatusBadge, PickStatus } from "@/components/ui/StatusBadge";
 import { TeamAvatar } from "@/components/ui/TeamAvatar";
@@ -61,7 +61,7 @@ export function PickCard({ pick, className }: PickCardProps) {
             <TeamAvatar name={homeRaw} className="w-12 h-12 md:w-14 md:h-14" />
           )}
           <span className="text-xs md:text-sm font-black uppercase tracking-tight text-text-primary line-clamp-1">
-            {homeRaw}
+            {normalizeTeamName(homeRaw)}
           </span>
           <span className="text-[9px] font-bold uppercase text-text-muted">Local</span>
         </div>
@@ -75,7 +75,7 @@ export function PickCard({ pick, className }: PickCardProps) {
             <TeamAvatar name={awayRaw} className="w-12 h-12 md:w-14 md:h-14" />
           )}
           <span className="text-xs md:text-sm font-black uppercase tracking-tight text-text-primary line-clamp-1">
-            {awayRaw}
+            {normalizeTeamName(awayRaw)}
           </span>
           <span className="text-[9px] font-bold uppercase text-text-muted">Visitante</span>
         </div>
@@ -88,7 +88,7 @@ export function PickCard({ pick, className }: PickCardProps) {
         </span>
         <div className="flex items-end justify-between gap-4">
           <span className="text-sm md:text-base font-black text-text-primary uppercase tracking-tight italic leading-tight">
-            {pick.pick}
+            {normalizeBettingPick(pick.pick, pick.match)}
           </span>
           <div className="flex flex-col items-end">
             <span className="text-[9px] font-black text-text-muted uppercase tracking-widest mb-0.5">Cuota</span>

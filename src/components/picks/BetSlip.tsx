@@ -1,7 +1,7 @@
 "use client";
  
 import { useState } from "react";
-import { cn, translateBettingTerm } from "@/lib/utils";
+import { cn, normalizeBettingPick, formatMatchName } from "@/lib/utils";
 import { X, Trash2, TrendingUp, Calculator, ChevronUp, ChevronDown } from "lucide-react";
  
 interface Pick {
@@ -32,9 +32,9 @@ function BetSlipItem({ pick, onRemove }: { pick: Pick; onRemove: (id: string) =>
         className="flex items-center justify-between p-4 cursor-pointer"
       >
         <div className="flex flex-col gap-1 flex-1 min-w-0">
-          <span className="text-[9px] text-text-muted font-black tracking-widest truncate pr-4 uppercase">{pick.match}</span>
+          <span className="text-[9px] text-text-muted font-black tracking-widest truncate pr-4 uppercase">{formatMatchName(pick.match)}</span>
           <div className="flex items-center gap-3">
-            <span className="text-xs font-black text-text-primary uppercase italic truncate max-w-[150px]">{translateBettingTerm(pick.pick)}</span>
+            <span className="text-xs font-black text-text-primary uppercase italic truncate max-w-[150px]">{normalizeBettingPick(pick.pick, pick.match)}</span>
             <span className="text-xs font-mono font-black text-accent">@{pick.odds.toFixed(2)}</span>
           </div>
         </div>
@@ -58,11 +58,11 @@ function BetSlipItem({ pick, onRemove }: { pick: Pick; onRemove: (id: string) =>
          <div className="pt-3 border-t border-border-base/30 space-y-2">
             <div className="flex items-center justify-between">
                <span className="text-[8px] text-text-muted font-black uppercase tracking-widest">Mercado</span>
-               <span className="text-[9px] text-accent font-black italic tracking-widest uppercase">{translateBettingTerm(pick.market || "")}</span>
+               <span className="text-[9px] text-accent font-black italic tracking-widest uppercase">{normalizeBettingPick(pick.market || "", pick.match)}</span>
             </div>
             <div className="flex items-center justify-between">
                <span className="text-[8px] text-text-muted font-black uppercase tracking-widest">Selección</span>
-               <span className="text-[10px] text-text-primary font-black uppercase italic tracking-tight">{translateBettingTerm(pick.pick)}</span>
+               <span className="text-[10px] text-text-primary font-black uppercase italic tracking-tight">{normalizeBettingPick(pick.pick, pick.match)}</span>
             </div>
          </div>
       </div>

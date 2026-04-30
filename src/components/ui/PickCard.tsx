@@ -61,7 +61,7 @@ export function PickCard({ pick }: PickCardProps) {
         <div className="flex justify-between items-center mb-8">
           <div className="flex items-center gap-3">
             <div className={cn(
-              "flex items-center gap-2 px-3 py-1.5 rounded-sm border text-[10px] font-black uppercase tracking-widest transition-all",
+              "flex items-center gap-1.5 px-2 py-1 rounded-sm border text-[9px] font-black uppercase tracking-widest transition-all",
               currentStatus.color
             )}>
               {currentStatus.icon}

@@ -2,6 +2,8 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { normalizeTeamName, normalizeLeagueName } from "./team-normalization";
 
+export { normalizeTeamName, normalizeLeagueName };
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }

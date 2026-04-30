@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { cn, normalizeOdds, normalizeBettingPick, formatTimeSpain, formatDateSpain } from "@/lib/utils";
+import { cn, normalizeOdds, normalizeBettingPick, formatTimeSpain, formatDateSpain, normalizeTeamName } from "@/lib/utils";
 import { getTeamLogo, getLeagueLogo } from "@/lib/logos";
 import { Zap, Clock, ChevronDown, Calculator } from "lucide-react";
 import { BankrollManager } from "../picks/BankrollManager";
@@ -73,7 +73,7 @@ export function MatchGroup({ picks, selectedPickIds = [], onTogglePick, onOpenAn
           <div className="flex flex-col items-center md:items-end gap-3 text-center md:text-right w-full">
             <div className="flex items-center gap-4">
               <span className="text-sm md:text-base font-display font-black uppercase tracking-tight text-text-primary line-clamp-1">
-                {homeRaw}
+                {normalizeTeamName(homeRaw)}
               </span>
               {homeLogo && (
                 <img src={homeLogo} alt="" className="h-10 w-10 md:h-12 md:w-12 object-contain" />
@@ -103,7 +103,7 @@ export function MatchGroup({ picks, selectedPickIds = [], onTogglePick, onOpenAn
                 <img src={awayLogo} alt="" className="h-10 w-10 md:h-12 md:w-12 object-contain" />
               )}
               <span className="text-sm md:text-base font-display font-black uppercase tracking-tight text-text-primary line-clamp-1">
-                {awayRaw}
+                {normalizeTeamName(awayRaw)}
               </span>
             </div>
             <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Visitante</span>
@@ -200,7 +200,7 @@ function SelectionRow({
           )} />
           <div className="flex flex-col min-w-0">
             <span className="text-[10px] font-black text-text-muted uppercase tracking-[0.3em] mb-1.5">
-              {pick.market}
+              {normalizeBettingPick(pick.market, pick.match)}
             </span>
             <div className="flex items-center gap-3">
               <span className="text-sm font-black text-text-primary uppercase tracking-tight italic line-clamp-1">
@@ -211,7 +211,7 @@ function SelectionRow({
               <div className="flex items-center gap-2">
                 {pick.status !== 'pending' ? (
                   <div className={cn(
-                    "w-[75px] py-0.5 rounded-sm text-[9px] font-black uppercase tracking-widest shadow-sm flex items-center justify-center",
+                    "w-[64px] py-0.5 rounded-sm text-[8px] font-black uppercase tracking-widest shadow-sm flex items-center justify-center",
                     pick.status === 'won' ? "bg-[#00ff88] text-black" :
                     pick.status === 'lost' ? "bg-red-600 text-white" :
                     "bg-white/20 text-white"
@@ -219,12 +219,12 @@ function SelectionRow({
                     {pick.status === 'won' ? 'GANADO' : pick.status === 'lost' ? 'PERDIDO' : 'NULO'}
                   </div>
                 ) : (
-                  <div className="flex items-center gap-1.5 px-1.5 py-0.5 rounded-sm bg-white/[0.03] border border-white/10">
+                  <div className="flex items-center gap-1 px-1 py-0.5 rounded-sm bg-white/[0.03] border border-white/10">
                     <span className="relative flex h-1 w-1">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white/20 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-1 w-1 bg-white/40"></span>
                     </span>
-                    <span className="text-[8px] font-black text-white/20 uppercase tracking-widest italic">Pendiente</span>
+                    <span className="text-[7px] font-black text-white/20 uppercase tracking-widest italic">Pendiente</span>
                   </div>
                 )}
 

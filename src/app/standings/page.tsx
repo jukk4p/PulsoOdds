@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, Fragment } from "react";
-import { cn } from "@/lib/utils";
+import { cn, normalizeTeamName } from "@/lib/utils";
 import { Trophy, Info, Loader2 } from "lucide-react";
 import { MASTER_LEAGUES } from "@/lib/masterDictionaries";
 
@@ -363,7 +363,7 @@ export default function StandingsPage() {
                               <div className="h-6 w-6 md:h-12 md:w-12 bg-white rounded-sm p-1 md:p-2 shadow-sm flex items-center justify-center shrink-0">
                                 <img src={team.logo_team || team.logo || "https://p-cdn.api-sports.io/football/teams/generic.png"} alt={team.public_name || team.team} className="h-full w-full object-contain" />
                               </div>
-                              <span className="text-[10px] md:text-lg font-display font-black text-text-primary uppercase tracking-tight truncate max-w-[70px] md:max-w-none">{team.public_name || team.team}</span>
+                              <span className="text-[10px] md:text-lg font-display font-black text-text-primary uppercase tracking-tight truncate max-w-[70px] md:max-w-none">{normalizeTeamName(team.public_name || team.team)}</span>
                             </div>
                           </td>
                           <td className="py-3 md:py-6 px-2 text-center text-[10px] md:text-sm font-mono font-bold text-text-secondary">{team.pj}</td>
