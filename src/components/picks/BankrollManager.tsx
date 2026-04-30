@@ -35,8 +35,8 @@ export function BankrollManager() {
         onClick={() => setIsOpen(!isOpen)}
         title="Gestión de Bankroll"
         className={cn(
-          "p-2.5 rounded-full border transition-all duration-300 hover:scale-110 active:scale-95",
-          isOpen ? "bg-accent border-accent text-bg-base" : "bg-white/5 border-white/10 text-text-muted hover:border-accent/50"
+          "p-2.5 rounded-full transition-all duration-300 hover:scale-110 active:scale-95",
+          isOpen ? "bg-accent text-bg-base" : "text-text-muted hover:bg-white/5 hover:text-white"
         )}
       >
         <Wallet className="w-4 h-4" />
