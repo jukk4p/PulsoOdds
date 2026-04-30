@@ -22,7 +22,9 @@ const LEAGUES = [
   { name: "Serie B", apiName: "Italy - Serie B", slug: "italia/serie-b", id: "136" },
   { name: "Ligue 2", apiName: "France - Ligue 2", slug: "francia/ligue-2", id: "62" },
   { name: "Serie A Betano / Brasil", apiName: "Brazil - Brasileiro Serie A", slug: "brasil/serie-a-betano", id: "325" },
-  { name: "MLS", apiName: "USA - MLS", slug: "usa/mls", id: "330" }
+  { name: "MLS", apiName: "USA - MLS", slug: "usa/mls", id: "330" },
+  { name: "Eurocopa", apiName: "Europe - Euro", slug: "europa/eurocopa", id: "4" },
+  { name: "Mundial", apiName: "World - World Cup", slug: "mundial/copa-del-mundo", id: "1" }
 ];
 
 // Mapeo dinámico desde el diccionario maestro
@@ -216,6 +218,24 @@ async function scrapeLeague(context, league) {
             });
         }
 
+        // Buscar si hay un nombre de grupo en la cabecera de la tabla
+        let groupName = "";
+        const table = row.closest('.ui-table, .table');
+        if (table) {
+          const header = table.querySelector('.ui-table__header, .table__header, .table__title');
+          if (header) {
+            const lines = header.innerText.split('\n').map(l => l.trim()).filter(l => l);
+            if (lines.length > 1) {
+              const text = lines[1].toUpperCase();
+              if (text.includes('GRUPO')) {
+                groupName = text;
+              } else if (text.includes('POSICIÓN') || text.includes('TERCEROS') || text.includes('RANKING')) {
+                groupName = "Mejores Terceros";
+              }
+            }
+          }
+        }
+
         return {
           pos: rankEl?.innerText.replace('.', '').trim() || "0",
           team: teamEl?.innerText.trim() || "Unknown",
@@ -226,7 +246,8 @@ async function scrapeLeague(context, league) {
           p: cells[5]?.innerText.trim() || "0",
           goals: cells[6]?.innerText.trim() || "0:0",
           pts: cells[8]?.innerText.trim() || "0",
-          form: form
+          form: form,
+          groupName: groupName
         };
       });
     });
@@ -238,6 +259,7 @@ async function scrapeLeague(context, league) {
     return scrapedData.map(r => {
       const teamData = getTeamData(r.team, league.name);
       const finalLeagueName = league.apiName || league.name;
+      const combinedLeagueName = r.groupName ? `${finalLeagueName} - ${r.groupName}` : finalLeagueName;
       
       return {
         ...r,
@@ -245,7 +267,7 @@ async function scrapeLeague(context, league) {
         publicName: teamData.publicName,
         // Prioridad: 1. Scrapeado, 2. Diccionario
         teamLogo: r.teamLogo || teamData.logo,
-        league: finalLeagueName,
+        league: combinedLeagueName,
         leagueLogo: liga_logo_scraped
       };
     });

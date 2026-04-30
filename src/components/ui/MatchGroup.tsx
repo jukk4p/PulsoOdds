@@ -206,11 +206,34 @@ function SelectionRow({
               <span className="text-sm font-black text-text-primary uppercase tracking-tight italic line-clamp-1">
                 {normalizeBettingPick(pick.pick, pick.match)}
               </span>
-              {isTopPick && (
-                <div className="px-2 py-0.5 rounded-sm bg-accent/10 border border-accent/20">
-                  <span className="text-[9px] font-black text-accent uppercase tracking-widest">TOP</span>
-                </div>
-              )}
+              
+              {/* STATUS BADGE PÚBLICO - COMPACTO Y LEGIBLE */}
+              <div className="flex items-center gap-2">
+                {pick.status !== 'pending' ? (
+                  <div className={cn(
+                    "w-[75px] py-0.5 rounded-sm text-[9px] font-black uppercase tracking-widest shadow-sm flex items-center justify-center",
+                    pick.status === 'won' ? "bg-[#00ff88] text-black" :
+                    pick.status === 'lost' ? "bg-red-600 text-white" :
+                    "bg-white/20 text-white"
+                  )}>
+                    {pick.status === 'won' ? 'GANADO' : pick.status === 'lost' ? 'PERDIDO' : 'NULO'}
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1.5 px-1.5 py-0.5 rounded-sm bg-white/[0.03] border border-white/10">
+                    <span className="relative flex h-1 w-1">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white/20 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-1 w-1 bg-white/40"></span>
+                    </span>
+                    <span className="text-[8px] font-black text-white/20 uppercase tracking-widest italic">Pendiente</span>
+                  </div>
+                )}
+
+                {isTopPick && pick.status === 'pending' && (
+                  <div className="px-1.5 py-0.5 rounded-sm bg-accent/10 border border-accent/20">
+                    <span className="text-[9px] font-black text-accent uppercase tracking-widest">TOP</span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

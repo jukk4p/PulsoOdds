@@ -202,6 +202,7 @@ function normalizeLeague(name) {
   if (n.includes("laliga") && !n.includes("2") && !n.includes("hypermotion")) return "Spain - LaLiga";
   if (n.includes("hypermotion") || n.includes("laliga2")) return "Spain - LaLiga2";
   if (n.includes("premier")) return "England - Premier League";
+  if (n.includes("2. bundesliga")) return "Germany - 2. Bundesliga";
   if (n.includes("bundesliga")) return "Germany - Bundesliga";
   if (n.includes("serie a") && !n.includes("brasil")) return "Italy - Serie A";
   if (n.includes("ligue 1")) return "France - Ligue 1";

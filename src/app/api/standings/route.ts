@@ -18,7 +18,11 @@ export async function GET(request: NextRequest) {
       .select('*');
 
     if (league && !slugs) {
-      query = query.eq('league', league);
+      if (league.includes('%')) {
+        query = query.like('league', league);
+      } else {
+        query = query.eq('league', league);
+      }
     }
 
     if (slugs) {
@@ -26,7 +30,7 @@ export async function GET(request: NextRequest) {
       query = query.in('team_slug', slugList);
     }
 
-    query = query.order('pos', { ascending: true });
+    query = query.order('league', { ascending: true }).order('pos', { ascending: true });
 
     const { data, error } = await query;
 
