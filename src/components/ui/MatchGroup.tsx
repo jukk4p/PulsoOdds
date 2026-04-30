@@ -34,132 +34,56 @@ interface MatchGroupProps {
 }
 
 export function MatchGroup({ picks, selectedPickIds = [], onTogglePick, onOpenAnalysis }: MatchGroupProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [bankroll, setBankroll] = useState<number | null>(null);
-
-  useEffect(() => {
-    const saved = localStorage.getItem("pulso_bankroll");
-    if (saved) setBankroll(Number(saved));
-
-    const handleUpdate = (e: any) => setBankroll(Number(e.detail));
-    window.addEventListener("bankroll-updated", handleUpdate);
-    return () => window.removeEventListener("bankroll-updated", handleUpdate);
-  }, []);
-
   const firstPick = picks[0];
   
   const formattedTime = formatTimeSpain(firstPick.match_date);
-  const formattedDateFull = formatDateSpain(firstPick.match_date)
-    .split(',')[1]?.trim() // Sacamos solo el "25 de abril"
-    .replace(/^\w/, (c) => c.toUpperCase()) || "";
-
   const [homeRaw, awayRaw] = (firstPick.match || "").split(/\s+vs\s+/i);
   
-  // Logos normalizados
-  const homeLogo = getTeamLogo(homeRaw) || firstPick.home_logo;
-  const awayLogo = getTeamLogo(awayRaw) || firstPick.away_logo;
+  // Logo de la liga
+  const leagueLogo = getLeagueLogo(firstPick.competition);
 
   return (
-    <div className="flex flex-col w-full mb-3">
-      <div className={cn(
-        "relative flex flex-col w-full rounded-lg bg-bg-surface border border-border-base transition-all duration-300",
-        isExpanded && "border-border-hover bg-bg-surface/80"
-      )}>
-        
-        {/* HEADER: EVENT INFO */}
-        <div className="flex flex-col md:grid md:grid-cols-[1fr_auto_1fr] items-center px-4 md:px-8 py-6 md:py-8 gap-6 md:gap-12">
-          
-          {/* Team 1 */}
-          <div className="flex flex-col items-center md:items-end gap-3 text-center md:text-right w-full">
-            <div className="flex items-center gap-4">
-              <span className="text-sm md:text-base font-display font-black uppercase tracking-tight text-text-primary line-clamp-1">
-                {normalizeTeamName(homeRaw)}
-              </span>
-              {homeLogo && (
-                <img src={homeLogo} alt="" className="h-10 w-10 md:h-12 md:w-12 object-contain" />
-              )}
+    <div 
+      onClick={() => onOpenAnalysis?.(picks)}
+      className={cn(
+        "group relative flex items-center justify-between px-4 py-4 rounded-xl bg-[#121212] border border-white/[0.03] hover:border-white/10 transition-all duration-300 cursor-pointer"
+      )}
+    >
+      <div className="flex items-center gap-4">
+        {/* League Logo Icon */}
+        <div className="w-12 h-12 rounded-lg bg-white border border-white/[0.05] flex items-center justify-center p-2.5 shrink-0 overflow-hidden shadow-inner">
+          {leagueLogo ? (
+            <img src={leagueLogo} alt="" className="w-full h-full object-contain" />
+          ) : (
+            <div className="w-full h-full bg-white rounded-sm flex items-center justify-center">
+              <Zap size={16} className="text-zinc-800" />
             </div>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Local</span>
-          </div>
-
-          {/* VS & Time */}
-          <div className="flex flex-col items-center justify-center shrink-0">
-            <span className="text-[10px] font-black text-text-muted italic mb-3 opacity-30">VS</span>
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded bg-bg-subtle border border-border-base">
-              <Clock size={12} className="text-accent" />
-              <span className="text-[11px] font-mono font-bold text-text-primary tabular-nums">
-                {formattedTime}
-              </span>
-            </div>
-            <span className="text-[9px] font-black text-text-muted uppercase tracking-[0.2em] mt-3">
-              {formattedDateFull}
-            </span>
-          </div>
-
-          {/* Team 2 */}
-          <div className="flex flex-col items-center md:items-start gap-3 text-center md:text-left w-full">
-            <div className="flex items-center gap-4">
-              {awayLogo && (
-                <img src={awayLogo} alt="" className="h-10 w-10 md:h-12 md:w-12 object-contain" />
-              )}
-              <span className="text-sm md:text-base font-display font-black uppercase tracking-tight text-text-primary line-clamp-1">
-                {normalizeTeamName(awayRaw)}
-              </span>
-            </div>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Visitante</span>
-          </div>
+          )}
         </div>
 
-        {/* Action Bar */}
-        <div className="flex items-center justify-between px-6 py-3 bg-bg-subtle/30 border-t border-border-base">
-          <div className="flex items-center gap-2.5">
-            {getLeagueLogo(firstPick.competition) && (
-              <div className="flex items-center justify-center w-6 h-6 rounded-full bg-white p-1 shadow-sm">
-                <img 
-                  src={getLeagueLogo(firstPick.competition) || ""} 
-                  alt="" 
-                  className="h-full w-full object-contain"
-                />
-              </div>
-            )}
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-text-primary/80 group-hover:text-accent transition-colors">
-              {firstPick.competition.split('-').pop()?.trim()}
+        {/* Info Section */}
+        <div className="flex flex-col gap-0.5">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-bold text-white tracking-tight">
+              {normalizeTeamName(homeRaw)} <span className="text-zinc-600 mx-0.5">vs</span> {normalizeTeamName(awayRaw)}
             </span>
           </div>
-          
-          <button 
-            onClick={() => setIsExpanded(!isExpanded)}
-            className={cn(
-              "flex items-center gap-3 px-4 py-1.5 rounded-sm transition-all duration-300",
-              "bg-bg-subtle border border-border-base hover:border-accent group",
-              isExpanded && "border-accent bg-accent/5"
-            )}
-          >
-            <div className="flex items-center justify-center w-5 h-5 rounded-sm bg-accent/10 border border-accent/20">
-              <span className="text-[10px] font-black text-accent">{picks.length}</span>
-            </div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-text-primary">
-              {isExpanded ? "Cerrar" : "Picks Disponibles"}
-            </span>
-            <ChevronDown size={14} className={cn("text-text-muted transition-transform duration-300", isExpanded && "rotate-180 text-accent")} />
-          </button>
+          <div className="flex items-center gap-1.5 text-[10px] font-medium text-zinc-500 uppercase">
+            <span>{firstPick.competition.split('-').pop()?.trim()}</span>
+            <span className="opacity-30">|</span>
+            <span className="tabular-nums">{formattedTime}</span>
+          </div>
         </div>
+      </div>
 
-        {/* SELECTIONS LIST */}
-        {isExpanded && (
-          <div className="flex flex-col divide-y divide-border-base/50 bg-bg-base/20 animate-in fade-in slide-in-from-top-1 duration-300">
-            {picks.map((pick) => (
-              <SelectionRow 
-                key={pick.id} 
-                pick={pick} 
-                isSelected={selectedPickIds.includes(pick.id)}
-                onToggle={() => onTogglePick?.(pick.id)}
-                onOpenAnalysis={() => onOpenAnalysis?.(pick)}
-                bankroll={bankroll}
-              />
-            ))}
-          </div>
-        )}
+      {/* Badge Section */}
+      <div className="flex items-center gap-3">
+        <div className="px-2.5 py-1 rounded-full bg-accent/10 border border-accent/20">
+          <span className="text-[10px] font-black text-accent tracking-tight">
+            {picks.length} {picks.length === 1 ? "pick" : "picks"}
+          </span>
+        </div>
+        <ChevronDown size={14} className="text-zinc-700 -rotate-90" />
       </div>
     </div>
   );

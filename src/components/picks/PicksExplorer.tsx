@@ -84,14 +84,13 @@ export function PicksExplorer({ initialPicks }: PicksExplorerProps) {
     const basePicks = filter === "all" ? initialPicks : initialPicks.filter(p => p.status === filter);
 
     return [
-      { id: "all", label: "💎 Todos", count: basePicks.length },
-      { id: "top", label: "🔥 Top Picks", count: getMarketMatches("top", basePicks).length },
-      { id: "mitad", label: "⚽ 1ª Mitad", count: getMarketMatches("mitad", basePicks).length },
-      { id: "ambos_marcan", label: "⚽ Ambos Marcan", count: getMarketMatches("ambos_marcan", basePicks).length },
-      { id: "doble", label: "🛡️ Doble Oportunidad", count: getMarketMatches("doble", basePicks).length },
-      { id: "ganador", label: "🏆 Ganador", count: getMarketMatches("ganador", basePicks).length },
-      { id: "handicap", label: "📊 Hándicap", count: getMarketMatches("handicap", basePicks).length },
-      { id: "goles", label: "🔢 Goles", count: getMarketMatches("goles", basePicks).length },
+      { id: "all", label: "Todos", icon: "💎", count: basePicks.length },
+      { id: "top", label: "Top Picks", icon: "🔥", count: getMarketMatches("top", basePicks).length },
+      { id: "mitad", label: "1ª Mitad", icon: "🌐", count: getMarketMatches("mitad", basePicks).length },
+      { id: "ambos_marcan", label: "Ambos Marcan", icon: "⚽", count: getMarketMatches("ambos_marcan", basePicks).length },
+      { id: "doble", label: "Doble Oportunidad", icon: "🛡️", count: getMarketMatches("doble", basePicks).length },
+      { id: "ganador", label: "Ganador", icon: "🏆", count: getMarketMatches("ganador", basePicks).length },
+      { id: "handicap", label: "Hándicap", icon: "📊", count: getMarketMatches("handicap", basePicks).length },
     ];
   }, [initialPicks, filter]);
 
@@ -162,38 +161,54 @@ export function PicksExplorer({ initialPicks }: PicksExplorerProps) {
     setSelectedPickIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
   };
 
-  const openAnalysis = (pick: any) => {
-    setAnalysisPick(pick);
+  const openAnalysis = (data: any) => {
+    setAnalysisPick(data);
   };
 
   return (
-    <div className="space-y-6">
-      {/* Row 1: Status & Actions */}
-      <div className="flex items-center justify-start gap-8">
-        <div className="w-auto overflow-hidden">
+    <div className="space-y-8">
+
+      {/* Row 1: Status Filters & Search Toggle */}
+      <div className="flex flex-row items-center justify-start gap-4">
+        <div className="min-w-0">
           <CategoryFilter 
             categories={statsCategories}
             selectedId={filter}
             onSelect={setFilter}
+            showStats={false}
           />
         </div>
         
-        <div className="flex items-center bg-white/[0.03] border border-white/[0.08] rounded-full p-1 gap-0.5 shadow-2xl backdrop-blur-xl">
-          {/* Search Toggle */}
+        <div className="flex items-center h-[32px] bg-white/[0.03] border border-white/[0.05] rounded-full px-1 gap-1 shadow-xl hover:border-white/10 transition-all duration-300 -mt-[3px]">
           <button 
             onClick={() => setIsSearchOpen(!isSearchOpen)}
-            title="Buscar evento"
             className={cn(
-              "p-2 rounded-full transition-all duration-300 hover:scale-110 active:scale-95",
-              isSearchOpen ? "bg-accent text-bg-base" : "text-text-muted hover:bg-white/5 hover:text-white"
+              "h-[24px] px-3 rounded-full transition-all duration-300 flex items-center justify-center gap-2",
+              isSearchOpen 
+                ? "bg-accent text-black shadow-[0_0_15px_rgba(200,255,0,0.2)]" 
+                : "text-zinc-400 hover:text-white"
             )}
           >
-            <Search className="w-4 h-4" />
+            <Search className="w-3.5 h-3.5" />
+            {isSearchOpen && <span className="text-[9px] font-black uppercase tracking-widest pr-1">Cerrar</span>}
           </button>
           
           <div className="w-[1px] h-3 bg-white/10 mx-0.5" />
           
-          <BankrollManager />
+          <div className="h-[24px] flex items-center px-1">
+            <BankrollManager />
+          </div>
+        </div>
+      </div>
+
+      {/* Row 2: Market Filters */}
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="w-full">
+          <CategoryFilter 
+            categories={marketCategories}
+            selectedId={selectedMarket}
+            onSelect={setSelectedMarket}
+          />
         </div>
       </div>
 
@@ -201,42 +216,33 @@ export function PicksExplorer({ initialPicks }: PicksExplorerProps) {
       {isSearchOpen && (
         <div className="animate-in fade-in slide-in-from-top-2 duration-300">
           <div className="relative group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text-muted/40 group-focus-within:text-accent transition-colors" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500 group-focus-within:text-accent transition-colors" />
             <input 
               type="text"
               autoFocus
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="¿QUÉ EVENTO BUSCÁS?..."
-              className="w-full bg-white/5 border border-white/10 rounded-lg py-3 pl-10 pr-4 text-[11px] font-black uppercase tracking-widest text-text-primary placeholder:text-text-muted/20 focus:outline-none focus:border-accent/40 transition-all shadow-2xl"
+              placeholder="¿Qué evento buscas?..."
+              className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-[11px] font-bold uppercase tracking-widest text-white placeholder:text-zinc-600 focus:outline-none focus:border-accent/40 transition-all"
             />
           </div>
         </div>
       )}
 
-      {/* Row 2: Markets */}
-      <div className="py-4 border-t border-white/5">
-        <CategoryFilter 
-          categories={marketCategories}
-          selectedId={selectedMarket}
-          onSelect={setSelectedMarket}
-        />
-      </div>
-
       {/* Results List */}
-      <div className="space-y-16">
+      <div className="space-y-12">
         {groupedData.length > 0 ? (
           groupedData.map(([date, matches]) => (
-            <div key={date} className="space-y-8">
+            <div key={date} className="space-y-6">
               <div className="flex items-center gap-4">
-                <div className="h-px w-8 bg-accent" />
-                <span className="text-[11px] font-black text-text-primary uppercase tracking-[0.4em] italic">
+                <div className="h-px w-8 bg-zinc-800" />
+                <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">
                   {date}
                 </span>
-                <div className="h-px flex-1 bg-border-base opacity-30" />
+                <div className="h-px flex-1 bg-zinc-800" />
               </div>
               
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {Object.entries(matches).map(([matchKey, matchPicks]) => (
                   <MatchGroup 
                     key={matchKey} 
@@ -265,7 +271,7 @@ export function PicksExplorer({ initialPicks }: PicksExplorerProps) {
       />
 
       <AnalysisDrawer 
-        pick={analysisPick}
+        picks={analysisPick ? (Array.isArray(analysisPick) ? analysisPick : [analysisPick]) : null}
         isOpen={!!analysisPick}
         onClose={() => setAnalysisPick(null)}
       />

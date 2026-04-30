@@ -35,11 +35,11 @@ export function BankrollManager() {
         onClick={() => setIsOpen(!isOpen)}
         title="Gestión de Bankroll"
         className={cn(
-          "p-2 rounded-full transition-all duration-300 hover:scale-110 active:scale-95",
+          "h-[24px] px-2 rounded-full transition-all duration-300 flex items-center justify-center",
           isOpen ? "bg-accent text-bg-base" : "text-text-muted hover:bg-white/5 hover:text-white"
         )}
       >
-        <Wallet className="w-4 h-4" />
+        <Wallet className="w-3.5 h-3.5" />
       </button>
 
       {/* Popover */}
