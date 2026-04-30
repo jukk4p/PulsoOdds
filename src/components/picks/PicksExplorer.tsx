@@ -178,20 +178,20 @@ export function PicksExplorer({ initialPicks }: PicksExplorerProps) {
           />
         </div>
         
-        <div className="flex items-center bg-white/[0.03] border border-white/[0.08] rounded-full p-1.5 gap-1 shadow-2xl backdrop-blur-xl">
+        <div className="flex items-center bg-white/[0.03] border border-white/[0.08] rounded-full p-1 gap-0.5 shadow-2xl backdrop-blur-xl">
           {/* Search Toggle */}
           <button 
             onClick={() => setIsSearchOpen(!isSearchOpen)}
             title="Buscar evento"
             className={cn(
-              "p-2.5 rounded-full transition-all duration-300 hover:scale-110 active:scale-95",
+              "p-2 rounded-full transition-all duration-300 hover:scale-110 active:scale-95",
               isSearchOpen ? "bg-accent text-bg-base" : "text-text-muted hover:bg-white/5 hover:text-white"
             )}
           >
             <Search className="w-4 h-4" />
           </button>
           
-          <div className="w-[1px] h-4 bg-white/10 mx-1" />
+          <div className="w-[1px] h-3 bg-white/10 mx-0.5" />
           
           <BankrollManager />
         </div>
