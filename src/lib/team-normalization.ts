@@ -417,6 +417,34 @@ export function normalizeTeamName(name: string): string {
 }
 
 /**
+ * Normaliza cualquier texto que contenga nombres de equipos, reemplazando los alias conocidos
+ * por sus Nombres Públicos. Útil para picks tipo "Real Madrid +0.5".
+ */
+export function normalizeTextWithTeams(text: string): string {
+  if (!text) return text;
+
+  let result = text;
+  
+  // Obtenemos todos los alias ordenados por longitud descendente para evitar reemplazos parciales
+  // (ej: "Manchester United" antes que "Manchester")
+  const sortedAliases = Object.keys(ALIAS).sort((a, b) => b.length - a.length);
+
+  for (const alias of sortedAliases) {
+    // Escapamos el alias para usarlo en un RegExp
+    const escapedAlias = alias.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    // Usamos límites de palabra (\b) si es posible, pero cuidado con alias que terminan en puntos o números
+    // Por simplicidad y robustez en este contexto, usamos el alias tal cual con 'gi'
+    const regex = new RegExp(escapedAlias, 'gi');
+    
+    if (regex.test(result)) {
+      result = result.replace(regex, ALIAS[alias]);
+    }
+  }
+
+  return result;
+}
+
+/**
  * Normaliza nombres de ligas para que coincidan con los IDs técnicos de la Base de Datos
  */
 export function normalizeLeagueName(name: string): string {

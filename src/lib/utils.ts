@@ -1,8 +1,8 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { normalizeTeamName, normalizeLeagueName } from "./team-normalization";
+import { normalizeTeamName, normalizeLeagueName, normalizeTextWithTeams } from "./team-normalization";
 
-export { normalizeTeamName, normalizeLeagueName };
+export { normalizeTeamName, normalizeLeagueName, normalizeTextWithTeams };
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -351,19 +351,30 @@ export function normalizeBettingPick(text: string, match?: string): string {
   let normalized = translateBettingTerm(text);
   normalized = normalized.replace(/\((?:HDP|H\u00C1NDICAP|HANDICAP|H\u00C1ND)?\s*([+-]?[\d.]+)\)/gi, '$1');
   
+  // 0. Aplicamos el reemplazo global de alias del diccionario
+  normalized = normalizeTextWithTeams(normalized);
+  
   // Si tenemos el contexto del partido, normalizamos los nombres de los equipos en el pick
   if (match && match.includes(' vs ')) {
     const [home, away] = match.split(/\s+vs\s+/i);
     const cleanHome = normalizeTeamName(home);
     const cleanAway = normalizeTeamName(away);
     
-    // Reemplazamos nombres completos si aparecen en el pick
-    normalized = normalized.replace(new RegExp(home.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), cleanHome);
-    normalized = normalized.replace(new RegExp(away.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), cleanAway);
-    
-    // También manejamos LOCAL/VISITANTE
-    normalized = normalized.replace(/\b(LOCAL|HOME)\b/gi, cleanHome);
-    normalized = normalized.replace(/\b(VISITANTE|AWAY|VISITOR)\b/gi, cleanAway);
+    // 1. Intentamos normalizar el pick completo como si fuera el nombre de un equipo (por si normalizeTextWithTeams no lo cubrió)
+    const pickAsTeam = normalizeTeamName(normalized);
+    if (pickAsTeam !== normalized && pickAsTeam !== "UNKNOWN") {
+      normalized = pickAsTeam;
+    } else {
+      // 2. Manejamos LOCAL/VISITANTE
+      normalized = normalized.replace(/\b(LOCAL|HOME)\b/gi, cleanHome);
+      normalized = normalized.replace(/\b(VISITANTE|AWAY|VISITOR)\b/gi, cleanAway);
+    }
+  } else {
+    // Si no hay match context, igual intentamos normalizar el pick completo
+    const pickAsTeam = normalizeTeamName(normalized);
+    if (pickAsTeam !== normalized && pickAsTeam !== "UNKNOWN") {
+      normalized = pickAsTeam;
+    }
   }
 
   normalized = normalized.replace(/\s+/g, ' ').trim();
