@@ -41,6 +41,8 @@ interface AnalysisDrawerProps {
   onClose: () => void;
 }
 
+export function AnalysisDrawer({ picks, isOpen, onClose }: AnalysisDrawerProps) {
+  const [mounted, setMounted] = useState(false);
   const [selectedPickId, setSelectedPickId] = useState<string | null>(null);
 
   useEffect(() => {
