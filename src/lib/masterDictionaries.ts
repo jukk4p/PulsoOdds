@@ -329,7 +329,25 @@ export const MASTER_TEAMS: Record<string, string> = {
   "Amiens SC": "https://static.flashscore.com/res/image/data/SYoFLN86-lriTEOfc.png",
   "Amiens": "https://static.flashscore.com/res/image/data/SYoFLN86-lriTEOfc.png",
   "Chapecoense": "https://static.flashscore.com/res/image/data/v9EKoUeM-CYex0lQl.png",
-  "Juventude": "https://static.flashscore.com/res/image/data/CA0V6qXg-v5wBaFPD.png"
+  "Juventude": "https://static.flashscore.com/res/image/data/CA0V6qXg-v5wBaFPD.png",
+  "Oporto": "https://static.flashscore.com/res/image/data/A5i3omUH-bXj7QfGI.png",
+  "Benfica": "https://static.flashscore.com/res/image/data/ttVtr6hT-GEKimEim.png",
+  "Sporting CP": "https://static.flashscore.com/res/image/data/jy2lEHBN-zJml495h.png",
+  "SC Braga": "https://static.flashscore.com/res/image/data/j3CGCQTH-6JDIcK05.png",
+  "Famalicao": "https://static.flashscore.com/res/image/data/CpC7C67k-SpWn3AxL.png",
+  "Gil Vicente": "https://static.flashscore.com/res/image/data/hQCcG5AN-2gs7fTQ1.png",
+  "Vitória Guimaraes": "https://static.flashscore.com/res/image/data/jsn3jm96-rDfht7Ta.png",
+  "Moreirense": "https://static.flashscore.com/res/image/data/4rouTHVH-xjC3FA5b.png",
+  "Alverca": "https://static.flashscore.com/res/image/data/tlIE7wkC-dK8Bw8LI.png",
+  "Estoril": "https://static.flashscore.com/res/image/data/W6lzPAoe-8GL0cHSF.png",
+  "Arouca": "https://static.flashscore.com/res/image/data/xSy6cS7k-UPMdbcD9.png",
+  "Rio Ave": "https://static.flashscore.com/res/image/data/06rYX486-pjxqSmk4.png",
+  "Santa Clara": "https://static.flashscore.com/res/image/data/nN0lc3gT-MFVHqOh7.png",
+  "Nacional": "https://static.flashscore.com/res/image/data/A7esGM6k-pUpRIC96.png",
+  "Estrela": "https://static.flashscore.com/res/image/data/MDdmzPjC-OtN6V8lD.png",
+  "Casa Pia": "https://static.flashscore.com/res/image/data/K8bRTdBN-SERhQixU.png",
+  "Tondela": "https://static.flashscore.com/res/image/data/foAPIsgT-tz55u9dQ.png",
+  "AFS": "https://static.flashscore.com/res/image/data/nV4DFA7k-0STJGQ2k.png"
 };
 
 // 🏆 LIGAS Y LOGOS (Sincronizado desde diccionario_maestro_equipos.md)
@@ -347,6 +365,7 @@ export const MASTER_LEAGUES: Record<string, string> = {
   "Ligue 2": "https://static.flashscore.com/res/image/data/IHwVm9ld-G2ORd69c.png",
   "Serie A / Brasil": "https://static.flashscore.com/res/image/data/6o8mQjjd-xlq6J1Ve.png",
   "MLS": "https://static.flashscore.com/res/image/data/CAewoRXI-IaphYoEb.png",
+  "Liga Portugal": "https://static.flashscore.com/res/image/data/d8CmTLfU-v340n9hA.png",
   "Eurocopa": "https://static.flashscore.com/res/image/data/EcI2WQVI-lK8GVqO2.png",
   "Mundial": "https://static.flashscore.com/res/image/data/GxXrrSiU-dny9du44.png"
 };

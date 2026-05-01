@@ -208,6 +208,7 @@ function normalizeLeague(name) {
   if (n.includes("ligue 1")) return "France - Ligue 1";
   if (n.includes("eredivisie")) return "Netherlands - Eredivisie";
   if (n.includes("championship")) return "England - Championship";
+  if (n.includes("primeira liga") || n.includes("portugal")) return "Portugal - Primeira Liga";
   return name.trim();
 }
 
@@ -304,6 +305,12 @@ async function sync() {
         else if (pos <= 6) zone = "europa";
         else if (pos === 7) zone = "conference";
         else if (pos >= 18) zone = "relegation";
+      } else if (league === "Portugal - Primeira Liga") {
+        if (pos <= 2) zone = "champions";
+        else if (pos === 3) zone = "champions"; // Qualifiers
+        else if (pos === 4) zone = "europa";
+        else if (pos === 5) zone = "conference";
+        else if (pos >= 16) zone = "relegation";
       }
 
       const { error } = await supabase

@@ -8,7 +8,7 @@ import { MASTER_LEAGUES } from "@/lib/masterDictionaries";
 
 const LEAGUES = [
   "LaLiga EA Sports", "LaLiga Hypermotion", "Premier League", "Bundesliga", "Serie A", "Ligue 1", 
-  "Eredivisie", "Championship", "2. Bundesliga", "Serie B", "Ligue 2", "Serie A / Brasil", "MLS",
+  "Eredivisie", "Liga Portugal", "Championship", "2. Bundesliga", "Serie B", "Ligue 2", "Serie A / Brasil", "MLS",
   "Eurocopa", "Mundial"
 ];
 
@@ -20,6 +20,7 @@ const LEAGUE_COLORS: Record<string, string> = {
   "Serie A": "rgba(0, 140, 206, 0.4)",
   "Ligue 1": "rgba(218, 255, 57, 0.4)",
   "Eredivisie": "rgba(242, 145, 0, 0.4)",
+  "Liga Portugal": "rgba(0, 82, 155, 0.4)",
   "Championship": "rgba(61, 25, 91, 0.4)",
   "2. Bundesliga": "rgba(209, 7, 19, 0.4)",
   "Serie B": "rgba(0, 140, 206, 0.4)",
@@ -40,6 +41,7 @@ const LEAGUE_DB_NAMES: Record<string, string> = {
   "Serie A":             "Italy - Serie A",
   "Ligue 1":             "France - Ligue 1",
   "Eredivisie":          "Netherlands - Eredivisie",
+  "Liga Portugal":       "Portugal - Primeira Liga",
   "Championship":        "England - Championship",
   "2. Bundesliga":       "Germany - 2. Bundesliga",
   "Serie B":             "Italy - Serie B",
@@ -183,6 +185,17 @@ const LEGENDS: Record<string, { zones: { label: string, color: string, border?: 
       { label: "Descenso - Keuken Kampioen Divisie", color: "bg-red-500/40", border: "border-red-500/60" }
     ],
     note: "Si los equipos finalizan la temporada empatados a puntos, el criterio de desempate es la diferencia general de goles."
+  },
+  "Liga Portugal": {
+    zones: [
+      { label: "Acceso - Champions League (Fase de liga)", color: "bg-accent", border: "border-accent shadow-[0_0_8px_rgba(200,255,0,0.4)]" },
+      { label: "Acceso - Champions League (Clasificación)", color: "bg-accent/20", border: "border-accent/40" },
+      { label: "Acceso - Europa League (Fase de liga)", color: "bg-white/10", border: "border-white/20" },
+      { label: "Acceso - Conference League (Clasificación)", color: "bg-white/5", border: "border-white/10" },
+      { label: "Liga Portugal (Descenso - Playoffs)", color: "bg-red-500/20", border: "border-red-500/40" },
+      { label: "Descenso - Liga Portugal 2", color: "bg-red-500/40", border: "border-red-500/60" }
+    ],
+    note: "Si los equipos finalizan la temporada empatados a puntos, se tendrán en cuenta los enfrentamientos directos como criterio de desempate."
   }
 };
 

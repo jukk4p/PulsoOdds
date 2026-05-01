@@ -23,6 +23,7 @@ const LEAGUES = [
   { name: "Ligue 2", apiName: "France - Ligue 2", slug: "francia/ligue-2", id: "62" },
   { name: "Serie A Betano / Brasil", apiName: "Brazil - Brasileiro Serie A", slug: "brasil/serie-a-betano", id: "325" },
   { name: "MLS", apiName: "USA - MLS", slug: "usa/mls", id: "330" },
+  { name: "Liga Portugal", apiName: "Portugal - Primeira Liga", slug: "portugal/liga-portugal", id: "94" },
   { name: "Eurocopa", apiName: "Europe - Euro", slug: "europa/eurocopa", id: "4" },
   { name: "Mundial", apiName: "World - World Cup", slug: "mundial/copa-del-mundo", id: "1" }
 ];
@@ -81,6 +82,7 @@ function loadTeamDictionary() {
       if (name.includes("Ligue 2")) LEAGUE_MAP[normalize("France - Ligue 2")] = logo;
       if (name.includes("Serie A Betano")) LEAGUE_MAP[normalize("Brazil - Brasileiro Serie A")] = logo;
       if (name.includes("MLS")) LEAGUE_MAP[normalize("USA - MLS")] = logo;
+      if (name.includes("Liga Portugal")) LEAGUE_MAP[normalize("Portugal - Primeira Liga")] = logo;
     }
 
     // 2. Extraer mapeo de equipos por liga
@@ -174,10 +176,18 @@ async function scrapeLeague(context, league) {
       const nameEl = document.querySelector('h1, [class*="heading"], [class*="tournament-name"]');
       
       let logoUrl = logoEl?.src || "";
+      
+      // Filtrar si el logo es un placeholder bg.png
+      if (logoUrl.includes('bg.png')) logoUrl = "";
+
       if (!logoUrl) {
         // Fallback: buscar cualquier imagen que parezca un logo en la parte superior
         const allImgs = Array.from(document.querySelectorAll('img'));
-        const possibleLogo = allImgs.find(img => img.src.includes('/data/') && (img.className.includes('logo') || img.className.includes('image')));
+        const possibleLogo = allImgs.find(img => 
+          img.src.includes('/data/') && 
+          !img.src.includes('bg.png') && 
+          (img.className.includes('logo') || img.className.includes('image'))
+        );
         logoUrl = possibleLogo?.src || "";
       }
 
@@ -317,7 +327,7 @@ async function run() {
     const header = '"Liga","Pos","Nombre Publico","Equipo","PJ","PG","PE","PP","Goles","Pts","Forma","Logo Liga","Logo Equipo"\n';
     const csvRows = allData.map(r => {
       const leagueNorm = normalize(r.league);
-      const leagueLogo = r.leagueLogo || LEAGUE_MAP[leagueNorm] || "";
+      const leagueLogo = LEAGUE_MAP[leagueNorm] || r.leagueLogo || "";
 
       return `"${r.league}","${r.pos}","${r.publicName}","${r.team}","${r.pj}","${r.g}","${r.e}","${r.p}","${r.goals}","${r.pts}","${r.form}","${leagueLogo}","${r.teamLogo}"`;
     }).join('\n');
@@ -330,7 +340,7 @@ async function run() {
     // --- GENERAR JSON PARA LA WEB ---
     const webData = allData.map(r => {
       const leagueNorm = normalize(r.league);
-      const leagueLogo = r.leagueLogo || LEAGUE_MAP[leagueNorm] || "";
+      const leagueLogo = LEAGUE_MAP[leagueNorm] || r.leagueLogo || "";
       return {
         liga: r.league,
         pos: parseInt(r.pos),

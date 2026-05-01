@@ -47,7 +47,9 @@ export function MatchGroup({ picks, selectedPickIds = [], onTogglePick, onOpenAn
     <div 
       onClick={() => onOpenAnalysis?.(picks)}
       className={cn(
-        "group relative flex items-center justify-between px-4 py-4 rounded-xl bg-[#121212] border border-white/[0.03] hover:border-white/10 transition-all duration-300 cursor-pointer"
+        "group relative flex items-center justify-between px-4 py-4 rounded-xl",
+        "bg-bg-surface border border-border-base hover:border-border-accent/40",
+        "hover:bg-bg-surface-hover transition-all duration-300 cursor-pointer shadow-lg"
       )}
     >
       <div className="flex items-center gap-4">
@@ -79,7 +81,7 @@ export function MatchGroup({ picks, selectedPickIds = [], onTogglePick, onOpenAn
 
       {/* Badge Section */}
       <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.05] group-hover:border-white/20 transition-all duration-300">
+        <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-bg-subtle border border-border-base group-hover:border-border-accent/40 transition-all duration-300">
           <div className="flex items-center gap-1.5">
             <div className="w-1 h-1 rounded-full bg-accent shadow-[0_0_8px_rgba(200,255,0,0.8)]" />
             <span className="text-xs font-black text-white tabular-nums leading-none">
@@ -120,7 +122,7 @@ function SelectionRow({
       <div 
         className={cn(
           "flex items-center justify-between px-6 py-4 transition-all cursor-pointer group/row",
-          isSelected ? "bg-accent/5" : "hover:bg-white/[0.02]"
+          isSelected ? "bg-accent-dim" : "hover:bg-bg-surface-hover"
         )}
         onClick={onOpenAnalysis}
       >

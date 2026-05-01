@@ -9,7 +9,7 @@ import { LogoAutocomplete } from '@/components/admin/LogoAutocomplete';
 
 const LEAGUES = [
   "Spain - LaLiga", "Spain - LaLiga2", "England - Premier League", "Germany - Bundesliga", 
-  "Italy - Serie A", "France - Ligue 1", "Netherlands - Eredivisie", "England - Championship", 
+  "Italy - Serie A", "France - Ligue 1", "Netherlands - Eredivisie", "Portugal - Primeira Liga", "England - Championship", 
   "Germany - 2. Bundesliga", "Italy - Serie B", "France - Ligue 2", "Brazil - Serie A", "USA - MLS"
 ];
 
