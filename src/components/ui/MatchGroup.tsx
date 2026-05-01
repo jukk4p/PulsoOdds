@@ -79,9 +79,16 @@ export function MatchGroup({ picks, selectedPickIds = [], onTogglePick, onOpenAn
 
       {/* Badge Section */}
       <div className="flex items-center gap-3">
-        <div className="px-2.5 py-1 rounded-full bg-accent/10 border border-accent/20">
-          <span className="text-[10px] font-black text-accent tracking-tight">
-            {picks.length} {picks.length === 1 ? "pick" : "picks"}
+        <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.05] group-hover:border-white/20 transition-all duration-300">
+          <div className="flex items-center gap-1.5">
+            <div className="w-1 h-1 rounded-full bg-accent shadow-[0_0_8px_rgba(200,255,0,0.8)]" />
+            <span className="text-xs font-black text-white tabular-nums leading-none">
+              {picks.length}
+            </span>
+          </div>
+          <div className="w-[1px] h-2.5 bg-white/10" />
+          <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-[0.2em] leading-none">
+            {picks.length === 1 ? "Apuesta" : "Apuestas"}
           </span>
         </div>
         <ChevronDown size={14} className="text-zinc-700 -rotate-90" />

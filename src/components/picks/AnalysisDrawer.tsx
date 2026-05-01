@@ -257,15 +257,27 @@ export function AnalysisDrawer({ picks, isOpen, onClose }: AnalysisDrawerProps) 
             </div>
             <div className="bg-[#121212] border border-white/[0.03] rounded-2xl p-6 shadow-2xl space-y-6">
               <p className="text-sm text-zinc-400 leading-relaxed font-medium">
-                {activePick.razonamiento ? activePick.razonamiento.split(' ').map((word, i) => (
-                  <span key={i} className={cn(
-                    (word.includes('4') || word.includes('goles') || word.includes('ambos') || word.includes('%')) ? "text-white font-bold" : ""
-                  )}>
-                    {word}{' '}
-                  </span>
-                )) : (
-                  <span className="italic text-zinc-600">No hay análisis detallado disponible para este mercado específico todavía.</span>
-                )}
+                {(() => {
+                  let text = activePick.razonamiento || "";
+                  // Limpiar placeholders comunes si existen
+                  text = text.replace(/V%/g, "Victoria %");
+                  text = text.replace(/EV%/g, "EV");
+                  
+                  return text.split(' ').map((word, i) => {
+                    const isHighlight = word.includes('%') || 
+                                      word.includes('(') || 
+                                      word.includes(')') || 
+                                      /^\d+(\.\d+)?$/.test(word.replace(/[,.]/g, '')) ||
+                                      word.toLowerCase().includes('goles') ||
+                                      word.toLowerCase().includes('victoria');
+                    
+                    return (
+                      <span key={i} className={cn(isHighlight ? "text-white font-bold" : "")}>
+                        {word}{' '}
+                      </span>
+                    );
+                  });
+                })()}
               </p>
 
               {/* Stats Grid */}
@@ -284,7 +296,12 @@ export function AnalysisDrawer({ picks, isOpen, onClose }: AnalysisDrawerProps) 
                 </div>
                 <div className="bg-[#1a1a1a] border border-white/5 rounded-xl p-4 flex flex-col items-center justify-center gap-1 min-h-[80px] transition-colors hover:border-white/10 group/stat">
                   <span className="text-lg font-black text-white italic group-hover/stat:scale-110 transition-transform">
-                    {activePick.stake ? (activePick.stake > 5 ? Math.round(activePick.stake / 2) : activePick.stake) : '0'}/5
+                    {(() => {
+                      const dots = activePick.confianza 
+                        ? Math.max(1, Math.min(5, Math.floor(activePick.confianza / 20))) 
+                        : (activePick.stake > 5 ? Math.round(activePick.stake / 2) : (activePick.stake || 1));
+                      return `${dots}/5`;
+                    })()}
                   </span>
                   <span className="text-[8px] font-bold text-zinc-600 uppercase text-center leading-tight">Stake Sugerido</span>
                 </div>

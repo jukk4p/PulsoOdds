@@ -940,10 +940,16 @@ export default function AdminPicksPage() {
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neon-green/10 border border-neon-green/30 shadow-[0_0_15px_rgba(200,255,0,0.1)] group-hover:bg-neon-green/20 group-hover:border-neon-green/50 transition-all duration-300">
-                          <Zap size={10} className="text-neon-green fill-neon-green animate-pulse" />
-                          <span className="text-[10px] font-black text-neon-green tracking-tighter uppercase italic">
-                            {matchPicks.length} {matchPicks.length === 1 ? "pick" : "picks"}
+                        <div className="flex items-center gap-3 px-3 py-1.5 rounded-full bg-white/[0.02] border border-white/[0.05] group-hover:border-white/20 transition-all duration-300">
+                          <div className="flex items-center gap-1.5">
+                            <div className="w-1 h-1 rounded-full bg-neon-green shadow-[0_0_8px_rgba(200,255,0,0.8)]" />
+                            <span className="text-xs font-black text-white tabular-nums leading-none">
+                              {matchPicks.length}
+                            </span>
+                          </div>
+                          <div className="w-[1px] h-2.5 bg-white/10" />
+                          <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-[0.2em] leading-none">
+                            {matchPicks.length === 1 ? "Apuesta" : "Apuestas"}
                           </span>
                         </div>
                       </div>
