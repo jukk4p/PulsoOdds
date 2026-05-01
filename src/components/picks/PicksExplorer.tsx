@@ -41,6 +41,7 @@ interface Pick {
   home_slug?: string;
   away_slug?: string;
   is_top?: boolean;
+  created_at: string;
 }
 
 interface PicksExplorerProps {

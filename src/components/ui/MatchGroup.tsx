@@ -24,6 +24,7 @@ interface Pick {
   confianza?: number;
   competition_logo?: string;
   is_top?: boolean;
+  created_at: string;
 }
 
 interface MatchGroupProps {
@@ -126,13 +127,20 @@ function SelectionRow({
             <span className="text-[10px] font-black text-text-muted uppercase tracking-[0.3em] mb-1.5">
               {normalizeBettingPick(pick.market, pick.match)}
             </span>
-            <div className="flex items-center gap-3">
-              <span className="text-sm font-black text-text-primary uppercase tracking-tight italic line-clamp-1">
-                {normalizeBettingPick(pick.pick, pick.match)}
-              </span>
-              
-              {/* STATUS BADGE PÚBLICO - COMPACTO Y LEGIBLE */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-black text-text-primary uppercase tracking-tight italic line-clamp-1">
+                  {normalizeBettingPick(pick.pick, pick.match)}
+                </span>
+                
+                {/* REG DATE */}
+                <div className="flex items-center gap-1.5 px-1.5 py-0.5 rounded-sm bg-white/[0.03] border border-white/5">
+                  <span className="text-[7px] font-black text-zinc-500 uppercase tracking-widest leading-none">
+                    REG: {new Date(pick.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' })} {new Date(pick.created_at).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                </div>
+                
+                {/* STATUS BADGE PÚBLICO - COMPACTO Y LEGIBLE */}
+                <div className="flex items-center gap-2">
                 {pick.status !== 'pending' ? (
                   <div className={cn(
                     "w-[64px] py-0.5 rounded-sm text-[8px] font-black uppercase tracking-widest shadow-sm flex items-center justify-center",

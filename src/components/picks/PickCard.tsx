@@ -16,6 +16,7 @@ interface Pick {
   home_logo?: string;
   away_logo?: string;
   competition_logo?: string;
+  created_at: string;
 }
 
 interface PickCardProps {
@@ -47,6 +48,10 @@ export function PickCard({ pick, className }: PickCardProps) {
           )}
           <span className="text-[10px] font-black uppercase tracking-wider text-text-secondary">
             {pick.competition} · {formattedDate} · {formattedTime}
+          </span>
+          <div className="w-px h-2 bg-white/10 mx-1" />
+          <span className="text-[8px] font-bold text-text-muted/60 uppercase tracking-widest">
+            REG: {new Date(pick.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' })}
           </span>
         </div>
         <StatusBadge status={pick.status.toLowerCase() as PickStatus} />
