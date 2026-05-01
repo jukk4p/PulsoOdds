@@ -940,8 +940,9 @@ export default function AdminPicksPage() {
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <div className="px-3 py-1.5 rounded-full bg-neon-green/5 border border-neon-green/10">
-                          <span className="text-[10px] font-black text-neon-green tracking-tight uppercase">
+                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neon-green/10 border border-neon-green/30 shadow-[0_0_15px_rgba(200,255,0,0.1)] group-hover:bg-neon-green/20 group-hover:border-neon-green/50 transition-all duration-300">
+                          <Zap size={10} className="text-neon-green fill-neon-green animate-pulse" />
+                          <span className="text-[10px] font-black text-neon-green tracking-tighter uppercase italic">
                             {matchPicks.length} {matchPicks.length === 1 ? "pick" : "picks"}
                           </span>
                         </div>
