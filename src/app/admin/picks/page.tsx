@@ -296,7 +296,7 @@ export default function AdminPicksPage() {
   const [picks, setPicks] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('pending');
   const [marketFilter, setMarketFilter] = useState('all');
   const [selectedPicks, setSelectedPicks] = useState<Set<string>>(new Set());
   const [editingPick, setEditingPick] = useState<any | null>(null);
@@ -666,7 +666,9 @@ export default function AdminPicksPage() {
     let result = filteredBySearch;
     
     // Filtrar por Estado
-    if (statusFilter !== 'all') {
+    if (statusFilter === 'archived') {
+      result = result.filter(p => ['won', 'lost', 'void'].includes(p.status));
+    } else if (statusFilter !== 'all') {
       result = result.filter(p => p.status === statusFilter);
     }
     
@@ -838,11 +840,12 @@ export default function AdminPicksPage() {
                   value={statusFilter}
                   onChange={setStatusFilter}
                   options={[
-                    { id: 'all', label: 'TODOS LOS ESTADOS', icon: '💎' },
-                    { id: 'pending', label: 'PENDIENTES', icon: '⏳' },
-                    { id: 'won', label: 'GANADOS', icon: '✅' },
-                    { id: 'lost', label: 'PERDIDOS', icon: '❌' },
-                    { id: 'void', label: 'NULOS', icon: '⚪' }
+                    { id: 'pending', label: 'ACTIVOS (PENDIENTES)', icon: '⏳' },
+                    { id: 'archived', label: 'ARCHIVADOS (HISTORIAL)', icon: '📦' },
+                    { id: 'all', label: 'VER TODO', icon: '💎' },
+                    { id: 'won', label: 'SOLO GANADOS', icon: '✅' },
+                    { id: 'lost', label: 'SOLO PERDIDOS', icon: '❌' },
+                    { id: 'void', label: 'SOLO NULOS', icon: '⚪' }
                   ]}
                 />
               </div>
@@ -949,6 +952,7 @@ export default function AdminPicksPage() {
                     <div className="divide-y divide-white/[0.02]">
                       {matchPicks.map((pick) => {
                         const isSelected = selectedPicks.has(pick.id);
+                        const isArchived = pick.status !== 'pending';
                         
                         return (
                           <div 
@@ -956,7 +960,8 @@ export default function AdminPicksPage() {
                             onClick={() => toggleSelectOne(pick.id)}
                             className={cn(
                               "group/row relative flex flex-col lg:flex-row items-stretch lg:items-center px-6 py-5 transition-all cursor-pointer",
-                              isSelected ? "bg-neon-green/[0.03]" : "hover:bg-white/[0.01]"
+                              isSelected ? "bg-neon-green/[0.03]" : "hover:bg-white/[0.01]",
+                              isArchived && "opacity-50 grayscale-[0.5]"
                             )}
                           >
                             {/* Checkbox Selector (Visual) */}
