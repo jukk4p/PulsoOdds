@@ -18,9 +18,10 @@ interface CategoryFilterProps {
     won: number;
     lost: number;
   };
+  showStats?: boolean;
 }
 
-export function CategoryFilter({ categories, selectedId, onSelect, counts }: CategoryFilterProps) {
+export function CategoryFilter({ categories, selectedId, onSelect, counts, showStats = true }: CategoryFilterProps) {
   return (
     <div className="flex flex-col gap-4 w-full">
       {/* Pills Container */}
@@ -57,7 +58,7 @@ export function CategoryFilter({ categories, selectedId, onSelect, counts }: Cat
       </div>
 
       {/* Stats Summary */}
-      {counts && (
+      {showStats && counts && (
         <div className="flex items-center gap-3 text-[12px] font-bold text-text-muted">
           <div className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-pending" />
