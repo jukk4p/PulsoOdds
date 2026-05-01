@@ -30,7 +30,7 @@ export function TopPicksSection({ groupedRecentPicks }: TopPicksSectionProps) {
       </div>
 
       <AnalysisDrawer 
-        pick={analysisPick}
+        picks={analysisPick ? (Array.isArray(analysisPick) ? analysisPick : [analysisPick]) : null}
         isOpen={!!analysisPick}
         onClose={() => setAnalysisPick(null)}
       />
