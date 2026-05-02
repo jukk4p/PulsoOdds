@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Zap, Trophy, BarChart3, Lock } from "lucide-react";
+import { Menu, X, Zap, Trophy, BarChart3, Lock, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function Navbar() {
@@ -39,6 +39,7 @@ export function Navbar() {
   const navLinks = [
     { name: "Inicio", href: "/", icon: Zap },
     { name: "Pronósticos", href: "/picks", icon: Trophy },
+    { name: "Próximos", href: "/matches", icon: Clock },
     { name: "Clasificación", href: "/standings", icon: Trophy },
     { name: "Estadísticas", href: "/stats", icon: BarChart3 },
   ];

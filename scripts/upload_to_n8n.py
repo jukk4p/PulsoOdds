@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 env_path = os.path.join(os.path.dirname(__file__), '..', '.env.local')
 load_dotenv(env_path)
 
-WEBHOOK_URL = os.environ.get("N8N_WEBHOOK_URL")
+WEBHOOK_URL = os.environ.get("N8N_JSON_WEBHOOK_URL")
 
 # Archivos a subir
 FILES_TO_UPLOAD = {

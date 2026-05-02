@@ -2,12 +2,11 @@
 
 import React, { useEffect, useState, Fragment } from "react";
 import { cn, normalizeTeamName } from "@/lib/utils";
-import { Trophy, Info, Loader2 } from "lucide-react";
+import { Trophy, Info, Loader2, ArrowUpDown } from "lucide-react";
 import { MASTER_LEAGUES } from "@/lib/masterDictionaries";
 
-
 const LEAGUES = [
-  "LaLiga EA Sports", "LaLiga Hypermotion", "Premier League", "Bundesliga", "Serie A", "Ligue 1", 
+  "LaLiga EA Sports", "LaLiga Hypermotion", "Premier League", "Bundesliga", "Serie A", "Ligue 1",
   "Eredivisie", "Liga Portugal", "Championship", "2. Bundesliga", "Serie B", "Ligue 2", "Serie A / Brasil", "MLS",
   "Eurocopa", "Mundial"
 ];
@@ -209,8 +208,21 @@ const DEFAULT_LEGEND = {
 
 export default function StandingsPage() {
   const [activeLeague, setActiveLeague] = useState(LEAGUES[0]);
+  const [standingType, setStandingType] = useState<"general" | "local" | "visitante">("general");
   const [standings, setStandings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+
+  const displayStandings = React.useMemo(() => {
+    if (sortOrder === "asc") return standings;
+    const grouped = standings.reduce((acc, team) => {
+      const group = team.league || "default";
+      if (!acc[group]) acc[group] = [];
+      acc[group].push(team);
+      return acc;
+    }, {} as Record<string, typeof standings>);
+    return Object.values(grouped).flatMap(group => [...group].reverse());
+  }, [standings, sortOrder]);
 
   const currentLegend = LEGENDS[activeLeague] || DEFAULT_LEGEND;
 
@@ -219,7 +231,7 @@ export default function StandingsPage() {
       setLoading(true);
       try {
         const dbName = LEAGUE_DB_NAMES[activeLeague] || activeLeague;
-        const res = await fetch(`/api/standings?league=${encodeURIComponent(dbName)}`);
+        const res = await fetch(`/api/standings?league=${encodeURIComponent(dbName)}&type=${standingType}`);
         const data = await res.json();
         setStandings(Array.isArray(data) ? data : []);
       } catch (err) {
@@ -230,7 +242,7 @@ export default function StandingsPage() {
       }
     }
     fetchStandings();
-  }, [activeLeague]);
+  }, [activeLeague, standingType]);
 
   return (
     <div className="min-h-screen bg-deep-black pt-28 pb-20 px-6">
@@ -258,7 +270,8 @@ export default function StandingsPage() {
           </div>
         </header>
 
-        <div className="relative mb-16">
+        <div className="flex flex-col gap-8 mb-12">
+          {/* League Selection */}
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-4 md:pb-0 md:flex-wrap md:justify-center">
             {LEAGUES.map((league) => (
               <button
@@ -317,10 +330,57 @@ export default function StandingsPage() {
           ) : (
             <div className="overflow-x-auto no-scrollbar">
               <table className="w-full text-left border-collapse table-fixed md:table-auto">
-                {activeLeague !== "Eurocopa" && activeLeague !== "Mundial" && (
-                  <thead>
+                <thead>
+                  <tr className="bg-white/[0.01] border-b border-white/5">
+                    <th colSpan={10} className="py-4 px-6">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div className="flex items-center gap-2">
+                          {(["general", "local", "visitante"] as const).map((type) => (
+                            <button
+                              key={type}
+                              onClick={() => setStandingType(type)}
+                              className={cn(
+                                "px-6 py-2 rounded-sm text-[9px] md:text-[11px] font-black uppercase tracking-[0.2em] transition-all duration-300",
+                                standingType === type 
+                                  ? "bg-accent text-bg-base shadow-[0_4px_12px_rgba(200,255,0,0.2)]" 
+                                  : "text-white/30 hover:text-white/60 hover:bg-white/5"
+                              )}
+                            >
+                              {type === "general" ? "General" : type === "local" ? "Local" : "Visitante"}
+                            </button>
+                          ))}
+                        </div>
+
+                        {/* Legend */}
+                        <div className="flex items-center gap-6 px-1">
+                          <div className="flex items-center gap-2">
+                            <div className="h-2 w-2 rounded-full bg-[#22c55e] shadow-[0_0_8px_rgba(34,197,94,0.4)]" />
+                            <span className="text-[9px] font-black text-text-muted uppercase tracking-[0.2em]">Victoria</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="h-2 w-2 rounded-full bg-[#71717a] shadow-[0_0_8px_rgba(113,113,122,0.4)]" />
+                            <span className="text-[9px] font-black text-text-muted uppercase tracking-[0.2em]">Empate</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="h-2 w-2 rounded-full bg-[#ef4444] shadow-[0_0_8px_rgba(239,68,68,0.4)]" />
+                            <span className="text-[9px] font-black text-text-muted uppercase tracking-[0.2em]">Derrota</span>
+                          </div>
+                        </div>
+                      </div>
+                    </th>
+                  </tr>
+                  {activeLeague !== "Eurocopa" && activeLeague !== "Mundial" && (
                     <tr className="bg-white/[0.02] border-b border-white/5">
-                      <th className="py-5 px-2 text-[9px] md:text-[11px] font-black text-white/20 uppercase tracking-widest text-center w-8 md:w-14">#</th>
+                      <th className="py-5 px-2 text-[9px] md:text-[11px] font-black text-white/20 uppercase tracking-widest text-center w-8 md:w-14">
+                        <button 
+                          onClick={() => setSortOrder(prev => prev === "asc" ? "desc" : "asc")}
+                          className="flex items-center justify-center gap-1 mx-auto hover:text-accent transition-colors"
+                          title="Invertir orden"
+                        >
+                          #
+                          <ArrowUpDown className="h-3 w-3 opacity-50" />
+                        </button>
+                      </th>
                       <th className="py-5 px-2 text-[9px] md:text-[11px] font-black text-white/20 uppercase tracking-widest w-auto">Equipo</th>
                       <th className="py-5 px-1 text-[9px] md:text-[11px] font-black text-white/20 uppercase tracking-widest text-center w-8 md:w-16">PJ</th>
                       <th className="py-6 px-4 text-[10px] md:text-xs font-black text-white/20 uppercase tracking-widest text-center hidden md:table-cell w-12 md:w-20">G</th>
@@ -331,18 +391,27 @@ export default function StandingsPage() {
                       <th className="py-5 px-2 text-[9px] md:text-[11px] font-black text-white/20 uppercase tracking-widest text-center w-12 md:w-24">Pts</th>
                       <th className="py-6 px-6 text-[10px] md:text-xs font-black text-white/20 uppercase tracking-widest text-center hidden md:table-cell w-40 md:w-56">Forma</th>
                     </tr>
-                  </thead>
-                )}
+                  )}
+                </thead>
                 <tbody className="divide-y divide-white/[0.03]">
-                  {standings.map((team, idx) => {
-                    const isNewGroup = idx === 0 || standings[idx - 1].league !== team.league;
+                  {displayStandings.map((team, idx) => {
+                    const isNewGroup = idx === 0 || displayStandings[idx - 1].league !== team.league;
                     const groupTitle = team.league.includes(" - ") ? team.league.split(" - ").pop() : null;
 
                     return (
                       <React.Fragment key={`${team.league}-${team.team}`}>
-                        {isNewGroup && groupTitle && (
+                        {isNewGroup && groupTitle && (activeLeague === "Eurocopa" || activeLeague === "Mundial") && (
                           <tr className="bg-white/[0.03] border-y border-white/5">
-                            <th className="py-3 px-2 text-[9px] md:text-[10px] font-black text-white/40 uppercase tracking-widest text-center w-8 md:w-14">#</th>
+                            <th className="py-3 px-2 text-[9px] md:text-[10px] font-black text-white/40 uppercase tracking-widest text-center w-8 md:w-14">
+                              <button 
+                                onClick={() => setSortOrder(prev => prev === "asc" ? "desc" : "asc")}
+                                className="flex items-center justify-center gap-1 mx-auto hover:text-accent transition-colors"
+                                title="Invertir orden"
+                              >
+                                #
+                                <ArrowUpDown className="h-3 w-3 opacity-50" />
+                              </button>
+                            </th>
                             <th className="py-3 px-2 text-[9px] md:text-[10px] font-black text-accent uppercase tracking-[0.2em] w-auto">{groupTitle}</th>
                             <th className="py-3 px-1 text-[9px] md:text-[10px] font-black text-white/40 uppercase tracking-widest text-center w-8 md:w-16">PJ</th>
                             <th className="py-3 px-4 text-[9px] md:text-[10px] font-black text-white/40 uppercase tracking-widest text-center hidden md:table-cell w-12 md:w-20">G</th>
