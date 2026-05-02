@@ -175,9 +175,7 @@ export function AnalysisDrawer({ picks, isOpen, onClose }: AnalysisDrawerProps) 
               {picks.map((p, idx) => {
                 const isSelected = selectedPickId === p.id;
                 const isTopPick = idx === 0;
-                const pDots = p.confianza 
-                  ? Math.max(1, Math.min(5, Math.floor(p.confianza / 20))) 
-                  : (p.stake > 5 ? Math.round(p.stake / 2) : (p.stake || 1));
+                const pDots = p.stake || (p.confianza ? Math.max(1, Math.min(5, Math.floor(p.confianza / 20))) : 1);
 
                 return (
                   <button 
@@ -261,7 +259,11 @@ export function AnalysisDrawer({ picks, isOpen, onClose }: AnalysisDrawerProps) 
                   let text = activePick.razonamiento || "";
                   // Limpiar placeholders comunes si existen
                   text = text.replace(/V%/g, "Victoria %");
-                  text = text.replace(/EV%/g, "EV");
+                  text = text.replace(/EV%/g, "Valor Esperado");
+                  text = text.replace(/\bidx\b/gi, "índice");
+                  text = text.replace(/\bxg_total\b/gi, "goles esperados");
+                  text = text.replace(/\bev\b/gi, "valor esperado");
+                  text = text.replace(/\bprob_est\b/gi, "probabilidad");
                   
                   return text.split(' ').map((word, i) => {
                     const isHighlight = word.includes('%') || 
@@ -297,9 +299,7 @@ export function AnalysisDrawer({ picks, isOpen, onClose }: AnalysisDrawerProps) 
                 <div className="bg-[#1a1a1a] border border-white/5 rounded-xl p-4 flex flex-col items-center justify-center gap-1 min-h-[80px] transition-colors hover:border-white/10 group/stat">
                   <span className="text-lg font-black text-white italic group-hover/stat:scale-110 transition-transform">
                     {(() => {
-                      const dots = activePick.confianza 
-                        ? Math.max(1, Math.min(5, Math.floor(activePick.confianza / 20))) 
-                        : (activePick.stake > 5 ? Math.round(activePick.stake / 2) : (activePick.stake || 1));
+                      const dots = activePick.stake || (activePick.confianza ? Math.max(1, Math.min(5, Math.floor(activePick.confianza / 20))) : 1);
                       return `${dots}/5`;
                     })()}
                   </span>
