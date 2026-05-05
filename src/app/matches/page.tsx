@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useMemo } from "react";
-import { cn, normalizeTeamName } from "@/lib/utils";
+import { cn, normalizeTeamName, formatDateSpain } from "@/lib/utils";
 import { Clock, Calendar, Loader2, ChevronRight } from "lucide-react";
 import { getTeamLogo } from "@/lib/logos";
 import { MASTER_LEAGUES } from "@/lib/masterDictionaries";
@@ -40,18 +40,29 @@ function parseDate(time: string): string {
 
 function formatDateLabel(raw: string): string {
   if (!raw) return "Sin fecha";
-  // raw = "02.05." → we build a nice label
-  const [day, month] = raw.replace(".", "").split(".");
-  const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
-  const monthName = months[parseInt(month, 10) - 1] || month;
+  
+  // raw comes as "02.05." from parseDate
+  const parts = raw.split(".").filter(Boolean);
+  if (parts.length < 2) return raw;
+
+  const day = parseInt(parts[0], 10);
+  const month = parseInt(parts[1], 10);
+  const year = new Date().getFullYear();
+  
+  // Create a proper date object (midday to avoid timezone shifts)
+  const date = new Date(year, month - 1, day, 12, 0, 0);
+  
   const d = new Date();
   const today = `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}.`;
-  const tomorrow = new Date(d); tomorrow.setDate(d.getDate() + 1);
+  const tomorrow = new Date(d); 
+  tomorrow.setDate(d.getDate() + 1);
   const tomorrowStr = `${String(tomorrow.getDate()).padStart(2, "0")}.${String(tomorrow.getMonth() + 1).padStart(2, "0")}.`;
 
   if (raw === today) return "Hoy";
   if (raw === tomorrowStr) return "Mañana";
-  return `${day} ${monthName}`;
+
+  // Using the shared utility for consistency: "sábado, 09 de mayo"
+  return formatDateSpain(date);
 }
 
 export default function MatchesPage() {
@@ -81,7 +92,21 @@ export default function MatchesPage() {
     return map;
   }, [matches]);
 
-  const dateKeys = Object.keys(grouped);
+  const dateKeys = useMemo(() => {
+    return Object.keys(grouped).sort((a, b) => {
+      const partsA = a.split('.').filter(Boolean);
+      const partsB = b.split('.').filter(Boolean);
+      if (partsA.length < 2 || partsB.length < 2) return 0;
+      
+      const dayA = parseInt(partsA[0], 10);
+      const monthA = parseInt(partsA[1], 10);
+      const dayB = parseInt(partsB[0], 10);
+      const monthB = parseInt(partsB[1], 10);
+      
+      if (monthA !== monthB) return monthA - monthB;
+      return dayA - dayB;
+    });
+  }, [grouped]);
 
   return (
     <div className="min-h-screen bg-deep-black pt-28 pb-20 px-4 md:px-6">

@@ -35,9 +35,24 @@ export function getLeagueLogo(leagueName: string): string | null {
   const original = leagueName.trim();
   const normalized = original.toLowerCase();
 
+  // 1.5. Alias mapping for common mismatches
+  const aliases: Record<string, string> = {
+    "laliga2": "LaLiga Hypermotion",
+    "la liga 2": "LaLiga Hypermotion",
+    "laliga": "LaLiga EA Sports",
+    "la liga": "LaLiga EA Sports",
+    "champions": "UEFA Champions League",
+    "europa league": "UEFA Europa League",
+    "conference league": "UEFA Conference League"
+  };
+
+  const aliasKey = Object.keys(aliases).find(a => normalized.includes(a));
+  const effectiveName = aliasKey ? aliases[aliasKey] : original;
+  const effectiveNormalized = effectiveName.toLowerCase();
+
   // 2. Try exact or case-insensitive match first
   const exactMatch = Object.keys(MASTER_LEAGUES).find(
-    key => key.toLowerCase() === normalized
+    key => key.toLowerCase() === effectiveNormalized
   );
   if (exactMatch) return MASTER_LEAGUES[exactMatch];
 

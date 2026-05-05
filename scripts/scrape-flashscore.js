@@ -159,131 +159,151 @@ async function scrapeLeague(context, league) {
   const url = `${BASE_URL}/${league.slug}/clasificacion/`;
 
   console.log(`📡 Procesando: ${league.name}...`);
+  const allViewsData = [];
 
   try {
     await page.goto(url, { waitUntil: 'networkidle', timeout: 45000 });
 
-    // Intentar esperar a la tabla con varios selectores posibles
-    await Promise.race([
-      page.waitForSelector('.ui-table__row', { timeout: 15000 }),
-      page.waitForSelector('.table__row', { timeout: 15000 })
-    ]);
+    // Definición de las vistas a capturar
+    const views = [
+      { id: 'total', label: 'General', selector: 'a[href*="/clasificacion/general/"]' },
+      { id: 'home', label: 'Local', selector: 'a[href*="/clasificacion/local/"]' },
+      { id: 'away', label: 'Visitante', selector: 'a[href*="/clasificacion/visitante/"]' }
+    ];
 
-    // Extraer título de la liga y LOGO de la liga (Búsqueda agresiva)
-    const leagueInfo = await page.evaluate(() => {
-      // Intentar varios selectores de logo de liga
-      const logoEl = document.querySelector('.heading__logo img, .heading__image, [class*="tournament"] img, [class*="heading"] img');
-      const nameEl = document.querySelector('h1, [class*="heading"], [class*="tournament-name"]');
-      
-      let logoUrl = logoEl?.src || "";
-      
-      // Filtrar si el logo es un placeholder bg.png
-      if (logoUrl.includes('bg.png')) logoUrl = "";
-
-      if (!logoUrl) {
-        // Fallback: buscar cualquier imagen que parezca un logo en la parte superior
-        const allImgs = Array.from(document.querySelectorAll('img'));
-        const possibleLogo = allImgs.find(img => 
-          img.src.includes('/data/') && 
-          !img.src.includes('bg.png') && 
-          (img.className.includes('logo') || img.className.includes('image'))
-        );
-        logoUrl = possibleLogo?.src || "";
-      }
-
-      return {
-        name: nameEl?.innerText.trim() || "",
-        logo: logoUrl
-      };
-    });
-
-    const liga_logo_scraped = leagueInfo.logo;
-
-    const scrapedData = await page.evaluate(() => {
-      const rows = Array.from(document.querySelectorAll('.ui-table__row, .table__row'));
-      return rows.map(row => {
-        const rankEl = row.querySelector('.ui-table__cell--rank, .tableCellRank');
-        const teamEl = row.querySelector('.ui-table__cell--team, .tableCellParticipant__name');
-        const logoEl = row.querySelector('.tableCellParticipant__image img, [class*="participant__image"]');
-        
-        const cells = Array.from(row.querySelectorAll('.ui-table__cell, .table__cell'));
-        
-        let form = "";
-        const rowText = row.innerText.trim();
-        const formMatch = rowText.match(/\b([GEPVEDWL\?](?:\s+[GEPVEDWL\?])*)\s*$/i);
-        
-        if (formMatch) {
-            form = formMatch[1].replace(/\s+/g, '').toUpperCase()
-                     .replace(/W|V/g, 'G')
-                     .replace(/D/g, 'E')
-                     .replace(/L/g, 'P');
-        } else {
-            const icons = row.querySelectorAll('[class*="formIcon"], [class*="tableCellFormIcon"]');
-            icons.forEach(icon => {
-                const text = icon.innerText.trim().toUpperCase();
-                if (text === 'W' || text === 'G' || text === 'V') form += 'G';
-                else if (text === 'D' || text === 'E') form += 'E';
-                else if (text === 'L' || text === 'P') form += 'P';
-                else if (text === '?') form += '?';
-            });
-        }
-
-        // Buscar si hay un nombre de grupo en la cabecera de la tabla
-        let groupName = "";
-        const table = row.closest('.ui-table, .table');
-        if (table) {
-          const header = table.querySelector('.ui-table__header, .table__header, .table__title');
-          if (header) {
-            const lines = header.innerText.split('\n').map(l => l.trim()).filter(l => l);
-            if (lines.length > 1) {
-              const text = lines[1].toUpperCase();
-              if (text.includes('GRUPO')) {
-                groupName = text;
-              } else if (text.includes('POSICIÓN') || text.includes('TERCEROS') || text.includes('RANKING')) {
-                groupName = "Mejores Terceros";
-              }
-            }
+    for (const view of views) {
+      try {
+        // Si no es la vista por defecto (General), intentamos hacer clic en la pestaña
+        if (view.id !== 'total') {
+          const tab = await page.$(view.selector);
+          if (tab) {
+            await tab.click();
+            // Esperar un poco a que la tabla se actualice
+            await page.waitForTimeout(2000);
+          } else {
+            console.log(`  ⚠️ Pestaña ${view.label} no disponible para ${league.name}. Saltando...`);
+            continue;
           }
         }
 
-        return {
-          pos: rankEl?.innerText.replace('.', '').trim() || "0",
-          team: teamEl?.innerText.trim() || "Unknown",
-          teamLogo: logoEl?.src || "",
-          pj: cells[2]?.innerText.trim() || "0",
-          g: cells[3]?.innerText.trim() || "0",
-          e: cells[4]?.innerText.trim() || "0",
-          p: cells[5]?.innerText.trim() || "0",
-          goals: cells[6]?.innerText.trim() || "0:0",
-          pts: cells[8]?.innerText.trim() || "0",
-          form: form,
-          groupName: groupName
-        };
-      });
-    });
+        // Esperar a que la tabla esté presente
+        await Promise.race([
+          page.waitForSelector('.ui-table__row', { timeout: 10000 }),
+          page.waitForSelector('.table__row', { timeout: 10000 })
+        ]);
+
+        // Extraer título de la liga y LOGO de la liga (solo en la primera pasada)
+        let liga_logo_scraped = "";
+        if (view.id === 'total') {
+          const leagueInfo = await page.evaluate(() => {
+            const logoEl = document.querySelector('.heading__logo img, .heading__image, [class*="tournament"] img, [class*="heading"] img');
+            let logoUrl = logoEl?.src || "";
+            if (logoUrl.includes('bg.png')) logoUrl = "";
+            if (!logoUrl) {
+              const allImgs = Array.from(document.querySelectorAll('img'));
+              const possibleLogo = allImgs.find(img => 
+                img.src.includes('/data/') && !img.src.includes('bg.png') && 
+                (img.className.includes('logo') || img.className.includes('image'))
+              );
+              logoUrl = possibleLogo?.src || "";
+            }
+            return { logo: logoUrl };
+          });
+          liga_logo_scraped = leagueInfo.logo;
+          // Guardar logo en el objeto de la liga para las siguientes pasadas
+          league.lastLogo = liga_logo_scraped;
+        } else {
+          liga_logo_scraped = league.lastLogo || "";
+        }
+
+        const scrapedData = await page.evaluate((viewLabel) => {
+          const rows = Array.from(document.querySelectorAll('.ui-table__row, .table__row'));
+          return rows.map(row => {
+            const rankEl = row.querySelector('.ui-table__cell--rank, .tableCellRank');
+            const teamEl = row.querySelector('.ui-table__cell--team, .tableCellParticipant__name');
+            const logoEl = row.querySelector('.tableCellParticipant__image img, [class*="participant__image"]');
+            
+            const cells = Array.from(row.querySelectorAll('.ui-table__cell, .table__cell'));
+            
+            let form = "";
+            const rowText = row.innerText.trim();
+            const formMatch = rowText.match(/\b([GEPVEDWL\?](?:\s+[GEPVEDWL\?])*)\s*$/i);
+            
+            if (formMatch) {
+                form = formMatch[1].replace(/\s+/g, '').toUpperCase()
+                         .replace(/W|V/g, 'G')
+                         .replace(/D/g, 'E')
+                         .replace(/L/g, 'P');
+            } else {
+                const icons = row.querySelectorAll('[class*="formIcon"], [class*="tableCellFormIcon"]');
+                icons.forEach(icon => {
+                    const text = icon.innerText.trim().toUpperCase();
+                    if (text === 'W' || text === 'G' || text === 'V') form += 'G';
+                    else if (text === 'D' || text === 'E') form += 'E';
+                    else if (text === 'L' || text === 'P') form += 'P';
+                });
+            }
+
+            let groupName = "";
+            const table = row.closest('.ui-table, .table');
+            if (table) {
+              const header = table.querySelector('.ui-table__header, .table__header, .table__title');
+              if (header) {
+                const lines = header.innerText.split('\n').map(l => l.trim()).filter(l => l);
+                if (lines.length > 1) {
+                  const text = lines[1].toUpperCase();
+                  if (text.includes('GRUPO')) groupName = text;
+                  else if (text.includes('POSICIÓN') || text.includes('TERCEROS')) groupName = "Mejores Terceros";
+                }
+              }
+            }
+
+            return {
+              tipo: viewLabel,
+              pos: rankEl?.innerText.replace('.', '').trim() || "0",
+              team: teamEl?.innerText.trim() || "Unknown",
+              teamLogo: logoEl?.src || "",
+              pj: cells[2]?.innerText.trim() || "0",
+              g: cells[3]?.innerText.trim() || "0",
+              e: cells[4]?.innerText.trim() || "0",
+              p: cells[5]?.innerText.trim() || "0",
+              goals: cells[6]?.innerText.trim() || "0:0",
+              pts: cells[8]?.innerText.trim() || "0",
+              form: form,
+              groupName: groupName
+            };
+          });
+        }, view.label);
+
+        // Mapear y normalizar
+        const normalized = scrapedData.map(r => {
+          const teamData = getTeamData(r.team, league.name);
+          const finalLeagueName = league.apiName || league.name;
+          const combinedLeagueName = r.groupName ? `${finalLeagueName} - ${r.groupName}` : finalLeagueName;
+          
+          return {
+            ...r,
+            team: teamData.apiName,
+            publicName: teamData.publicName,
+            teamLogo: r.teamLogo || teamData.logo,
+            league: combinedLeagueName,
+            leagueLogo: liga_logo_scraped
+          };
+        });
+
+        allViewsData.push(...normalized);
+        console.log(`  ✅ ${view.label}: ${scrapedData.length} equipos.`);
+
+      } catch (err) {
+        console.error(`  ⚠️ Error en vista ${view.label} de ${league.name}:`, err.message);
+      }
+    }
 
     await page.close();
-    
-    console.log(`✅ ${league.name}: ${scrapedData.length} equipos.`);
-    
-    return scrapedData.map(r => {
-      const teamData = getTeamData(r.team, league.name);
-      const finalLeagueName = league.apiName || league.name;
-      const combinedLeagueName = r.groupName ? `${finalLeagueName} - ${r.groupName}` : finalLeagueName;
-      
-      return {
-        ...r,
-        team: teamData.apiName,
-        publicName: teamData.publicName,
-        // Prioridad: 1. Scrapeado, 2. Diccionario
-        teamLogo: r.teamLogo || teamData.logo,
-        league: combinedLeagueName,
-        leagueLogo: liga_logo_scraped
-      };
-    });
+    return allViewsData;
 
   } catch (error) {
-    console.error(`❌ Error en ${league.name}:`, error.message);
+    console.error(`❌ Error general en ${league.name}:`, error.message);
     await page.close();
     return [];
   }
@@ -323,13 +343,13 @@ async function run() {
 
   if (allData.length > 0) {
     // Generar CSV
-    // A:Liga, B:Pos, C:Nombre Publico, D:Equipo, E:PJ, F:PG, G:PE, H:PP, I:Goles, J:Pts, K:Forma, L:Logo Liga, M:Logo Equipo
-    const header = '"Liga","Pos","Nombre Publico","Equipo","PJ","PG","PE","PP","Goles","Pts","Forma","Logo Liga","Logo Equipo"\n';
+    // A:Tipo, B:Liga, C:Pos, D:Nombre Publico, E:Equipo, F:PJ, G:PG, H:PE, I:PP, J:Goles, K:Pts, L:Forma, M:Logo Liga, N:Logo Equipo
+    const header = '"Tipo","Liga","Pos","Nombre Publico","Equipo","PJ","PG","PE","PP","Goles","Pts","Forma","Logo Liga","Logo Equipo"\n';
     const csvRows = allData.map(r => {
       const leagueNorm = normalize(r.league);
       const leagueLogo = LEAGUE_MAP[leagueNorm] || r.leagueLogo || "";
 
-      return `"${r.league}","${r.pos}","${r.publicName}","${r.team}","${r.pj}","${r.g}","${r.e}","${r.p}","${r.goals}","${r.pts}","${r.form}","${leagueLogo}","${r.teamLogo}"`;
+      return `"${r.tipo}","${r.league}","${r.pos}","${r.publicName}","${r.team}","${r.pj}","${r.g}","${r.e}","${r.p}","${r.goals}","${r.pts}","${r.form}","${leagueLogo}","${r.teamLogo}"`;
     }).join('\n');
 
     const csvContent = header + csvRows;
@@ -342,6 +362,7 @@ async function run() {
       const leagueNorm = normalize(r.league);
       const leagueLogo = LEAGUE_MAP[leagueNorm] || r.leagueLogo || "";
       return {
+        tipo: r.tipo,
         liga: r.league,
         pos: parseInt(r.pos),
         equipo: r.publicName, // Nombre público para la web

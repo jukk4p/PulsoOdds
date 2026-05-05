@@ -252,20 +252,30 @@ async function sync() {
     }
 
     const header = rows[0].map(h => h.toLowerCase());
+    console.log("📝 Cabeceras detectadas en el Sheet:", header.join(", "));
+    const findCol = (names) => {
+      for (const name of names) {
+        const idx = header.indexOf(name.toLowerCase());
+        if (idx !== -1) return idx;
+      }
+      return -1;
+    };
+
     const colIdx = {
-      league: header.indexOf("liga"),
-      pos: header.indexOf("pos"),
-      team: header.indexOf("equipo"),
-      publicName: header.indexOf("nombre publico"),
-      pj: header.indexOf("pj"),
-      g: header.indexOf("pg"),
-      e: header.indexOf("pe"),
-      p: header.indexOf("pp"),
-      goals: header.indexOf("goles"),
-      pts: header.indexOf("pts"),
-      form: header.indexOf("forma"),
-      logoTeam: header.indexOf("logo equipo"),
-      logoLeague: header.indexOf("logo liga")
+      league: findCol(["liga", "league"]),
+      tipo: findCol(["tipo", "type", "scope"]),
+      pos: findCol(["pos", "position"]),
+      team: findCol(["equipo", "team"]),
+      publicName: findCol(["nombre publico", "public name"]),
+      pj: findCol(["pj", "played"]),
+      g: findCol(["pg", "g", "won"]),
+      e: findCol(["pe", "e", "draw"]),
+      p: findCol(["pp", "p", "lost"]),
+      goals: findCol(["goles", "goals"]),
+      pts: findCol(["pts", "points"]),
+      form: findCol(["forma", "form"]),
+      logoTeam: findCol(["logo equipo", "team logo"]),
+      logoLeague: findCol(["logo liga", "league logo"])
     };
 
     const teams = rows.slice(1).filter(row => row[colIdx.pos] && !isNaN(parseInt(row[colIdx.pos])));
@@ -294,7 +304,7 @@ async function sync() {
       const pj = parseInt(row[colIdx.pj]) || 0;
       const pg = parseInt(row[colIdx.g]) || 0;
       const pe = parseInt(row[colIdx.e]) || 0;
-      const pp = parseInt(row[colIdx.pp]) || 0;
+      const pp = parseInt(row[colIdx.p]) || 0;
       const goals = row[colIdx.goals] || "0:0";
       const pts = parseInt(row[colIdx.pts]) || 0;
       const form = (row[colIdx.form] || "").toUpperCase();
@@ -313,10 +323,13 @@ async function sync() {
         else if (pos >= 16) zone = "relegation";
       }
 
+      const type = (row[colIdx.tipo] || "General").trim();
+
       const { error } = await supabase
         .from('standings')
         .upsert({
           league,
+          type,
           pos,
           team: apiName,         // Nombre API limpio (sin ID)
           public_name: teamName, // Nombre de tu diccionario
@@ -331,7 +344,7 @@ async function sync() {
           logo_team: row[colIdx.logoTeam] || "",
           logo_league: row[colIdx.logoLeague] || ""
         }, { 
-          onConflict: 'league,team' 
+          onConflict: 'league,team,type' 
         });
 
       if (error) console.error(`❌ Error con ${teamName}:`, error.message);

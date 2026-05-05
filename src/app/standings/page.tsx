@@ -216,12 +216,12 @@ export default function StandingsPage() {
   const displayStandings = React.useMemo(() => {
     if (sortOrder === "asc") return standings;
     const grouped = standings.reduce((acc, team) => {
-      const group = team.league || "default";
-      if (!acc[group]) acc[group] = [];
-      acc[group].push(team);
+      const groupKey = team.league || "default";
+      if (!acc[groupKey]) acc[groupKey] = [];
+      acc[groupKey].push(team);
       return acc;
-    }, {} as Record<string, typeof standings>);
-    return Object.values(grouped).flatMap(group => [...group].reverse());
+    }, {} as Record<string, any[]>);
+    return Object.values(grouped).flatMap((group: any[]) => [...group].reverse());
   }, [standings, sortOrder]);
 
   const currentLegend = LEGENDS[activeLeague] || DEFAULT_LEGEND;
