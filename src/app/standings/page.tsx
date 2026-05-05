@@ -221,7 +221,7 @@ export default function StandingsPage() {
       acc[groupKey].push(team);
       return acc;
     }, {} as Record<string, any[]>);
-    return Object.values(grouped).flatMap((group: any[]) => [...group].reverse());
+    return (Object.values(grouped) as any[][]).flatMap((group: any[]) => [...group].reverse());
   }, [standings, sortOrder]);
 
   const currentLegend = LEGENDS[activeLeague] || DEFAULT_LEGEND;
