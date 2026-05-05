@@ -62,40 +62,78 @@ export function PicksExplorer({ initialPicks }: PicksExplorerProps) {
     return isNaN(n) ? 0 : n;
   };
 
+  const getMarketId = (p: Pick): string => {
+    const m = simpleNormalize((p.market || "") + " " + (p.pick || ""));
+    if (m.includes("mitad") || m.includes("1st") || m.includes("1a") || m.includes("1ra") || m.includes("primera parte")) return "mitad";
+    if (m.includes("ambos") || m.includes("marcan") || m.includes("btts")) return "ambos_marcan";
+    if (m.includes("doble") || m.includes("oportunidad") || m.includes("double chance")) return "doble";
+    if (m.includes("ganador") || m.includes("resultado") || m.includes("1x2") || m.includes("final")) return "ganador";
+    if (m.includes("handicap") || m.includes("asiatico")) return "handicap";
+    if (m.includes("goles") || m.includes("total") || m.includes("over") || m.includes("under")) return "goles";
+    return "other_" + simpleNormalize(p.market || "otros");
+  };
+
   const marketCategories = useMemo(() => {
-    // Definimos los criterios de cada mercado para reusar en el conteo
-    const getMarketMatches = (marketId: string, picks: Pick[]) => {
-      if (marketId === "all") return picks;
-      if (marketId === "top") return picks.filter(p => p.is_top || ((normalizeOdds(p.odds) >= 1.50) && ((p.confianza || 0) >= 85 || (p.stake || 0) >= 8.5)));
-      
-      const search = marketId.toLowerCase();
-      return picks.filter(p => {
-        const m = simpleNormalize((p.market || "") + " " + (p.pick || ""));
-        if (search === "mitad") return m.includes("mitad") || m.includes("1st") || m.includes("1a") || m.includes("1ra") || m.includes("primera parte");
-        if (search === "ambos_marcan") return m.includes("ambos") || m.includes("marcan") || m.includes("btts");
-        if (search === "doble") return m.includes("doble") || m.includes("oportunidad") || m.includes("double chance");
-        if (search === "ganador") return m.includes("ganador") || m.includes("resultado") || m.includes("1x2") || m.includes("final");
-        if (search === "handicap") return m.includes("handicap") || m.includes("asiatico");
-        if (search === "goles") return m.includes("goles") || m.includes("total") || m.includes("over") || m.includes("under");
-        return m.includes(search);
-      });
+    const basePicks = filter === "all" ? initialPicks : initialPicks.filter(p => p.status === filter);
+    
+    // 1. Contar picks por cada categoría posible
+    const counts: Record<string, number> = { all: basePicks.length, top: 0 };
+    const labels: Record<string, string> = { 
+      all: "Todos", 
+      top: "Top Picks", 
+      mitad: "1ª Mitad", 
+      ambos_marcan: "Ambos Marcan", 
+      doble: "Doble Oportunidad", 
+      ganador: "Ganador", 
+      handicap: "Hándicap", 
+      goles: "Goles" 
+    };
+    const icons: Record<string, string> = { 
+      all: "💎", top: "🔥", mitad: "🌐", ambos_marcan: "⚽", doble: "🛡️", ganador: "🏆", handicap: "📊", goles: "🥅" 
     };
 
-    // Base de picks filtrada por el estado (pending/won/etc) para que los counts de mercado sean coherentes
-    const basePicks = filter === "all" ? initialPicks : initialPicks.filter(p => p.status === filter);
+    basePicks.forEach(p => {
+      // Check Top Picks
+      const isTop = p.is_top || ((normalizeOdds(p.odds) >= 1.50) && ((p.confianza || 0) >= 85 || (p.stake || 0) >= 8.5));
+      if (isTop) counts.top = (counts.top || 0) + 1;
 
-    return [
-      { id: "all", label: "Todos", icon: "💎", count: basePicks.length },
-      { id: "top", label: "Top Picks", icon: "🔥", count: getMarketMatches("top", basePicks).length },
-      { id: "mitad", label: "1ª Mitad", icon: "🌐", count: getMarketMatches("mitad", basePicks).length },
-      { id: "ambos_marcan", label: "Ambos Marcan", icon: "⚽", count: getMarketMatches("ambos_marcan", basePicks).length },
-      { id: "doble", label: "Doble Oportunidad", icon: "🛡️", count: getMarketMatches("doble", basePicks).length },
-      { id: "ganador", label: "Ganador", icon: "🏆", count: getMarketMatches("ganador", basePicks).length },
-      { id: "handicap", label: "Hándicap", icon: "📊", count: getMarketMatches("handicap", basePicks).length },
-    ];
+      // Check Category
+      const mid = getMarketId(p);
+      counts[mid] = (counts[mid] || 0) + 1;
+      
+      // If it's a dynamic category not in our labels, use the market name
+      if (!labels[mid] && mid.startsWith("other_")) {
+        labels[mid] = p.market || "Otros";
+        icons[mid] = "📈";
+      }
+    });
+
+    // 2. Construir lista final filtrando las que tienen 0 (excepto 'all')
+    const result = Object.keys(counts)
+      .filter(id => id === "all" || counts[id] > 0)
+      .map(id => ({
+        id,
+        label: labels[id] || id,
+        icon: icons[id] || "📈",
+        count: counts[id]
+      }));
+
+    // Ordenar: primero all y top, luego el resto por cuenta
+    return result.sort((a, b) => {
+      if (a.id === "all") return -1;
+      if (b.id === "all") return 1;
+      if (a.id === "top") return -1;
+      if (b.id === "top") return 1;
+      return b.count - a.count;
+    });
   }, [initialPicks, filter]);
 
-
+  // Reset selected market if it no longer exists in current view
+  useEffect(() => {
+    if (selectedMarket !== "all" && !marketCategories.find(c => c.id === selectedMarket)) {
+      setSelectedMarket("all");
+    }
+  }, [marketCategories, selectedMarket]);
 
   const filteredBySearchAndMarket = useMemo(() => {
     let result = initialPicks;
@@ -103,17 +141,7 @@ export function PicksExplorer({ initialPicks }: PicksExplorerProps) {
     if (selectedMarket === "top") {
       result = result.filter(p => p.is_top || ((normalizeOdds(p.odds) >= 1.50) && ((p.confianza || 0) >= 85 || (p.stake || 0) >= 8.5)));
     } else if (selectedMarket !== "all") {
-      const search = selectedMarket.toLowerCase();
-      result = result.filter(p => {
-        const m = simpleNormalize((p.market || "") + " " + (p.pick || ""));
-        if (search === "mitad") return m.includes("mitad") || m.includes("1st") || m.includes("1a") || m.includes("1ra") || m.includes("primera parte");
-        if (search === "ambos_equipos" || search === "ambos_marcan") return m.includes("ambos") || m.includes("marcan") || m.includes("btts");
-        if (search === "doble") return m.includes("doble") || m.includes("oportunidad") || m.includes("double chance");
-        if (search === "ganador" || search === "resultado") return m.includes("ganador") || m.includes("resultado") || m.includes("1x2") || m.includes("final");
-        if (search === "handicap") return m.includes("handicap") || m.includes("asiatico");
-        if (search === "goles") return m.includes("goles") || m.includes("total") || m.includes("over") || m.includes("under");
-        return m.includes(search);
-      });
+      result = result.filter(p => getMarketId(p) === selectedMarket);
     }
 
     if (searchQuery.trim()) {
