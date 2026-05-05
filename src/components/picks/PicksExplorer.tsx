@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { MatchGroup } from "@/components/ui/MatchGroup";
 import { cn, simpleNormalize } from "@/lib/utils";
 import { CategoryFilter } from "./CategoryFilter";
