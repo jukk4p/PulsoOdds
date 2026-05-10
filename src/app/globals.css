@@ -3,12 +3,14 @@
 @theme {
   /* Fondo */
   --color-bg-base: #0D0F12;
+  --color-deep-black: #0A0A0A;
   --color-bg-surface: #13161B;
   --color-bg-surface-hover: #1A1E25;
   --color-bg-subtle: #1E2229;
 
   /* Acento eléctrico */
   --color-accent: #C8FF00;
+  --color-neon-green: #C8FF00;
   --color-accent-dim: rgba(200, 255, 0, 0.12);
   --color-accent-glow: rgba(200, 255, 0, 0.06);
 

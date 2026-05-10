@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Trash2, CheckCircle, XCircle, MinusCircle, Plus, Search, ShieldCheck, TrendingUp, Sparkles, Pencil, X, Save, AlertCircle, ArrowUpDown, Wand2, Zap, ChevronDown, Calculator, Clock } from 'lucide-react';
+import { Trash2, CheckCircle, XCircle, MinusCircle, Plus, Search, TrendingUp, Sparkles, Pencil, X, Save, AlertCircle, ArrowUpDown, Wand2, Zap, ChevronDown, Calculator, Clock } from 'lucide-react';
 
 import { cn, normalizeBettingPick, translateBettingTerm, substituteTeamNames, translateLeagueName, formatMatchName, formatTeamName, deepNormalize, simpleNormalize, formatDateSpain, formatTimeSpain, normalizeTeamName } from '@/lib/utils';
 import { LogoAutocomplete } from '@/components/admin/LogoAutocomplete';
@@ -10,9 +10,10 @@ import { StatusBadge } from '@/components/ui/StatusBadge';
 import { getLeagueLogo, getTeamLogo } from '@/lib/logos';
 
 // ==========================================
-// COMPONENTE: MODAL DE EDICIÓN TOTAL
+// COMPONENTE: MODAL DE EDICIÓN / CREACIÓN
 // ==========================================
-function EditPickModal({ pick, isOpen, onClose, onSave }: { pick: any, isOpen: boolean, onClose: () => void, onSave: (updatedPick: any) => void }) {
+function PickModal({ pick, isOpen, onClose, onSave }: { pick: any, isOpen: boolean, onClose: () => void, onSave: (updatedPick: any) => void }) {
+  const isNew = !pick?.id;
   const [formData, setFormData] = useState({ ...pick });
   const [isSaving, setIsSaving] = useState(false);
 
@@ -24,13 +25,12 @@ function EditPickModal({ pick, isOpen, onClose, onSave }: { pick: any, isOpen: b
 
   const handleSave = async () => {
     setIsSaving(true);
-    const { error } = await supabase
-      .from('picks')
-      .update(formData)
-      .eq('id', pick.id);
-
+    const { data, error } = isNew 
+      ? await supabase.from('picks').insert([formData]).select()
+      : await supabase.from('picks').update(formData).eq('id', pick.id).select();
+      
     if (!error) {
-      onSave(formData);
+      onSave(isNew ? data[0] : formData);
       onClose();
     } else {
       alert("Error al guardar: " + error.message);
@@ -48,7 +48,7 @@ function EditPickModal({ pick, isOpen, onClose, onSave }: { pick: any, isOpen: b
               <Pencil className="h-4 w-4 md:h-5 md:w-5 text-neon-green" />
             </div>
             <div>
-              <h2 className="text-base md:text-xl font-black text-white tracking-tighter uppercase italic">Edición Total</h2>
+              <h2 className="text-base md:text-xl font-black text-white tracking-tighter uppercase italic">{isNew ? 'Nueva Apuesta' : 'Edición Total'}</h2>
               <div className="flex items-center gap-4">
                 <p className="text-[10px] text-white/30 uppercase font-bold tracking-widest">ID: {pick.id}</p>
                 <div className="h-3 w-[1px] bg-white/10" />
@@ -236,7 +236,7 @@ function EditPickModal({ pick, isOpen, onClose, onSave }: { pick: any, isOpen: b
             disabled={isSaving}
             className="w-full md:w-auto bg-neon-green text-deep-black px-6 py-2.5 rounded-lg font-black uppercase italic tracking-tighter text-xs shadow-lg shadow-neon-green/20 ring-1 ring-neon-green/50 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50 order-1 md:order-2"
           >
-            {isSaving ? "Guardando..." : <><Save size={14} /> Guardar Pick</>}
+            {isSaving ? "Guardando..." : <><Save size={14} /> {isNew ? 'Crear Apuesta' : 'Guardar Apuesta'}</>}
           </button>
         </div>
       </div>
@@ -300,6 +300,7 @@ export default function AdminPicksPage() {
   const [marketFilter, setMarketFilter] = useState('all');
   const [selectedPicks, setSelectedPicks] = useState<Set<string>>(new Set());
   const [editingPick, setEditingPick] = useState<any | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [notification, setNotification] = useState<{ message: string, type: 'success' | 'info' | 'warning' } | null>(null);
   const [isGeneratingAll, setIsGeneratingAll] = useState(false);
   
@@ -434,43 +435,6 @@ export default function AdminPicksPage() {
     setLoading(false);
   };
 
-  const handleValidate = async (pick: any) => {
-    setLoading(true);
-    try {
-      const resp = await fetch('/api/odds');
-      const data = await resp.json();
-      let suggestedOdd = null;
-      if (!data.error && Array.isArray(data)) {
-        const match = data.find((event: any) =>
-          pick.match.toLowerCase().includes(event.home_team.toLowerCase()) ||
-          pick.match.toLowerCase().includes(event.away_team.toLowerCase())
-        );
-        if (match) {
-          const bookmaker = match.bookmakers[0];
-          if (bookmaker) {
-            const market = bookmaker.markets.find((m: any) => m.key === 'h2h' || m.key === 'btts');
-            if (market) suggestedOdd = market.outcomes[0].price;
-          }
-        }
-      }
-      const manualOdd = prompt(
-        suggestedOdd
-          ? `¡Partido encontrado!\nCuota sugerida: @${suggestedOdd}\n\nIntroduce la cuota real:`
-          : `No se encontró mercado para "${pick.match}".\n\nIntroduce la cuota manual:`,
-        suggestedOdd || pick.odds
-      );
-      if (manualOdd && !isNaN(parseFloat(manualOdd))) {
-        await supabase.from('picks').update({ odds: parseFloat(manualOdd), is_verified: true }).eq('id', pick.id);
-        showNotification("Cuota validada y guardada", 'success');
-        fetchPicks();
-      }
-    } catch (err) {
-      showNotification("Error al conectar con la API de cuotas", 'warning');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleCheckAssets = async () => {
     const { MASTER_TEAMS, MASTER_LEAGUES } = await import('@/lib/masterDictionaries');
     if (!confirm('¿Deseas sincronizar logos de equipos y ligas con el Diccionario Maestro para TODOS los registros?')) return;
@@ -534,7 +498,7 @@ export default function AdminPicksPage() {
     setLoading(false);
   };
 
-  const handleNewPick = () => showNotification("Módulo de creación manual próximamente.", 'info');
+  const handleNewPick = () => setIsCreateModalOpen(true);
 
   const handleCleanupDuplicates = async (silent = false) => {
     if (!silent && !confirm('¿Ejecutar limpieza de duplicados? Se borrarán registros idénticos (mismo partido, mercado y fecha).')) return;
@@ -735,13 +699,40 @@ export default function AdminPicksPage() {
         </div>
       )}
 
-      <EditPickModal
+      <PickModal
         pick={editingPick}
         isOpen={!!editingPick}
         onClose={() => setEditingPick(null)}
         onSave={(updated) => {
           setPicks(picks.map(p => p.id === updated.id ? updated : p));
-          showNotification("Pick actualizado correctamente", 'success');
+          showNotification("Apuesta actualizada correctamente", 'success');
+        }}
+      />
+
+      <PickModal
+        pick={{
+          match: "",
+          competition: "",
+          match_date: new Date().toISOString(),
+          market: "",
+          pick: "",
+          odds: 1.50,
+          stake: 1,
+          confianza: 50,
+          bookmaker: "",
+          home_logo: "",
+          away_logo: "",
+          league_logo: "",
+          razonamiento: "",
+          factores: "[]",
+          alertas: "[]",
+          status: "pending"
+        }}
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSave={(newPick) => {
+          setPicks([newPick, ...picks]);
+          showNotification("Apuesta creada correctamente", 'success');
         }}
       />
 
@@ -770,7 +761,7 @@ export default function AdminPicksPage() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase italic leading-none">CENTRO DE <span className="text-neon-green">CONTROL</span></h1>
-            <p className="text-white/30 text-[11px] mt-3 tracking-[0.2em] uppercase font-black">Panel v8.5 · {picks.length} picks</p>
+            <p className="text-white/30 text-[11px] mt-3 tracking-[0.2em] uppercase font-black">Panel v8.5 · {picks.length} apuestas</p>
           </div>
           
           <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
@@ -781,7 +772,7 @@ export default function AdminPicksPage() {
               className="flex items-center justify-center gap-2 px-6 py-3 bg-[#0a1219] text-white/70 rounded-xl border border-white/10 font-bold text-[10px] uppercase tracking-widest hover:border-neon-green/50 hover:text-neon-green transition-all disabled:opacity-50 disabled:cursor-not-allowed group w-full sm:w-auto shadow-xl"
             >
               <Sparkles className="h-3.5 w-3.5 group-hover:rotate-12 transition-transform" />
-              <span>Mantenimiento</span>
+              <span>Sincronizar y Optimizar</span>
             </button>
 
             {/* Botón de Nuevo Pick (Sólido Protagonista) */}
@@ -790,7 +781,7 @@ export default function AdminPicksPage() {
               className="bg-neon-green text-deep-black font-black px-6 py-3 rounded-xl text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 hover:scale-[1.02] hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-neon-green/20 ring-1 ring-neon-green/50 w-full sm:w-auto"
             >
               <Plus className="h-4 w-4" /> 
-              <span>Nuevo Pick</span>
+              <span>Nueva Apuesta</span>
             </button>
           </div>
         </div>
@@ -1021,15 +1012,6 @@ export default function AdminPicksPage() {
                                   <Pencil className="h-4 w-4" />
                                 </button>
 
-                                {pick.status === 'pending' && (
-                                  <button
-                                    onClick={() => handleValidate(pick)}
-                                    className="h-9 w-9 flex items-center justify-center rounded-xl bg-neon-green/10 text-neon-green hover:bg-neon-green/20 transition-all"
-                                    title="Validar Cuota"
-                                  >
-                                    <ShieldCheck className="h-4 w-4" />
-                                  </button>
-                                )}
 
                                 <div className="w-[1px] h-4 bg-white/10 mx-2" />
 
