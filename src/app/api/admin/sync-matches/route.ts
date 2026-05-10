@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { spawn } from 'child_process';
 import path from 'path';
 
 export async function POST(request: Request) {
@@ -11,11 +10,11 @@ export async function POST(request: Request) {
     //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     // }
 
-    console.log('Starting match scraper script...');
-    
     const scriptName = 'scrape-upcoming-matches.js';
     const scriptPath = path.join(process.cwd(), 'scripts', scriptName);
     
+    // Bypass Turbopack static analysis
+    const { spawn } = eval('require')('child_process');
     const child = spawn('node', [scriptPath]);
 
     let output = '';
