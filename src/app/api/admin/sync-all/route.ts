@@ -40,7 +40,7 @@ export async function POST() {
       }
     });
 
-    child.on('error', (err) => {
+    child.on('error', (err: any) => {
       console.error('❌ Error al lanzar el script:', err);
       resolve(NextResponse.json({ 
         success: false, 
