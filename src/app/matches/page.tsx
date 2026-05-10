@@ -5,6 +5,7 @@ import { cn, normalizeTeamName, formatDateSpain } from "@/lib/utils";
 import { Clock, Calendar, Loader2, ChevronRight } from "lucide-react";
 import { getTeamLogo } from "@/lib/logos";
 import { MASTER_LEAGUES } from "@/lib/masterDictionaries";
+import Image from "next/image";
 
 const LEAGUES = [
   "LaLiga EA Sports",
@@ -116,7 +117,7 @@ export default function MatchesPage() {
         <header className="flex flex-col items-center text-center mb-14">
           <div className="flex items-center gap-3 mb-5">
             <div className="h-1.5 w-12 bg-accent" />
-            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-text-muted">Calendario</span>
+            <span className="text-xs font-black uppercase tracking-[0.4em] text-text-muted">Calendario</span>
             <div className="h-1.5 w-12 bg-accent" />
           </div>
           <h1 className="text-3xl md:text-5xl font-display font-black text-text-primary uppercase tracking-tighter leading-[0.85]">
@@ -143,11 +144,11 @@ export default function MatchesPage() {
               >
                 {logo && (
                   <div className="h-5 w-5 shrink-0 bg-white rounded-sm flex items-center justify-center p-0.5">
-                    <img src={logo} alt="" className="h-full w-full object-contain" />
+                    <Image src={logo} alt="" width={20} height={20} className="h-full w-full object-contain" />
                   </div>
                 )}
                 <span className={cn(
-                  "text-[10px] font-black uppercase tracking-[0.15em] whitespace-nowrap transition-colors",
+                  "text-xs font-black uppercase tracking-[0.15em] whitespace-nowrap transition-colors",
                   isActive ? "text-text-primary" : "text-text-muted group-hover:text-text-secondary"
                 )}>
                   {league}
@@ -162,7 +163,7 @@ export default function MatchesPage() {
           {loading ? (
             <div className="flex flex-col items-center justify-center py-24">
               <Loader2 className="h-8 w-8 text-accent animate-spin mb-4" />
-              <span className="text-[10px] font-black uppercase tracking-[0.4em] text-text-muted">Cargando...</span>
+              <span className="text-xs font-black uppercase tracking-[0.4em] text-text-muted">Cargando...</span>
             </div>
           ) : matches.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 border border-border-base rounded-xl bg-bg-surface/30">
@@ -177,12 +178,12 @@ export default function MatchesPage() {
                   <div className="flex items-center gap-4 mb-4">
                     <div className="flex items-center gap-2">
                       <Calendar size={12} className="text-accent" />
-                      <span className="text-[11px] font-black uppercase tracking-[0.3em] text-accent">
+                      <span className="text-xs font-black uppercase tracking-[0.3em] text-accent">
                         {formatDateLabel(dateKey)}
                       </span>
                     </div>
                     <div className="flex-1 h-px bg-white/5" />
-                    <span className="text-[9px] text-text-muted font-mono">{grouped[dateKey].length} partidos</span>
+                    <span className="text-[10px] text-text-muted font-mono">{grouped[dateKey].length} partidos</span>
                   </div>
 
                   {/* Match cards */}
@@ -207,12 +208,12 @@ export default function MatchesPage() {
                           <div className="flex-1 grid grid-cols-[1fr_32px_1fr] items-center gap-3">
                             {/* Home */}
                             <div className="flex items-center justify-end gap-3">
-                              <span className="text-[11px] md:text-sm font-black uppercase tracking-tight text-text-primary text-right leading-tight line-clamp-1">
+                              <span className="text-xs md:text-sm font-black uppercase tracking-tight text-text-primary text-right leading-tight line-clamp-1">
                                 {normalizeTeamName(match.home)}
                               </span>
                               <div className="h-9 w-9 bg-white rounded-md p-1.5 flex items-center justify-center shrink-0 shadow-sm">
                                 {homeLogo
-                                  ? <img src={homeLogo} alt="" className="h-full w-full object-contain" />
+                                  ? <Image src={homeLogo} alt="" width={36} height={36} className="h-full w-full object-contain" />
                                   : <div className="h-full w-full bg-zinc-200 rounded-sm" />
                                 }
                               </div>
@@ -220,18 +221,18 @@ export default function MatchesPage() {
 
                             {/* VS */}
                             <div className="flex items-center justify-center">
-                              <span className="text-[9px] font-black text-text-muted/40 italic">VS</span>
+                              <span className="text-[10px] font-black text-text-muted/40 italic">VS</span>
                             </div>
 
                             {/* Away */}
                             <div className="flex items-center justify-start gap-3">
                               <div className="h-9 w-9 bg-white rounded-md p-1.5 flex items-center justify-center shrink-0 shadow-sm">
                                 {awayLogo
-                                  ? <img src={awayLogo} alt="" className="h-full w-full object-contain" />
+                                  ? <Image src={awayLogo} alt="" width={36} height={36} className="h-full w-full object-contain" />
                                   : <div className="h-full w-full bg-zinc-200 rounded-sm" />
                                 }
                               </div>
-                              <span className="text-[11px] md:text-sm font-black uppercase tracking-tight text-text-primary leading-tight line-clamp-1">
+                              <span className="text-xs md:text-sm font-black uppercase tracking-tight text-text-primary leading-tight line-clamp-1">
                                 {normalizeTeamName(match.away)}
                               </span>
                             </div>

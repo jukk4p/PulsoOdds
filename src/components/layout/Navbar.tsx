@@ -118,12 +118,12 @@ export function Navbar() {
       {/* Mobile Menu Overlay */}
       <div
         className={cn(
-          "fixed inset-0 bg-bg-base z-40 md:hidden transition-all duration-500 ease-in-out px-8 pt-32 pb-12 flex flex-col justify-between",
+          "fixed inset-0 bg-bg-base z-40 md:hidden transition-all duration-500 ease-in-out px-6 min-[400px]:px-8 pt-32 pb-12 flex flex-col justify-between",
           isOpen ? "opacity-100 translate-x-0" : "opacity-0 translate-x-full pointer-events-none"
         )}
       >
-        <div className="flex flex-col gap-8">
-          <div className="mb-4">
+        <div className="flex flex-col gap-6 min-[400px]:gap-8">
+          <div className="mb-2 min-[400px]:mb-4">
             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-text-muted">Navegación</span>
             <div className="h-[2px] w-12 bg-accent mt-3" />
           </div>
@@ -133,7 +133,7 @@ export function Navbar() {
               key={link.name}
               href={link.href}
               className={cn(
-                "text-5xl font-black uppercase tracking-tighter flex items-center justify-between group transition-all duration-300",
+                "text-2xl min-[360px]:text-3xl min-[400px]:text-4xl min-[480px]:text-5xl font-black uppercase tracking-tighter flex items-center justify-between group transition-all duration-300",
                 pathname === link.href ? "text-accent" : "text-text-primary hover:text-accent"
               )}
               style={{ 
@@ -141,22 +141,22 @@ export function Navbar() {
                 transform: isOpen ? "translateX(0)" : "translateX(40px)"
               }}
             >
-              <div className="flex items-center gap-6">
-                <span className="text-sm font-bold text-text-muted group-hover:text-accent/40 duration-300">0{i + 1}</span>
+              <div className="flex items-center gap-3 min-[400px]:gap-6">
+                <span className="text-[10px] min-[400px]:text-sm font-bold text-text-muted group-hover:text-accent/40 duration-300">0{i + 1}</span>
                 <span>{link.name}</span>
               </div>
-              <link.icon className={cn("h-8 w-8 transition-transform duration-300 group-hover:scale-125", pathname === link.href ? "text-accent" : "text-text-muted/20")} />
+              <link.icon className={cn("h-5 w-5 min-[400px]:h-8 min-[400px]:w-8 transition-transform duration-300 group-hover:scale-125", pathname === link.href ? "text-accent" : "text-text-muted/20")} />
             </Link>
           ))}
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-4 min-[400px]:space-y-6">
           <Link
             href="/admin"
-            className="flex items-center justify-between px-8 py-5 rounded-xl bg-bg-surface border border-border-base text-text-secondary font-black uppercase tracking-widest text-xs hover:border-border-accent hover:text-accent transition-all duration-300"
+            className="flex items-center justify-between px-6 min-[400px]:px-8 py-4 min-[400px]:py-5 rounded-xl bg-bg-surface border border-border-base text-text-secondary font-black uppercase tracking-widest text-xs hover:border-border-accent hover:text-accent transition-all duration-300"
           >
             <div className="flex items-center gap-4">
-              <Lock className="h-5 w-5" />
+              <Lock className="h-4 w-4 min-[400px]:h-5 min-[400px]:w-5" />
               Acceso Admin
             </div>
           </Link>

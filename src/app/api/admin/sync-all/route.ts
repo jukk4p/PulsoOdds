@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import path from 'path';
+import { spawn } from 'node:child_process';
 
 export async function POST() {
   // Solo permitimos esto en desarrollo para evitar abusos o configurarlo con una KEY en prod
@@ -10,9 +11,6 @@ export async function POST() {
   return new Promise<Response>((resolve) => {
     const scriptName = 'master_update.js';
     const scriptPath = path.join(process.cwd(), 'scripts', scriptName);
-    
-    // Bypass Turbopack static analysis
-    const { spawn } = eval('require')('child_process');
     
     console.log('🚀 Iniciando sincronización total desde la web...');
     

@@ -1,20 +1,14 @@
 import { NextResponse } from 'next/server';
+import { spawn } from 'node:child_process';
 import path from 'path';
 
 export async function POST(request: Request) {
   try {
     const { apiKey } = await request.json();
     
-    // Simple security check (could be expanded with environment variables)
-    // if (apiKey !== process.env.SYNC_API_KEY) {
-    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    // }
-
     const scriptName = 'scrape-upcoming-matches.js';
     const scriptPath = path.join(process.cwd(), 'scripts', scriptName);
     
-    // Bypass Turbopack static analysis
-    const { spawn } = eval('require')('child_process');
     const child = spawn('node', [scriptPath]);
 
     let output = '';

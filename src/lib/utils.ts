@@ -247,45 +247,6 @@ const leagueDictionary: Record<string, string> = {
 };
 
 /**
- * Mapa de logos de ligas usando URLs directas de Flashscore (Diccionario Maestro)
- */
-export const leagueLogoMap: Record<string, string> = {
-  "laliga": "https://static.flashscore.com/res/image/data/6aNYx0jD-A3tOPy9B.png",
-  "premier league": "https://static.flashscore.com/res/image/data/423YHekd-UZ1TZUJe.png",
-  "bundesliga": "https://static.flashscore.com/res/image/data/fqltz6CO-4ATnefbq.png",
-  "serie a": "https://static.flashscore.com/res/image/data/rFHMayEO-2exwJQks.png",
-  "ligue 1": "https://static.flashscore.com/res/image/data/tOAXV6hU-QJIQNuDK.png",
-  "eredivisie": "https://static.flashscore.com/res/image/data/tUREAsfU-GlPCPH4g.png",
-  "laliga hypermotion": "https://static.flashscore.com/res/image/data/pKR6BlXI-ldSUHsCQ.png",
-  "championship": "https://static.flashscore.com/res/image/data/4ADJttRp-GEd5kOd6.png",
-  "2. bundesliga": "https://static.flashscore.com/res/image/data/ryRxh88j-ziwIGcqp.png",
-  "serie b": "https://static.flashscore.com/res/image/data/4U93rbmd-rTQVhPCF.png",
-  "ligue 2": "https://static.flashscore.com/res/image/data/IHwVm9ld-G2ORd69c.png",
-  "conference league": "https://static.flashscore.com/res/image/data/6a9THkA7-fmGCnzrf.png",
-  "europa league": "https://static.flashscore.com/res/image/data/lxUusmmd-nyYh4pi6.png",
-  "champions league": "https://static.flashscore.com/res/image/data/fNS5fTmC-WvvSE8Dm.png",
-  "copa sul-sudeste": "https://static.flashscore.com/res/image/data/6o8mQjjd-xlq6J1Ve.png",
-  "serie a betano": "https://static.flashscore.com/res/image/data/6o8mQjjd-xlq6J1Ve.png",
-};
-
-/**
- * Obtiene el logo de la liga de forma robusta
- */
-export function getLeagueLogo(competition: string | undefined, apiLogo?: string): string {
-  if (!competition) return apiLogo || "/logos/placeholder.png";
-  
-  const normalized = simpleNormalize(competition);
-  const cleanName = normalized.includes(':') ? normalized.split(':').pop()?.trim() : normalized;
-
-  // Búsqueda por coincidencia parcial en el mapa
-  const logoKey = Object.keys(leagueLogoMap).find(key => 
-    cleanName?.includes(key) || key.includes(cleanName || "")
-  );
-
-  return logoKey ? leagueLogoMap[logoKey] : (apiLogo || "/logos/placeholder.png");
-}
-
-/**
  * Traduce y normaliza nombres de ligas y competiciones.
  */
 export function translateLeagueName(leagueName: string | undefined): string {

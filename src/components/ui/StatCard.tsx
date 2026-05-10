@@ -15,7 +15,7 @@ export function StatCard({ label, value, subtext, trend, className }: StatCardPr
       "group relative flex flex-col p-5 rounded-lg bg-bg-surface border border-border-base transition-all duration-300 hover:border-border-accent hover:-translate-y-0.5",
       className
     )}>
-      <span className="text-[11px] font-black uppercase tracking-wider text-text-muted mb-4">
+      <span className="text-xs font-black uppercase tracking-wider text-text-muted mb-4">
         {label}
       </span>
       
@@ -24,12 +24,15 @@ export function StatCard({ label, value, subtext, trend, className }: StatCardPr
           {value}
         </span>
         {trend && (
-          <div className={cn(
-            "mb-1.5 p-0.5 rounded",
-            trend === "up" && "text-win",
-            trend === "down" && "text-loss",
-            trend === "neutral" && "text-void"
-          )}>
+          <div 
+            className={cn(
+              "mb-1.5 p-0.5 rounded",
+              trend === "up" && "text-win",
+              trend === "down" && "text-loss",
+              trend === "neutral" && "text-void"
+            )}
+            aria-label={trend === "up" ? "Tendencia positiva" : trend === "down" ? "Tendencia negativa" : "Tendencia neutral"}
+          >
             {trend === "up" && <ArrowUpRight size={16} />}
             {trend === "down" && <ArrowDownRight size={16} />}
             {trend === "neutral" && <Minus size={16} />}
@@ -39,7 +42,7 @@ export function StatCard({ label, value, subtext, trend, className }: StatCardPr
 
       {subtext && (
         <span className={cn(
-          "text-[11px] font-bold uppercase tracking-tight",
+          "text-xs font-bold uppercase tracking-tight",
           trend === "up" && "text-win",
           trend === "down" && "text-loss",
           trend === "neutral" && "text-text-muted"
