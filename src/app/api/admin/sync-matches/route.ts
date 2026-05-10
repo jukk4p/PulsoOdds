@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
-import { spawn } from 'node:child_process';
 import path from 'path';
+
+// Bypass Turbopack static analysis for node-only modules
+const { spawn } = eval('require')('child_process');
 
 export async function POST(request: Request) {
   try {
