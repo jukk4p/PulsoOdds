@@ -13,7 +13,8 @@ export async function POST(request: Request) {
 
     console.log('Starting match scraper script...');
     
-    const scriptPath = path.join(process.cwd(), 'scripts', 'scrape-upcoming-matches.js');
+    const scriptName = 'scrape-upcoming-matches.js';
+    const scriptPath = path.join(process.cwd(), 'scripts', scriptName);
     
     const child = spawn('node', [scriptPath]);
 

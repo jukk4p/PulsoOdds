@@ -9,7 +9,8 @@ export async function POST() {
   }
 
   return new Promise((resolve) => {
-    const scriptPath = path.join(process.cwd(), 'scripts', 'master_update.js');
+    const scriptName = 'master_update.js';
+    const scriptPath = path.join(process.cwd(), 'scripts', scriptName);
     
     console.log('🚀 Iniciando sincronización total desde la web...');
     
