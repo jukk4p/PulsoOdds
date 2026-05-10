@@ -30,7 +30,7 @@ export async function POST(request: Request) {
       console.error(`Scraper Error: ${data}`);
     });
 
-    return new Promise((resolve) => {
+    return new Promise<Response>((resolve) => {
       child.on('close', (code) => {
         console.log(`Scraper process exited with code ${code}`);
         if (code === 0) {

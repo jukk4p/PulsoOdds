@@ -7,7 +7,7 @@ export async function POST() {
     return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
   }
 
-  return new Promise((resolve) => {
+  return new Promise<Response>((resolve) => {
     const scriptName = 'master_update.js';
     const scriptPath = path.join(process.cwd(), 'scripts', scriptName);
     
