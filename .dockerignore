@@ -2,8 +2,7 @@
 node_modules
 .next
 
-# Datos pesados locales (Los que queremos ignorar)
-scripts/
+# Datos pesados locales
 actualizar_ligas.bat
 *.csv
 mercado_cuotas.json
@@ -17,9 +16,16 @@ flashscore_*.csv
 .atl/
 .gemini/
 scratch/
-*.md
 
-# Asegurarse de que las configuraciones VITALES NO se ignoren
+# Archivos de texto (ignoramos todos excepto diccionarios)
+*.md
+!diccionario_maestro_*.md
+
+# Asegurarse de que los SCRIPTS se incluyan
+!scripts/
+!scripts/*.js
+
+# Configuraciones VITALES
 !tsconfig.json
 !next.config.ts
 !package.json
