@@ -24,7 +24,7 @@ export async function POST() {
       stdio: 'inherit' // Esto sacará el log en la consola del servidor
     });
 
-    child.on('close', (code) => {
+    child.on('close', (code: number | null) => {
       if (code === 0) {
         console.log('✅ Sincronización web completada con éxito.');
         resolve(NextResponse.json({ 

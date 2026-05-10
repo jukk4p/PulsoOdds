@@ -20,18 +20,18 @@ export async function POST(request: Request) {
     let output = '';
     let errorOutput = '';
 
-    child.stdout.on('data', (data) => {
+    child.stdout.on('data', (data: Buffer | string) => {
       output += data.toString();
       console.log(`Scraper Output: ${data}`);
     });
 
-    child.stderr.on('data', (data) => {
+    child.stderr.on('data', (data: Buffer | string) => {
       errorOutput += data.toString();
       console.error(`Scraper Error: ${data}`);
     });
 
     return new Promise<Response>((resolve) => {
-      child.on('close', (code) => {
+      child.on('close', (code: number | null) => {
         console.log(`Scraper process exited with code ${code}`);
         if (code === 0) {
           resolve(NextResponse.json({ 
