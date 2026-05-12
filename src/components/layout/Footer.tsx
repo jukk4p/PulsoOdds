@@ -19,6 +19,7 @@ export function Footer() {
             <p className="text-text-secondary text-sm max-w-sm leading-relaxed font-medium">
               La plataforma definitiva para el análisis deportivo. Ofrecemos información verificada y estratégica para elevar tu nivel de pronóstico al siguiente escalón.
             </p>
+            {/* Social links hidden until accounts are ready
             <div className="flex gap-4">
               <SocialLink href="#" icon={
                 <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24">
@@ -36,6 +37,7 @@ export function Footer() {
                 </svg>
               } />
             </div>
+            */}
           </div>
 
           {/* Nav Col */}
