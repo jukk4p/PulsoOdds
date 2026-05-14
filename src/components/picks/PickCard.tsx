@@ -44,7 +44,7 @@ export function PickCard({ pick, className }: PickCardProps) {
       <div className="flex items-center justify-between px-4 py-2.5 bg-bg-subtle/50 border-b border-border-base">
         <div className="flex items-center gap-2">
           {pick.competition_logo && (
-            <img src={pick.competition_logo} alt="" className="w-4 h-4 object-contain opacity-70" />
+            <img src={pick.competition_logo} alt="" className="w-4 h-4 object-contain opacity-70" referrerPolicy="no-referrer" />
           )}
           <span className="text-[10px] font-black uppercase tracking-wider text-text-secondary">
             {pick.competition} · {formattedDate} · {formattedTime}
@@ -61,7 +61,7 @@ export function PickCard({ pick, className }: PickCardProps) {
       <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 px-6 py-8">
         <div className="flex flex-col items-center gap-3 text-center">
           {homeLogo ? (
-            <img src={homeLogo} alt={homeRaw} className="w-12 h-12 md:w-14 md:h-14 object-contain" />
+            <img src={homeLogo} alt={homeRaw} className="w-12 h-12 md:w-14 md:h-14 object-contain" referrerPolicy="no-referrer" />
           ) : (
             <TeamAvatar name={homeRaw} className="w-12 h-12 md:w-14 md:h-14" />
           )}
@@ -75,7 +75,7 @@ export function PickCard({ pick, className }: PickCardProps) {
 
         <div className="flex flex-col items-center gap-3 text-center">
           {awayLogo ? (
-            <img src={awayLogo} alt={awayRaw} className="w-12 h-12 md:w-14 md:h-14 object-contain" />
+            <img src={awayLogo} alt={awayRaw} className="w-12 h-12 md:w-14 md:h-14 object-contain" referrerPolicy="no-referrer" />
           ) : (
             <TeamAvatar name={awayRaw} className="w-12 h-12 md:w-14 md:h-14" />
           )}

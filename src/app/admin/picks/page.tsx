@@ -757,103 +757,112 @@ export default function AdminPicksPage() {
       )}
 
       {/* --- HEADER --- */}
-      <div className="flex flex-col gap-6 px-4">
+      <div className="flex flex-col gap-8 px-4">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
-            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase italic leading-none">CENTRO DE <span className="text-neon-green">CONTROL</span></h1>
-            <p className="text-white/30 text-[11px] mt-3 tracking-[0.2em] uppercase font-black">Panel v8.5 · {picks.length} apuestas</p>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="h-2 w-2 rounded-full bg-neon-green animate-pulse shadow-[0_0_8px_rgba(200,255,0,1)]" />
+              <span className="text-[10px] font-black text-neon-green uppercase tracking-[0.3em]">Sistema Operativo Live</span>
+            </div>
+            <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase italic leading-none">CENTRO DE <span className="text-neon-green">CONTROL</span></h1>
+            <p className="text-white/30 text-[11px] mt-4 tracking-[0.2em] uppercase font-black">Panel v8.5 · {picks.length} Operaciones registradas</p>
           </div>
           
-          <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
-            {/* Botón de Mantenimiento (Estilo Outlined Premium) */}
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+            {/* Botón de Mantenimiento */}
             <button
               onClick={handleMasterMaintenance}
               disabled={loading}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-[#0a1219] text-white/70 rounded-xl border border-white/10 font-bold text-[10px] uppercase tracking-widest hover:border-neon-green/50 hover:text-neon-green transition-all disabled:opacity-50 disabled:cursor-not-allowed group w-full sm:w-auto shadow-xl"
+              className="flex items-center justify-center gap-3 px-8 py-4 bg-[#0a1219] text-white/70 rounded-2xl border border-white/10 font-black text-[10px] uppercase tracking-widest hover:border-neon-green/50 hover:text-neon-green transition-all disabled:opacity-50 disabled:cursor-not-allowed group w-full sm:w-auto shadow-2xl"
             >
-              <Sparkles className="h-3.5 w-3.5 group-hover:rotate-12 transition-transform" />
-              <span>Sincronizar y Optimizar</span>
+              <Sparkles className="h-4 w-4 group-hover:rotate-12 transition-transform" />
+              <span>Optimizar Engine</span>
             </button>
 
-            {/* Botón de Nuevo Pick (Sólido Protagonista) */}
+            {/* Botón de Nuevo Pick */}
             <button 
               onClick={handleNewPick} 
-              className="bg-neon-green text-deep-black font-black px-6 py-3 rounded-xl text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 hover:scale-[1.02] hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-neon-green/20 ring-1 ring-neon-green/50 w-full sm:w-auto"
+              className="bg-neon-green text-deep-black font-black px-8 py-4 rounded-2xl text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 hover:scale-[1.02] hover:brightness-110 active:scale-95 transition-all shadow-2xl shadow-neon-green/30 ring-1 ring-neon-green/50 w-full sm:w-auto"
             >
-              <Plus className="h-4 w-4" /> 
-              <span>Nueva Apuesta</span>
+              <Plus className="h-5 w-5" /> 
+              <span>Nueva Operación</span>
             </button>
           </div>
         </div>
-
-
       </div>
 
       {/* --- CONTENIDO PRINCIPAL CON SIDEBAR --- */}
       <div className="flex flex-col lg:flex-row gap-8 px-4">
         
         {/* SIDEBAR DE FILTROS */}
-        <aside className="w-full lg:w-64 flex-none">
-          <div className="sticky top-8 space-y-6">
+        <aside className="w-full lg:w-72 flex-none">
+          <div className="sticky top-8 space-y-8">
             
-            <div className="space-y-2">
-              <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] ml-2">Herramientas IA</label>
+            {/* AI Tools Card */}
+            <div className="p-6 bg-accent/5 border border-accent/20 rounded-[32px] space-y-4">
+              <div className="flex items-center gap-2 px-2">
+                <Wand2 className="h-3 w-3 text-accent" />
+                <label className="text-[9px] font-black text-accent uppercase tracking-[0.3em]">IA Engine</label>
+              </div>
               <button
                 onClick={handleGenerateAllAnalysis}
                 disabled={isGeneratingAll}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-neon-green/10 text-neon-green rounded-2xl border border-neon-green/20 hover:bg-neon-green hover:text-deep-black transition-all disabled:opacity-50 disabled:cursor-not-allowed group"
+                className="w-full flex items-center justify-center gap-3 px-4 py-4 bg-accent text-bg-base rounded-2xl hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl shadow-accent/20"
               >
-                <Wand2 className={`h-4 w-4 ${isGeneratingAll ? 'animate-pulse' : 'group-hover:rotate-12'} transition-transform`} />
-                <span className="font-black text-[10px] uppercase tracking-widest">Generar Análisis IA</span>
+                <Sparkles className={`h-4 w-4 ${isGeneratingAll ? 'animate-spin' : ''}`} />
+                <span className="font-black text-[10px] uppercase tracking-widest">Generar Análisis</span>
               </button>
+              <p className="text-[8px] text-accent/40 font-bold uppercase tracking-wider text-center px-4">
+                Generación masiva de razonamientos técnicos.
+              </p>
             </div>
 
             {/* Buscador */}
-            <div className="space-y-2">
-              <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] ml-2">Buscador</label>
+            <div className="space-y-3">
+              <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.3em] ml-4">Terminal Search</label>
               <div className="relative group">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/20 group-focus-within:text-neon-green transition-colors" />
+                <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20 group-focus-within:text-neon-green transition-all" />
                 <input 
                   type="text" 
-                  placeholder="BUSCAR..." 
+                  placeholder="FILTRAR POR EQUIPO O MERCADO..." 
                   value={searchQuery} 
                   onChange={(e) => setSearchQuery(e.target.value)} 
-                  className="w-full bg-white/[0.02] border border-white/5 rounded-2xl py-3 pl-10 pr-4 text-[10px] font-black uppercase text-white placeholder:text-white/10 focus:outline-none transition-all focus:bg-white/[0.05] focus:border-white/10 shadow-inner" 
+                  className="w-full bg-white/[0.03] border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-[10px] font-black uppercase text-white placeholder:text-white/10 focus:outline-none transition-all focus:bg-white/[0.08] focus:border-white/20 shadow-2xl" 
                 />
               </div>
             </div>
 
             {/* Filtros Dropdown */}
-            <div className="space-y-4 p-4 bg-white/[0.02] border border-white/5 rounded-[28px] backdrop-blur-sm">
-              <div className="space-y-2">
-                <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] ml-2">Estado</label>
+            <div className="space-y-6 p-6 bg-white/[0.02] border border-white/5 rounded-[32px] backdrop-blur-xl">
+              <div className="space-y-3">
+                <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.3em] ml-2">Visualización</label>
                 <CustomDropdown 
                   value={statusFilter}
                   onChange={setStatusFilter}
                   options={[
-                    { id: 'pending', label: 'ACTIVOS (PENDIENTES)', icon: '⏳' },
-                    { id: 'archived', label: 'ARCHIVADOS (HISTORIAL)', icon: '📦' },
-                    { id: 'all', label: 'VER TODO', icon: '💎' },
-                    { id: 'won', label: 'SOLO GANADOS', icon: '✅' },
-                    { id: 'lost', label: 'SOLO PERDIDOS', icon: '❌' },
-                    { id: 'void', label: 'SOLO NULOS', icon: '⚪' }
+                    { id: 'pending', label: 'ACTIVOS (LIVE)', icon: '⏳' },
+                    { id: 'archived', label: 'ARCHIVADOS', icon: '📦' },
+                    { id: 'all', label: 'TODO EL HISTORIAL', icon: '💎' },
+                    { id: 'won', label: 'SOLO VERDES', icon: '✅' },
+                    { id: 'lost', label: 'SOLO ROJOS', icon: '❌' },
+                    { id: 'void', label: 'NULOS / VOID', icon: '⚪' }
                   ]}
                 />
               </div>
 
-              <div className="space-y-2">
-                <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] ml-2">Mercado</label>
+              <div className="space-y-3">
+                <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.3em] ml-2">Segmentación</label>
                 <CustomDropdown 
                   value={marketFilter}
                   onChange={setMarketFilter}
                   options={[
                     { id: 'all', label: 'TODOS LOS MERCADOS', icon: '💎' },
-                    { id: 'ganador', label: 'GANADOR', icon: '🏆' },
-                    { id: 'goles', label: 'GOLES', icon: '🔢' },
-                    { id: 'ambos_marcan', label: 'BTTS', icon: '⚽' },
-                    { id: 'doble', label: 'DOBLE', icon: '🛡️' },
+                    { id: 'ganador', label: 'GANADOR 1X2', icon: '🏆' },
+                    { id: 'goles', label: 'GOLES +/-', icon: '🔢' },
+                    { id: 'ambos_marcan', label: 'BTTS / AMBOS', icon: '⚽' },
+                    { id: 'doble', label: 'OP. DOBLE', icon: '🛡️' },
                     { id: 'handicap', label: 'HÁNDICAP', icon: '📊' },
-                    { id: 'mitad', label: '1ª MITAD', icon: '⏱️' }
+                    { id: 'mitad', label: 'PRIMERA PARTE', icon: '⏱️' }
                   ]}
                 />
               </div>
@@ -866,25 +875,23 @@ export default function AdminPicksPage() {
                     else if (sortBy === 'recent_matches') setSortBy('recent_inserted');
                     else setSortBy('upcoming');
                   }}
-                  className="w-full flex flex-col items-center justify-center gap-1 bg-white/[0.02] border border-white/5 rounded-2xl py-3 hover:bg-white/[0.05] hover:border-white/10 transition-all shadow-inner group"
+                  className="w-full flex flex-col items-center justify-center gap-2 bg-white/[0.04] border border-white/10 rounded-2xl py-4 hover:bg-white/[0.08] hover:border-neon-green/30 transition-all shadow-inner group"
                 >
                   <div className="flex items-center gap-2">
-                    <ArrowUpDown className="h-3 w-3 text-neon-green/60 group-hover:text-neon-green" />
+                    <ArrowUpDown className="h-4 w-4 text-neon-green/60 group-hover:text-neon-green group-hover:rotate-180 transition-transform duration-500" />
                     <span className="text-[10px] font-black uppercase tracking-widest text-white">
                       {sortBy === 'upcoming' ? 'PRÓXIMOS' : 
                        sortBy === 'recent_matches' ? 'RECIENTES' : 
-                       'INSERTADOS'}
+                       'INSERCIÓN'}
                     </span>
                   </div>
-                  <span className="text-[7px] font-bold text-white/20 uppercase tracking-widest">
-                    {sortBy === 'upcoming' ? 'Por fecha de partido (ASC)' : 
-                     sortBy === 'recent_matches' ? 'Por fecha de partido (DESC)' : 
-                     'Por fecha de creación (DESC)'}
-                  </span>
+                  <span className="text-[8px] font-bold text-white/20 uppercase tracking-[0.2em]">
+                    {sortBy === 'upcoming' ? 'Fecha Evento (ASC)' : 
+                     sortBy === 'recent_matches' ? 'Fecha Evento (DESC)' : 
+                     'Fecha Registro (DESC)'}
                 </button>
               </div>
             </div>
-
           </div>
         </aside>
 
@@ -906,42 +913,42 @@ export default function AdminPicksPage() {
                 const matchDate = formatDateSpain(firstPick.match_date);
 
                 return (
-                  <div key={matchKey} className="bg-[#121212] border border-white/[0.03] rounded-3xl overflow-hidden">
-                    {/* Match Header (Estilo /picks) */}
-                    <div className="flex items-center justify-between px-6 py-5 bg-white/[0.01] border-b border-white/[0.03]">
-                      <div className="flex items-center gap-5">
-                        <div className="w-12 h-12 rounded-xl bg-white border border-white/[0.05] flex items-center justify-center p-2.5 shrink-0 overflow-hidden">
+                  <div key={matchKey} className="group/match bg-[#0a1016] border border-white/[0.05] rounded-[40px] overflow-hidden shadow-2xl transition-all hover:border-white/10">
+                    {/* Match Header */}
+                    <div className="flex items-center justify-between px-8 py-7 bg-white/[0.02] border-b border-white/[0.05]">
+                      <div className="flex items-center gap-6">
+                        <div className="w-14 h-14 rounded-2xl bg-white border border-white/[0.1] flex items-center justify-center p-3 shrink-0 overflow-hidden shadow-xl">
                           {leagueLogo ? (
-                            <img src={leagueLogo} alt="" className="w-full h-full object-contain" />
+                            <img src={leagueLogo} alt="" className="w-full h-full object-contain" referrerPolicy="no-referrer" />
                           ) : (
-                            <Zap size={18} className="text-zinc-800" />
+                            <Zap size={22} className="text-zinc-800" />
                           )}
                         </div>
-                        <div className="flex flex-col gap-0.5">
+                        <div className="space-y-1.5">
                           <div className="flex items-center gap-2">
-                            <span className="text-base font-black text-white tracking-tighter uppercase italic">
-                              {homeName} <span className="text-zinc-600 mx-0.5">vs</span> {awayName}
+                            <span className="text-xl md:text-2xl font-black text-white tracking-tighter uppercase italic">
+                              {homeName} <span className="text-zinc-600 mx-1">VS</span> {awayName}
                             </span>
                           </div>
-                          <div className="flex items-center gap-2 text-[10px] font-black text-zinc-500 uppercase tracking-widest">
-                            <span>{firstPick.competition.split('-').pop()?.trim()}</span>
-                            <span className="opacity-30">|</span>
-                            <span className="text-neon-green/80">{matchDate} · {matchTime}</span>
+                          <div className="flex items-center gap-3">
+                             <div className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-[9px] font-black text-zinc-400 uppercase tracking-widest">
+                               {firstPick.competition.split('-').pop()?.trim()}
+                             </div>
+                             <div className="flex items-center gap-2 text-[10px] font-black text-neon-green tracking-widest">
+                               <Clock size={12} className="opacity-50" />
+                               <span>{matchDate} · {matchTime}</span>
+                             </div>
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-3 px-3 py-1.5 rounded-full bg-white/[0.02] border border-white/[0.05] group-hover:border-white/20 transition-all duration-300">
-                          <div className="flex items-center gap-1.5">
-                            <div className="w-1 h-1 rounded-full bg-neon-green shadow-[0_0_8px_rgba(200,255,0,0.8)]" />
-                            <span className="text-xs font-black text-white tabular-nums leading-none">
-                              {matchPicks.length}
-                            </span>
-                          </div>
-                          <div className="w-[1px] h-2.5 bg-white/10" />
-                          <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-[0.2em] leading-none">
-                            {matchPicks.length === 1 ? "Apuesta" : "Apuestas"}
-                          </span>
+                      <div className="hidden md:flex items-center gap-4">
+                        <div className="flex items-center gap-4 px-5 py-2.5 rounded-2xl bg-deep-black/60 border border-white/10">
+                           <div className="flex flex-col items-end">
+                             <span className="text-[7px] font-black text-zinc-600 uppercase tracking-widest">Estatus</span>
+                             <span className="text-[10px] font-black text-white uppercase">{matchPicks.length} {matchPicks.length === 1 ? "Apuesta" : "Apuestas"}</span>
+                           </div>
+                           <div className="w-[1px] h-6 bg-white/10" />
+                           <div className="h-2 w-2 rounded-full bg-neon-green shadow-[0_0_8px_rgba(200,255,0,0.5)]" />
                         </div>
                       </div>
                     </div>
@@ -970,88 +977,99 @@ export default function AdminPicksPage() {
 
                             {/* Market & Selection */}
                             <div className="flex-1 flex flex-col min-w-0">
-                              <span className="text-[9px] font-black text-zinc-500 uppercase tracking-[0.3em] mb-1.5 group-hover/row:text-zinc-400 transition-colors">
+                              <span className="text-[9px] font-black text-zinc-600 uppercase tracking-[0.4em] mb-2 group-hover/row:text-neon-green transition-colors">
                                 {translateBettingTerm(pick.market)}
                               </span>
-                              <div className="flex items-center gap-3">
-                                <span className="text-sm font-black text-white uppercase tracking-tight italic leading-none truncate">
+                              <div className="flex items-center gap-4">
+                                <span className="text-base font-black text-white uppercase tracking-tight italic leading-none truncate group-hover/row:translate-x-1 transition-transform">
                                   {substituteTeamNames(normalizeBettingPick(pick.pick), pick.match)}
                                 </span>
-                                <StatusBadge status={pick.status.toLowerCase() as any} className="shrink-0" />
+                                <StatusBadge status={pick.status.toLowerCase() as any} className="shrink-0 scale-90 origin-left" />
                               </div>
-                              <div className="flex items-center gap-2 mt-2">
-                                <span className="text-[8px] font-black text-zinc-500 uppercase tracking-widest">
-                                  REG: {new Date(pick.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' })} {new Date(pick.created_at).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                              <div className="flex items-center gap-3 mt-3">
+                                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-white/[0.03] border border-white/5">
+                                  <div className="w-1 h-1 rounded-full bg-white/20" />
+                                  <span className="text-[8px] font-black text-zinc-500 uppercase tracking-widest">
+                                    ID: {pick.id.slice(0, 8)}
+                                  </span>
+                                </div>
+                                <span className="text-[8px] font-black text-zinc-600 uppercase tracking-widest">
+                                  {new Date(pick.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' })} {new Date(pick.created_at).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
                                 </span>
                               </div>
                             </div>
 
                             {/* Odds & Stake */}
-                            <div className="flex items-center gap-6 my-4 lg:my-0 lg:px-8 border-y lg:border-y-0 lg:border-x border-white/[0.03]">
+                            <div className="flex items-center gap-10 my-6 lg:my-0 lg:px-12 border-y lg:border-y-0 lg:border-x border-white/[0.05]">
                               <div className="flex flex-col items-end">
-                                <span className="text-[8px] font-black text-zinc-600 uppercase tracking-widest mb-1">CUOTA</span>
-                                <span className="text-xl font-mono font-black text-neon-green leading-none tracking-tighter">
-                                  {Number(pick.odds).toFixed(2)}
+                                <span className="text-[8px] font-black text-zinc-600 uppercase tracking-[0.2em] mb-2">OPERATIVA</span>
+                                <span className="text-2xl font-mono font-black text-neon-green leading-none tracking-tighter drop-shadow-[0_0_10px_rgba(200,255,0,0.3)]">
+                                  @{Number(pick.odds).toFixed(2)}
                                 </span>
                               </div>
                               <div className="flex flex-col items-end">
-                                <span className="text-[8px] font-black text-zinc-600 uppercase tracking-widest mb-1">STAKE</span>
-                                <span className="text-xs font-black text-white/40 uppercase leading-none">
-                                  {pick.stake}/10
-                                </span>
+                                <span className="text-[8px] font-black text-zinc-600 uppercase tracking-[0.2em] mb-2">RIESGO</span>
+                                <div className="flex items-end gap-1">
+                                  <span className="text-sm font-black text-white uppercase leading-none tracking-tighter">
+                                    {pick.stake}
+                                  </span>
+                                  <span className="text-[9px] font-black text-white/20 uppercase leading-none pb-0.5">/10</span>
+                                </div>
                               </div>
                             </div>
 
                             {/* Admin Actions */}
-                            <div className="flex items-center justify-end gap-1 pl-4" onClick={(e) => e.stopPropagation()}>
+                            <div className="flex items-center justify-end gap-2 pl-6" onClick={(e) => e.stopPropagation()}>
                                 <button
                                   onClick={() => setEditingPick(pick)}
-                                  className="h-9 w-9 flex items-center justify-center rounded-xl text-sky-400/60 hover:text-sky-400 hover:bg-sky-400/10 transition-all"
-                                  title="Editar"
+                                  className="h-10 w-10 flex items-center justify-center rounded-2xl text-sky-400/40 hover:text-sky-400 hover:bg-sky-400/10 transition-all border border-transparent hover:border-sky-400/20"
+                                  title="Editar Parámetros"
                                 >
                                   <Pencil className="h-4 w-4" />
                                 </button>
 
 
-                                <div className="w-[1px] h-4 bg-white/10 mx-2" />
+                                <div className="w-[1px] h-6 bg-white/5 mx-2" />
 
-                                <button
-                                  onClick={() => updateStatus(pick.id, 'won')}
-                                  className={cn(
-                                    "h-9 w-9 flex items-center justify-center rounded-xl transition-all",
-                                    pick.status === 'won' ? "bg-win-bg text-win shadow-[0_0_15px_rgba(0,255,136,0.3)]" : "text-win/40 hover:bg-win-bg hover:text-win"
-                                  )}
-                                  title="Ganado"
-                                >
-                                  <CheckCircle className="h-4.5 w-4.5 stroke-[2.5px]" />
-                                </button>
+                                <div className="flex items-center gap-1.5 p-1.5 bg-deep-black/40 border border-white/5 rounded-2xl shadow-inner">
+                                  <button
+                                    onClick={() => updateStatus(pick.id, 'won')}
+                                    className={cn(
+                                      "h-9 w-9 flex items-center justify-center rounded-xl transition-all",
+                                      pick.status === 'won' ? "bg-win text-bg-base shadow-[0_0_20px_rgba(0,255,136,0.4)]" : "text-win/40 hover:bg-win/10 hover:text-win"
+                                    )}
+                                    title="Marcar como Ganada"
+                                  >
+                                    <CheckCircle className="h-4.5 w-4.5 stroke-[2.5px]" />
+                                  </button>
 
-                                <button
-                                  onClick={() => updateStatus(pick.id, 'lost')}
-                                  className={cn(
-                                    "h-9 w-9 flex items-center justify-center rounded-xl transition-all",
-                                    pick.status === 'lost' ? "bg-loss-bg text-loss shadow-[0_0_15px_rgba(255,59,48,0.3)]" : "text-loss/40 hover:bg-loss-bg hover:text-loss"
-                                  )}
-                                  title="Perdido"
-                                >
-                                  <XCircle className="h-4.5 w-4.5 stroke-[2.5px]" />
-                                </button>
+                                  <button
+                                    onClick={() => updateStatus(pick.id, 'lost')}
+                                    className={cn(
+                                      "h-9 w-9 flex items-center justify-center rounded-xl transition-all",
+                                      pick.status === 'lost' ? "bg-loss text-bg-base shadow-[0_0_20px_rgba(255,59,48,0.4)]" : "text-loss/40 hover:bg-loss/10 hover:text-loss"
+                                    )}
+                                    title="Marcar como Perdida"
+                                  >
+                                    <XCircle className="h-4.5 w-4.5 stroke-[2.5px]" />
+                                  </button>
 
-                                <button
-                                  onClick={() => updateStatus(pick.id, 'void')}
-                                  className={cn(
-                                    "h-9 w-9 flex items-center justify-center rounded-xl transition-all",
-                                    pick.status === 'void' ? "bg-white/20 text-white" : "text-white/40 hover:bg-white/10 hover:text-white"
-                                  )}
-                                  title="Nulo"
-                                >
-                                  <MinusCircle className="h-4.5 w-4.5" />
-                                </button>
+                                  <button
+                                    onClick={() => updateStatus(pick.id, 'void')}
+                                    className={cn(
+                                      "h-9 w-9 flex items-center justify-center rounded-xl transition-all",
+                                      pick.status === 'void' ? "bg-white text-bg-base shadow-[0_0_20px_rgba(255,255,255,0.2)]" : "text-white/20 hover:bg-white/10 hover:text-white"
+                                    )}
+                                    title="Marcar como Nula"
+                                  >
+                                    <MinusCircle className="h-4.5 w-4.5" />
+                                  </button>
+                                </div>
 
                                 <button
                                   onClick={() => deletePick(pick.id)}
-                                  className="h-9 w-9 flex items-center justify-center rounded-xl text-red-500/40 hover:text-red-500 hover:bg-red-500/10 transition-all ml-2"
-                                  title="Eliminar"
+                                  className="h-10 w-10 flex items-center justify-center rounded-2xl text-red-500/20 hover:text-red-500 hover:bg-red-500/10 transition-all border border-transparent hover:border-red-500/20 ml-2"
+                                  title="Eliminar Permanente"
                                 >
                                   <Trash2 className="h-4 w-4" />
                                 </button>

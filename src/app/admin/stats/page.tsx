@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { TrendingUp, Target, Zap, Trophy, TrendingDown, Activity } from 'lucide-react';
+import { TrendingUp, Target, Zap, Trophy, TrendingDown, Activity, PieChart, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ProfitChart } from '@/components/ProfitChart';
 
 export default function AdminStatsPage() {
   const [stats, setStats] = useState({
@@ -15,7 +16,9 @@ export default function AdminStatsPage() {
     profit: 0,
     roi: 0,
     winRate: 0,
-    totalStaked: 0
+    totalStaked: 0,
+    chartData: [] as { date: string; profit: number }[],
+    sportData: {} as Record<string, { won: number, lost: number, profit: number }>
   });
   const [loading, setLoading] = useState(true);
 
@@ -30,20 +33,38 @@ export default function AdminStatsPage() {
         let won = 0, lost = 0, pending = 0, voidPicks = 0;
         let profit = 0, totalStaked = 0;
 
+        const chartData: { date: string; profit: number }[] = [];
+        const sportData: Record<string, { won: number, lost: number, profit: number }> = {};
+
         data.forEach(pick => {
+          let pickProfit = 0;
           if (pick.status === 'won') {
             won++;
-            const pickProfit = (pick.odds - 1) * pick.stake;
+            pickProfit = (pick.odds - 1) * pick.stake;
             profit += pickProfit;
             totalStaked += pick.stake;
           } else if (pick.status === 'lost') {
             lost++;
-            profit -= pick.stake;
+            pickProfit = -pick.stake;
+            profit += pickProfit;
             totalStaked += pick.stake;
           } else if (pick.status === 'pending') {
             pending++;
           } else if (pick.status === 'void') {
             voidPicks++;
+          }
+
+          if (pick.status !== 'pending') {
+            chartData.push({
+              date: pick.published_at || pick.created_at,
+              profit: pickProfit
+            });
+
+            const sport = pick.sport || 'football';
+            if (!sportData[sport]) sportData[sport] = { won: 0, lost: 0, profit: 0 };
+            if (pick.status === 'won') sportData[sport].won++;
+            if (pick.status === 'lost') sportData[sport].lost++;
+            sportData[sport].profit += pickProfit;
           }
         });
 
@@ -60,7 +81,9 @@ export default function AdminStatsPage() {
           profit,
           roi,
           winRate,
-          totalStaked
+          totalStaked,
+          chartData,
+          sportData
         });
       }
       setLoading(false);
@@ -86,88 +109,158 @@ export default function AdminStatsPage() {
         <p className="text-white/40 mt-2 text-sm md:text-base font-medium">Análisis profundo de rentabilidad y precisión operativa.</p>
       </div>
 
-      {/* Primary Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="glass-card p-8 rounded-3xl border border-white/5 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-            <TrendingUp className="h-24 w-24 text-neon-green" />
-          </div>
-          <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em] mb-4">Profit Total</p>
-          <div className="flex items-baseline gap-2">
-            <h2 className={cn(
-              "text-5xl font-black tracking-tighter italic",
-              stats.profit >= 0 ? "text-neon-green" : "text-red-500"
-            )}>
-              {stats.profit >= 0 ? '+' : ''}{stats.profit.toFixed(2)}
-            </h2>
-            <span className="text-white/20 font-bold uppercase text-xs">Unidades</span>
-          </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Main Stats */}
+        <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <StatCard 
+            label="Profit Total" 
+            value={`${stats.profit >= 0 ? '+' : ''}${stats.profit.toFixed(2)}`}
+            subValue="Unidades"
+            icon={<TrendingUp className="h-6 w-6" />}
+            variant={stats.profit >= 0 ? 'success' : 'danger'}
+          />
+          <StatCard 
+            label="ROI / Rentabilidad" 
+            value={`${stats.roi.toFixed(1)}%`}
+            subValue="Sobre inversión"
+            icon={<Activity className="h-6 w-6" />}
+            variant="default"
+          />
+          <StatCard 
+            label="Tasa de Acierto" 
+            value={`${stats.winRate.toFixed(1)}%`}
+            subValue={`${stats.won} Verdes / ${stats.lost} Rojos`}
+            icon={<Target className="h-6 w-6" />}
+            variant="success"
+          />
+          <StatCard 
+            label="Volumen de Juego" 
+            value={stats.totalStaked.toFixed(0)}
+            subValue="Unidades apostadas"
+            icon={<Zap className="h-6 w-6" />}
+            variant="default"
+          />
         </div>
 
-        <div className="glass-card p-8 rounded-3xl border border-white/5 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-            <Activity className="h-24 w-24 text-white" />
+        {/* Quick Breakdown */}
+        <div className="glass-card p-6 rounded-3xl border border-white/5 space-y-6">
+          <div className="flex items-center gap-2 mb-2">
+            <PieChart className="h-4 w-4 text-accent" />
+            <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-white/60">Distribución</h3>
           </div>
-          <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em] mb-4">ROI / Rentabilidad</p>
-          <div className="flex items-baseline gap-2">
-            <h2 className="text-5xl font-black tracking-tighter italic text-white">
-              {stats.roi.toFixed(1)}%
-            </h2>
-            <TrendingUp className="h-6 w-6 text-neon-green" />
+          
+          <div className="space-y-4">
+            <BreakdownItem label="Picks Ganados" value={stats.won} total={stats.won + stats.lost} color="bg-neon-green" />
+            <BreakdownItem label="Picks Perdidos" value={stats.lost} total={stats.won + stats.lost} color="bg-red-500" />
+            <BreakdownItem label="En Espera" value={stats.pending} total={stats.totalPicks} color="bg-yellow-500" />
           </div>
-        </div>
 
-        <div className="glass-card p-8 rounded-3xl border border-white/5 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-            <Target className="h-24 w-24 text-neon-green" />
-          </div>
-          <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em] mb-4">Tasa de Acierto</p>
-          <div className="flex items-baseline gap-2">
-            <h2 className="text-5xl font-black tracking-tighter italic text-neon-green">
-              {stats.winRate.toFixed(1)}%
-            </h2>
-            <span className="text-white/20 font-bold uppercase text-xs">Aciertos</span>
+          <div className="pt-6 border-t border-white/5">
+             <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-white/30">
+               <span>Picks Totales</span>
+               <span className="text-white">{stats.totalPicks}</span>
+             </div>
           </div>
         </div>
       </div>
 
-      {/* Secondary Stats Row */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <MiniStat label="Picks Totales" value={stats.totalPicks} icon={<Zap className="h-4 w-4" />} />
-        <MiniStat label="Ganados" value={stats.won} icon={<Trophy className="h-4 w-4 text-neon-green" />} />
-        <MiniStat label="Perdidos" value={stats.lost} icon={<TrendingDown className="h-4 w-4 text-red-500" />} />
-        <MiniStat label="Pendientes" value={stats.pending} icon={<Activity className="h-4 w-4 text-yellow-500" />} />
-      </div>
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="lg:col-span-3 glass-card p-8 rounded-3xl border border-white/5 min-h-[400px] flex flex-col">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <div className="flex items-center gap-2">
+                <BarChart3 className="h-4 w-4 text-neon-green" />
+                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white">Evolución de Profit</h3>
+              </div>
+              <p className="text-[10px] text-white/40 font-medium mt-1">Curva acumulada de beneficios por unidades.</p>
+            </div>
+            <div className="flex gap-2">
+               <div className="px-3 py-1 bg-white/5 rounded-full border border-white/10 text-[9px] font-black uppercase text-white/40">Todo el tiempo</div>
+            </div>
+          </div>
+          <div className="flex-1 w-full">
+            <ProfitChart data={stats.chartData} />
+          </div>
+        </div>
 
-      {/* Visual Indicator: Success Bar */}
-      <div className="glass-card p-6 rounded-3xl border border-white/5">
-        <div className="flex justify-between items-end mb-4 px-2">
-           <p className="text-[10px] font-black uppercase tracking-widest text-white/60">Distribución de Resultados</p>
-           <p className="text-xs font-mono text-neon-green">{stats.won}W / {stats.lost}L</p>
-        </div>
-        <div className="h-3 w-full bg-white/5 rounded-full overflow-hidden flex">
-          <div className="bg-neon-green h-full shadow-[0_0_15px_rgba(0,255,135,0.5)]" style={{ width: `${stats.winRate}%` }} />
-          <div className="bg-red-500/50 h-full" style={{ width: `${100 - stats.winRate}%` }} />
-        </div>
-        <div className="mt-4 flex justify-between text-[9px] font-black uppercase tracking-tighter text-white/20 px-2">
-           <span>0% Fracaso</span>
-           <span>100% Dominio</span>
+        <div className="glass-card p-8 rounded-3xl border border-white/5 space-y-8">
+          <div className="flex items-center gap-2">
+            <Trophy className="h-4 w-4 text-neon-green" />
+            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white">Por Deporte</h3>
+          </div>
+          
+          <div className="space-y-6">
+            {Object.entries(stats.sportData).map(([sport, data]) => (
+              <div key={sport} className="space-y-2">
+                <div className="flex justify-between items-end">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-white/60 capitalize">{sport}</span>
+                  <span className={cn(
+                    "text-xs font-bold",
+                    data.profit >= 0 ? "text-neon-green" : "text-red-500"
+                  )}>
+                    {data.profit >= 0 ? '+' : ''}{data.profit.toFixed(1)}u
+                  </span>
+                </div>
+                <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                  <div 
+                    className="bg-neon-green h-full" 
+                    style={{ width: `${(data.won / (data.won + data.lost || 1)) * 100}%` }} 
+                  />
+                </div>
+                <div className="flex justify-between text-[8px] font-black uppercase tracking-tighter text-white/20">
+                  <span>{data.won}W - {data.lost}L</span>
+                  <span>Yield: {((data.profit / (data.won + data.lost || 1)) * 10).toFixed(1)}%</span>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-function MiniStat({ label, value, icon }: { label: string; value: number | string; icon: React.ReactNode }) {
+function StatCard({ label, value, subValue, icon, variant = 'default' }: { 
+  label: string; 
+  value: string; 
+  subValue: string;
+  icon: React.ReactNode;
+  variant?: 'default' | 'success' | 'danger'
+}) {
   return (
-    <div className="glass-card p-5 rounded-2xl border border-white/5 flex flex-col gap-2">
-      <div className="flex items-center gap-2">
-        <div className="p-1.5 bg-white/5 rounded-lg border border-white/5 text-white/40">
-          {icon}
-        </div>
-        <span className="text-[9px] font-black uppercase tracking-widest text-white/40">{label}</span>
+    <div className="glass-card p-8 rounded-3xl border border-white/5 relative overflow-hidden group">
+      <div className={cn(
+        "absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity",
+        variant === 'success' ? "text-neon-green" : variant === 'danger' ? "text-red-500" : "text-white"
+      )}>
+        {icon}
       </div>
-      <p className="text-2xl font-black italic tracking-tighter text-white">{value}</p>
+      <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em] mb-4">{label}</p>
+      <div className="space-y-1">
+        <h2 className={cn(
+          "text-4xl font-black tracking-tighter italic",
+          variant === 'success' ? "text-neon-green" : variant === 'danger' ? "text-red-500" : "text-white"
+        )}>
+          {value}
+        </h2>
+        <p className="text-[10px] text-white/20 font-bold uppercase tracking-widest">{subValue}</p>
+      </div>
+    </div>
+  );
+}
+
+function BreakdownItem({ label, value, total, color }: { label: string; value: number; total: number; color: string }) {
+  const percentage = total > 0 ? (value / total) * 100 : 0;
+  return (
+    <div className="space-y-2">
+      <div className="flex justify-between items-center">
+        <span className="text-[10px] font-black uppercase tracking-tighter text-white/40">{label}</span>
+        <span className="text-xs font-mono text-white/80">{value}</span>
+      </div>
+      <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+        <div className={cn("h-full transition-all duration-1000", color)} style={{ width: `${percentage}%` }} />
+      </div>
     </div>
   );
 }

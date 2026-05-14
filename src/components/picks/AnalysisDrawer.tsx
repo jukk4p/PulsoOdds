@@ -108,7 +108,7 @@ export function AnalysisDrawer({ picks, isOpen, onClose }: AnalysisDrawerProps) 
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-lg bg-white border border-white/5 p-1 flex items-center justify-center overflow-hidden">
               {getLeagueLogo(activePick.competition) ? (
-                <img src={getLeagueLogo(activePick.competition) || ""} alt="" className="w-full h-full object-contain" />
+                <img src={getLeagueLogo(activePick.competition) || ""} alt="" className="w-full h-full object-contain" referrerPolicy="no-referrer" />
               ) : (
                 <BarChart3 size={12} className="text-zinc-600" />
               )}
@@ -136,7 +136,7 @@ export function AnalysisDrawer({ picks, isOpen, onClose }: AnalysisDrawerProps) 
               <div className="flex flex-col items-center gap-3 text-center">
                 <div className="w-20 h-20 rounded-2xl bg-white border border-white/5 p-4 shadow-2xl transition-transform hover:scale-105">
                   {homeLogo ? (
-                    <img src={homeLogo} alt="" className="w-full h-full object-contain" />
+                    <img src={homeLogo} alt="" className="w-full h-full object-contain" referrerPolicy="no-referrer" />
                   ) : (
                     <div className="w-full h-full bg-white/5 rounded-sm" />
                   )}
@@ -152,7 +152,7 @@ export function AnalysisDrawer({ picks, isOpen, onClose }: AnalysisDrawerProps) 
               <div className="flex flex-col items-center gap-3 text-center">
                 <div className="w-20 h-20 rounded-2xl bg-white border border-white/5 p-4 shadow-2xl transition-transform hover:scale-105">
                   {awayLogo ? (
-                    <img src={awayLogo} alt="" className="w-full h-full object-contain" />
+                    <img src={awayLogo} alt="" className="w-full h-full object-contain" referrerPolicy="no-referrer" />
                   ) : (
                     <div className="w-full h-full bg-white/5 rounded-sm" />
                   )}
