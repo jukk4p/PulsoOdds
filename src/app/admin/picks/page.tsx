@@ -889,6 +889,7 @@ export default function AdminPicksPage() {
                     {sortBy === 'upcoming' ? 'Fecha Evento (ASC)' : 
                      sortBy === 'recent_matches' ? 'Fecha Evento (DESC)' : 
                      'Fecha Registro (DESC)'}
+                  </span>
                 </button>
               </div>
             </div>
