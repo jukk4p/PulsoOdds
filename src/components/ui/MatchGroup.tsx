@@ -64,12 +64,11 @@ export function MatchGroup({ picks, selectedPickIds = [], onTogglePick, onOpenAn
         {/* League Logo Icon */}
         <div className="w-12 h-12 rounded-lg bg-white border border-white/[0.05] flex items-center justify-center p-2.5 shrink-0 overflow-hidden shadow-inner">
           {leagueLogo ? (
-            <Image 
+            <img 
               src={leagueLogo} 
               alt={`Logo de la liga ${firstPick.competition}`} 
-              width={48}
-              height={48}
               className="w-full h-full object-contain" 
+              referrerPolicy="no-referrer"
             />
           ) : (
             <div className="w-full h-full bg-white rounded-sm flex items-center justify-center">

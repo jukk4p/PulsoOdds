@@ -144,7 +144,7 @@ export default function MatchesPage() {
               >
                 {logo && (
                   <div className="h-5 w-5 shrink-0 bg-white rounded-sm flex items-center justify-center p-0.5">
-                    <Image src={logo} alt="" width={20} height={20} className="h-full w-full object-contain" />
+                    <img src={logo} alt="" className="h-full w-full object-contain" referrerPolicy="no-referrer" />
                   </div>
                 )}
                 <span className={cn(
@@ -213,7 +213,7 @@ export default function MatchesPage() {
                               </span>
                               <div className="h-9 w-9 bg-white rounded-md p-1.5 flex items-center justify-center shrink-0 shadow-sm">
                                 {homeLogo
-                                  ? <Image src={homeLogo} alt="" width={36} height={36} className="h-full w-full object-contain" />
+                                  ? <img src={homeLogo} alt="" className="h-full w-full object-contain" referrerPolicy="no-referrer" />
                                   : <div className="h-full w-full bg-zinc-200 rounded-sm" />
                                 }
                               </div>
@@ -228,7 +228,7 @@ export default function MatchesPage() {
                             <div className="flex items-center justify-start gap-3">
                               <div className="h-9 w-9 bg-white rounded-md p-1.5 flex items-center justify-center shrink-0 shadow-sm">
                                 {awayLogo
-                                  ? <Image src={awayLogo} alt="" width={36} height={36} className="h-full w-full object-contain" />
+                                  ? <img src={awayLogo} alt="" className="h-full w-full object-contain" referrerPolicy="no-referrer" />
                                   : <div className="h-full w-full bg-zinc-200 rounded-sm" />
                                 }
                               </div>
