@@ -1,4 +1,5 @@
 "use client";
+import { supabase } from "@/lib/supabase";
 
 import React, { useEffect, useState, useMemo } from "react";
 import { cn, normalizeTeamName } from "@/lib/utils";
