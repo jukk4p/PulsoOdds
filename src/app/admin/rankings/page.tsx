@@ -49,7 +49,13 @@ export default function AdminRankingsPage() {
     setMessage({ type: 'success', text: 'Iniciando Scraper y Sincronización... Esto puede tardar un par de minutos.' });
     
     try {
-      const res = await fetch('/api/admin/sync-all', { method: 'POST' });
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch('/api/admin/sync-all', { 
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session?.access_token}`
+        }
+      });
       const data = await res.json();
       
       if (data.success) {

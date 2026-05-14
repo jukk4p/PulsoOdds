@@ -1,12 +1,37 @@
 import { NextResponse } from 'next/server';
 import path from 'path';
+import { createClient } from '@supabase/supabase-js';
 
 // Bypass Turbopack static analysis for node-only modules
 const { spawn } = eval('require')('child_process');
 
 export async function POST(request: Request) {
   try {
-    const { apiKey } = await request.json();
+    if (process.env.NODE_ENV === 'production') {
+      const authHeader = request.headers.get('Authorization');
+      const token = authHeader?.split('Bearer ')[1];
+
+      if (!token) {
+        return NextResponse.json({ success: false, message: 'No autorizado: Token faltante' }, { status: 401 });
+      }
+
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+      const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+      const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+      const { data: { user }, error } = await supabase.auth.getUser(token);
+
+      if (error || !user || user.email !== 'jukk4p@gmail.com') {
+        return NextResponse.json({ success: false, message: 'No autorizado: Credenciales inválidas' }, { status: 401 });
+      }
+    }
+    
+    // Consume body if necessary, though no longer strictly needed for apiKey
+    try {
+      await request.json();
+    } catch (e) {
+      // Ignore empty body errors
+    }
     
     const scriptName = 'scrape-upcoming-matches.js';
     const scriptPath = path.join(process.cwd(), 'scripts', scriptName);

@@ -1,13 +1,28 @@
 import { NextResponse } from 'next/server';
 import path from 'path';
+import { createClient } from '@supabase/supabase-js';
 
 // Bypass Turbopack static analysis for node-only modules
 const { spawn } = eval('require')('child_process');
 
-export async function POST() {
-  // Solo permitimos esto en desarrollo para evitar abusos o configurarlo con una KEY en prod
-  if (process.env.NODE_ENV === 'production' && !process.env.SYNC_API_KEY) {
-    return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+export async function POST(request: Request) {
+  if (process.env.NODE_ENV === 'production') {
+    const authHeader = request.headers.get('Authorization');
+    const token = authHeader?.split('Bearer ')[1];
+
+    if (!token) {
+      return NextResponse.json({ error: 'No autorizado: Token faltante' }, { status: 401 });
+    }
+
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+    const { data: { user }, error } = await supabase.auth.getUser(token);
+
+    if (error || !user || user.email !== 'jukk4p@gmail.com') {
+      return NextResponse.json({ error: 'No autorizado: Credenciales inválidas' }, { status: 401 });
+    }
   }
 
   return new Promise<Response>((resolve) => {
