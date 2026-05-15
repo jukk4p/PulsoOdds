@@ -7,7 +7,9 @@ const { spawn } = eval('require')('child_process');
 
 export async function POST(request: Request) {
   try {
-    if (process.env.NODE_ENV === 'production') {
+    const isProduction = process.env.NODE_ENV === 'production';
+
+    if (isProduction) {
       const authHeader = request.headers.get('Authorization');
       const token = authHeader?.split('Bearer ')[1];
 
@@ -24,18 +26,19 @@ export async function POST(request: Request) {
       if (error || !user || user.email !== 'jukk4p@gmail.com') {
         return NextResponse.json({ success: false, message: 'No autorizado: Credenciales inválidas' }, { status: 401 });
       }
+
+      // En producción, informamos que el scraper es local
+      return NextResponse.json({ 
+        success: false, 
+        message: 'El scraper de partidos requiere Playwright y no puede ejecutarse en este servidor. Por favor, ejecuta "actualizar_todo.bat" localmente para subir los datos.' 
+      }, { status: 400 });
     }
     
-    // Consume body if necessary, though no longer strictly needed for apiKey
-    try {
-      await request.json();
-    } catch (e) {
-      // Ignore empty body errors
-    }
-    
+    // MODO LOCAL
     const scriptName = 'scrape-upcoming-matches.js';
     const scriptPath = path.join(process.cwd(), 'scripts', scriptName);
     
+    console.log(`🚀 Ejecutando scraper de partidos local: ${scriptPath}`);
     const child = spawn('node', [scriptPath]);
 
     let output = '';
@@ -43,27 +46,20 @@ export async function POST(request: Request) {
 
     child.stdout.on('data', (data: Buffer | string) => {
       output += data.toString();
-      console.log(`Scraper Output: ${data}`);
     });
 
     child.stderr.on('data', (data: Buffer | string) => {
       errorOutput += data.toString();
-      console.error(`Scraper Error: ${data}`);
     });
 
     return new Promise<Response>((resolve) => {
       child.on('close', (code: number | null) => {
-        console.log(`Scraper process exited with code ${code}`);
         if (code === 0) {
-          resolve(NextResponse.json({ 
-            success: true, 
-            message: 'Matches scraped successfully',
-            output 
-          }));
+          resolve(NextResponse.json({ success: true, message: 'Partidos sincronizados (Local)' }));
         } else {
           resolve(NextResponse.json({ 
             success: false, 
-            message: `Scraper failed with code ${code}`,
+            message: `Scraper falló (code ${code})`,
             error: errorOutput 
           }, { status: 500 }));
         }
@@ -71,10 +67,8 @@ export async function POST(request: Request) {
     });
 
   } catch (error: any) {
-    console.error('API Route Error:', error);
-    return NextResponse.json({ 
-      success: false, 
-      message: error.message 
-    }, { status: 500 });
+    console.error('Error in sync-matches:', error);
+    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
   }
 }
+
