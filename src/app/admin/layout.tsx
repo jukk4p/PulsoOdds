@@ -48,7 +48,7 @@ export default function AdminLayout({
   const currentTitle = pageTitles[pathname] ?? 'Admin';
 
   return (
-    <div className="flex min-h-screen bg-deep-black">
+    <div className="flex min-h-screen bg-deep-black w-full overflow-x-hidden min-w-0">
       {/* ── Desktop Sidebar ── */}
       <aside className="hidden md:flex w-64 flex-col border-r border-white/5 bg-white/[0.02] fixed inset-y-0 left-0 z-30">
         <div className="px-8 py-8 border-b border-white/5">
@@ -90,13 +90,13 @@ export default function AdminLayout({
       </header>
 
       {/* ── Main Content ── */}
-      <main className="flex-1 md:ml-64 min-h-screen">
+      <main className="flex-1 md:ml-64 min-h-screen min-w-0 w-full overflow-x-hidden">
         {/*
           Mobile:  top-16 (admin header) + spacing, bottom-20 (mobile tab nav)
           Desktop: no top offset from admin header (sidebar handles it), standard bottom
         */}
-        <div className="pt-20 md:pt-10 pb-28 md:pb-12 px-4 md:px-10">
-          <div className="max-w-6xl mx-auto">
+        <div className="pt-20 md:pt-10 pb-28 md:pb-12 px-4 md:px-10 min-w-0 w-full overflow-x-hidden">
+          <div className="max-w-6xl mx-auto min-w-0 w-full overflow-x-hidden">
             {children}
           </div>
         </div>

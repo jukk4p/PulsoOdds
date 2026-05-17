@@ -153,25 +153,25 @@ export default function AdminRankingsPage() {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500 relative w-full flex flex-col items-center md:items-stretch pb-20">
+    <div className="space-y-8 animate-in fade-in duration-500 relative w-full flex flex-col items-center md:items-stretch pb-20 min-w-0 overflow-x-hidden">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row items-center md:items-center justify-between gap-4">
-        <div className="flex flex-col items-center md:items-start w-full">
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-white italic tracking-tighter flex items-center gap-2 sm:gap-3">
+      <div className="flex flex-col md:flex-row items-center md:items-center justify-between gap-4 w-full min-w-0">
+        <div className="flex flex-col items-center md:items-start w-full min-w-0">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-white italic tracking-tighter flex items-center gap-2 sm:gap-3 w-full min-w-0">
             <Trophy className="h-6 w-6 sm:h-8 sm:w-8 text-neon-green shrink-0" />
             <span className="truncate">GESTIÓN DE CLASIFICACIONES</span>
           </h1>
-          <p className="text-white/40 text-[10px] sm:text-xs uppercase font-bold tracking-widest mt-1 text-center md:text-left">
+          <p className="text-white/40 text-[10px] sm:text-xs uppercase font-bold tracking-widest mt-1 text-center md:text-left truncate w-full">
             Edición manual y sincronización de tablas de posiciones
           </p>
         </div>
       </div>
 
       {/* Top Sync Section */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mb-12 bg-white/[0.01] border border-white/5 p-6 sm:p-8 rounded-[24px] sm:rounded-[32px] w-full shadow-2xl backdrop-blur-sm">
-        <div>
-          <h2 className="text-base sm:text-lg font-black text-white uppercase tracking-wider">Sincronización Automática</h2>
-          <p className="text-white/40 text-[10px] sm:text-xs uppercase font-bold tracking-widest mt-1">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mb-12 bg-white/[0.01] border border-white/5 p-6 sm:p-8 rounded-[24px] sm:rounded-[32px] w-full min-w-0 shadow-2xl backdrop-blur-sm">
+        <div className="min-w-0 w-full sm:w-auto">
+          <h2 className="text-base sm:text-lg font-black text-white uppercase tracking-wider truncate">Sincronización Automática</h2>
+          <p className="text-white/40 text-[10px] sm:text-xs uppercase font-bold tracking-widest mt-1 truncate">
             Extraer y actualizar datos en tiempo real desde Flashscore
           </p>
         </div>
@@ -179,31 +179,31 @@ export default function AdminRankingsPage() {
         <button 
           onClick={runFullSync}
           disabled={syncing}
-          className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-neon-green text-deep-black font-black text-xs uppercase tracking-widest shadow-[0_0_30px_rgba(0,255,135,0.2)] hover:shadow-[0_0_50px_rgba(0,255,135,0.4)] transition-all hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center gap-3"
+          className="w-full sm:w-auto px-6 sm:px-8 py-4 rounded-2xl bg-neon-green text-deep-black font-black text-xs uppercase tracking-widest shadow-[0_0_30px_rgba(0,255,135,0.2)] hover:shadow-[0_0_50px_rgba(0,255,135,0.4)] transition-all hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center gap-3 shrink-0"
           title="Sincronizar Clasificaciones"
         >
-          <RefreshCw className={cn("h-4 w-4", syncing && "animate-spin")} />
-          {syncing ? "SINCRONIZANDO..." : "SINCRONIZAR CLASIFICACIONES"}
+          <RefreshCw className={cn("h-4 w-4 shrink-0", syncing && "animate-spin")} />
+          <span className="truncate">{syncing ? "SINCRONIZANDO..." : "SINCRONIZAR CLASIFICACIONES"}</span>
         </button>
       </div>
 
       {/* Status Message */}
       {message && (
         <div className={cn(
-          "flex items-center gap-3 px-6 py-4 rounded-2xl border animate-in slide-in-from-top-4 duration-300",
+          "flex items-center gap-3 px-6 py-4 rounded-2xl border animate-in slide-in-from-top-4 duration-300 w-full min-w-0",
           message.type === 'success' ? "bg-neon-green/10 border-neon-green/20 text-neon-green" : "bg-red-500/10 border-red-500/20 text-red-500"
         )}>
-          {message.type === 'success' ? <CheckCircle2 className="h-5 w-5" /> : <AlertCircle className="h-5 w-5" />}
-          <span className="text-sm font-bold uppercase tracking-tight">{message.text}</span>
+          {message.type === 'success' ? <CheckCircle2 className="h-5 w-5 shrink-0" /> : <AlertCircle className="h-5 w-5 shrink-0" />}
+          <span className="text-sm font-bold uppercase tracking-tight truncate">{message.text}</span>
         </div>
       )}
 
       {/* Standings Content - Accordion Layout */}
-      <div className="w-full space-y-6">
+      <div className="w-full space-y-6 min-w-0">
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-32 border border-white/5 rounded-3xl bg-white/[0.02]">
+          <div className="flex flex-col items-center justify-center py-32 border border-white/5 rounded-3xl bg-white/[0.02] w-full min-w-0">
             <Loader2 className="h-10 w-10 text-neon-green animate-spin mb-4" />
-            <span className="text-[10px] font-black uppercase tracking-[0.5em] text-white/20">Cargando clasificaciones...</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.5em] text-white/20 truncate">Cargando clasificaciones...</span>
           </div>
         ) : LEAGUES.map((league) => {
           const currentType = leagueTypes[league] || 'General';
@@ -214,14 +214,14 @@ export default function AdminRankingsPage() {
           return (
             <div 
               key={league} 
-              className="border border-white/10 rounded-xl overflow-hidden bg-[#070D14]/60 shadow-[0_10px_30px_rgba(0,0,0,0.3)] transition-all duration-300"
+              className="border border-white/10 rounded-xl overflow-hidden bg-[#070D14]/60 shadow-[0_10px_30px_rgba(0,0,0,0.3)] transition-all duration-300 w-full min-w-0"
             >
               {/* League Header / Accordion Bar */}
               <div 
                 onClick={() => toggleLeague(league)}
-                className="flex items-center justify-between bg-[#0B1727] hover:bg-[#112238] border-b border-white/10 px-4 sm:px-6 py-3.5 cursor-pointer transition-all duration-200 select-none group"
+                className="flex items-center justify-between bg-[#0B1727] hover:bg-[#112238] border-b border-white/10 px-4 sm:px-6 py-3.5 cursor-pointer transition-all duration-200 select-none group w-full min-w-0"
               >
-                <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
                   <Star className="h-4 w-4 text-white/40 hover:text-yellow-400 transition-colors shrink-0 cursor-pointer" onClick={(e) => { e.stopPropagation(); }} />
                   <div className="h-6 w-6 sm:h-7 sm:w-7 bg-white rounded-md p-1 flex items-center justify-center shrink-0 shadow-md overflow-hidden">
                     {logo ? (
@@ -233,21 +233,24 @@ export default function AdminRankingsPage() {
                   <span className="text-xs sm:text-sm font-black text-white uppercase tracking-wider truncate group-hover:text-neon-green transition-colors">
                     {league}
                   </span>
-                  <span className="text-[10px] font-bold text-neon-green/80 bg-neon-green/10 px-2 py-0.5 rounded-full border border-neon-green/20 ml-1 shrink-0">
+                  <span className="text-[10px] font-bold text-neon-green/80 bg-neon-green/10 px-2 py-0.5 rounded-full border border-neon-green/20 ml-1 shrink-0 hidden sm:inline-block">
                     {leagueStandings.length} {league === "Europe - Euro" || league === "World - World Cup" ? "selecciones" : "equipos"}
                   </span>
                 </div>
 
-                <div className="flex items-center gap-4 shrink-0 ml-4">
-                  <ChevronDown className={cn("h-4 w-4 text-white/40 group-hover:text-white transition-transform duration-300", isExpanded && "rotate-180 text-neon-green")} />
+                <div className="flex items-center gap-2 sm:gap-4 shrink-0 ml-2 sm:ml-4">
+                  <span className="text-[9px] font-bold text-neon-green/80 bg-neon-green/10 px-1.5 py-0.5 rounded-full border border-neon-green/20 sm:hidden">
+                    {leagueStandings.length}
+                  </span>
+                  <ChevronDown className={cn("h-4 w-4 text-white/40 group-hover:text-white transition-transform duration-300 shrink-0", isExpanded && "rotate-180 text-neon-green")} />
                 </div>
               </div>
 
               {/* Expanded Standings Table */}
               {isExpanded && (
-                <div className="bg-[#070D14] divide-y divide-white/5">
+                <div className="bg-[#070D14] divide-y divide-white/5 w-full min-w-0">
                   {/* Selector de Modalidad estilo Flashscore por debajo del nombre de la liga */}
-                  <div className="bg-[#070D14] px-4 sm:px-6 py-1.5 border-b border-white/10 flex items-center gap-1 sm:gap-2 overflow-x-auto scrollbar-none select-none">
+                  <div className="bg-[#070D14] px-4 sm:px-6 py-1.5 border-b border-white/10 flex items-center gap-1 sm:gap-2 overflow-x-auto scrollbar-none select-none w-full min-w-0">
                     {(['General', 'Local', 'Visitante'] as const).map((type) => (
                       <button
                         key={type}
@@ -268,11 +271,11 @@ export default function AdminRankingsPage() {
                   </div>
 
                   {leagueStandings.length === 0 ? (
-                    <div className="px-6 py-12 text-center text-xs font-bold text-white/30 italic">
+                    <div className="px-6 py-12 text-center text-xs font-bold text-white/30 italic w-full min-w-0">
                       No hay datos de clasificación disponibles para esta competición ({currentType}).
                     </div>
                   ) : (
-                    <div className="overflow-x-auto no-scrollbar">
+                    <div className="overflow-x-auto no-scrollbar w-full min-w-0">
                       <table className="w-full text-left border-collapse border-spacing-0">
                         <thead>
                           <tr className="border-b border-white/5 bg-white/[0.01]">
