@@ -2,8 +2,9 @@
 import { supabase } from "@/lib/supabase";
 
 import React, { useEffect, useState, useMemo } from "react";
+import Link from "next/link";
 import { cn, normalizeTeamName } from "@/lib/utils";
-import { Clock, Calendar, RefreshCw, AlertCircle, CheckCircle2, ChevronRight, ExternalLink, ChevronDown, Filter } from "lucide-react";
+import { Clock, Calendar, RefreshCw, AlertCircle, CheckCircle2, ChevronDown, Filter, Star, ExternalLink } from "lucide-react";
 import { getTeamLogo } from "@/lib/logos";
 import { MASTER_LEAGUES } from "@/lib/masterDictionaries";
 
@@ -31,20 +32,88 @@ type Match = {
   time: string;
   home: string;
   away: string;
+  forecast?: {
+    expectedGoals?: { home: string; away: string };
+    probableResults?: string;
+    teamInsights?: string[];
+  };
+  injuries?: { player: string; reason: string }[];
+  doubtful?: { player: string; reason: string }[];
+  tvChannels?: string[];
+  recentForm?: {
+    home?: { date: string; match: string; result: string }[];
+    away?: { date: string; match: string; result: string }[];
+  };
+  h2h?: { date: string; match: string; result?: string }[];
+};
+
+const isPastMatch = (dateStr: string) => {
+  if (!dateStr) return false;
+  const clean = dateStr.replace(/[^\d.]/g, '');
+  const parts = clean.split('.').filter(Boolean).map(Number);
+  if (parts.length < 2) return false;
+  const matchDay = parts[0];
+  const matchMonth = parts[1];
+  
+  const now = new Date();
+  const currentDay = now.getDate();
+  const currentMonth = now.getMonth() + 1;
+  
+  if (matchMonth < currentMonth) return true;
+  if (matchMonth === currentMonth && matchDay < currentDay) return true;
+  return false;
 };
 
 export default function AdminMatchesPage() {
-  const [activeLeague, setActiveLeague] = useState(LEAGUES[0]);
   const [allData, setAllData] = useState<Record<string, Match[]>>({});
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null);
-  const [isLeagueMenuOpen, setIsLeagueMenuOpen] = useState(false);
+  const [lastSyncTime, setLastSyncTime] = useState<string | null>(null);
+  
+  const [expandedLeagues, setExpandedLeagues] = useState<Record<string, boolean>>({
+    "LaLiga EA Sports": true,
+    "Premier League": true,
+  });
+
+  const toggleLeague = (league: string) => {
+    setExpandedLeagues(prev => ({ ...prev, [league]: !prev[league] }));
+  };
+
+  const [starredLeagues, setStarredLeagues] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("starredLeagues");
+      if (saved) setStarredLeagues(JSON.parse(saved));
+    } catch (e) {}
+  }, []);
+
+  const toggleStarLeague = (league: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setStarredLeagues(prev => {
+      const next = { ...prev, [league]: !prev[league] };
+      try {
+        localStorage.setItem("starredLeagues", JSON.stringify(next));
+      } catch (err) {}
+      return next;
+    });
+  };
+
+  const sortedLeagues = useMemo(() => {
+    return [...LEAGUES].sort((a, b) => {
+      const aStarred = !!starredLeagues[a];
+      const bStarred = !!starredLeagues[b];
+      if (aStarred && !bStarred) return -1;
+      if (!aStarred && bStarred) return 1;
+      return LEAGUES.indexOf(a) - LEAGUES.indexOf(b);
+    });
+  }, [starredLeagues]);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const r = await fetch("/upcoming_matches_detailed.json?t=" + Date.now());
+      const r = await fetch("/api/admin/matches?t=" + Date.now());
       const data = await r.json();
       setAllData(data);
     } catch (err) {
@@ -74,7 +143,10 @@ export default function AdminMatchesPage() {
       });
       const data = await res.json();
       if (data.success) {
-        setNotification({ type: 'success', message: 'Partidos actualizados correctamente' });
+        const nowStr = new Date().toLocaleTimeString();
+        setLastSyncTime(nowStr);
+        setNotification({ type: 'success', message: `¡Partidos actualizados con éxito a las ${nowStr}!` });
+        setTimeout(() => setNotification(null), 6000);
         fetchData();
       } else {
         setNotification({ type: 'error', message: data.message || 'Error al sincronizar' });
@@ -86,10 +158,28 @@ export default function AdminMatchesPage() {
     }
   };
 
-  const matches = useMemo(() => allData[activeLeague] || [], [allData, activeLeague]);
+  const totalMatchesCount = useMemo(() => {
+    return Object.values(allData).reduce((sum, matches) => {
+      const future = (matches || []).filter(m => {
+        let mDate = m.date;
+        if (m.time?.includes(' ')) mDate = m.time.split(' ')[0];
+        return !isPastMatch(mDate);
+      });
+      return sum + future.length;
+    }, 0);
+  }, [allData]);
+
+  const renderResultBadge = (res: string) => {
+    if (!res) return null;
+    const clean = res.toUpperCase().trim();
+    if (clean === "G") return <span className="bg-neon-green/20 text-neon-green border border-neon-green/30 text-[10px] font-black px-1.5 py-0.5 rounded">G</span>;
+    if (clean === "E") return <span className="bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 text-[10px] font-black px-1.5 py-0.5 rounded">E</span>;
+    if (clean === "P") return <span className="bg-red-500/20 text-red-400 border border-red-500/30 text-[10px] font-black px-1.5 py-0.5 rounded">P</span>;
+    return <span className="bg-white/10 text-white/60 border border-white/20 text-[10px] font-black px-1.5 py-0.5 rounded">{clean}</span>;
+  };
 
   return (
-    <div className="space-y-8 w-full flex flex-col items-center md:items-stretch">
+    <div className="space-y-8 w-full flex flex-col items-center md:items-stretch pb-24" style={{ zoom: 0.75 } as any}>
       {/* Notification */}
       {notification && (
         <div className={cn(
@@ -103,110 +193,52 @@ export default function AdminMatchesPage() {
       )}
 
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row items-center md:items-end justify-between gap-6 mb-12">
-        <div className="flex flex-col items-center md:items-start w-full">
+      <div className="flex flex-col md:flex-row items-center md:items-end justify-between gap-6 mb-8 border-b border-white/10 pb-8">
+        <div className="flex flex-col items-center md:items-start w-full md:w-auto">
+          <div className="flex items-center gap-3 mb-2">
+            <span className="px-3 py-1 rounded-full bg-neon-green/10 border border-neon-green/20 text-neon-green text-[10px] font-black uppercase tracking-widest">
+              Calendario Flashscore
+            </span>
+            <span className="text-xs font-bold text-white/40">
+              {totalMatchesCount} eventos totales
+            </span>
+          </div>
           <h1 className="text-3xl sm:text-4xl md:text-6xl font-black text-white uppercase tracking-tighter leading-none mb-4 text-center md:text-left">
             Próximos <span className="text-neon-green italic">Partidos</span>
           </h1>
           <p className="text-white/40 text-[10px] sm:text-xs font-medium max-w-lg text-center md:text-left">
-            Control de calendario y próximos encuentros para la generación de picks automáticos.
+            Despliega cada competición para ver los encuentros programados y cuotas automáticas.
           </p>
         </div>
 
-      </div>
+        {/* Sync Button & Status */}
+        <div className="flex flex-col items-center md:items-end gap-3 shrink-0 w-full md:w-auto">
+          <button 
+            onClick={runSync}
+            disabled={syncing}
+            className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-white/[0.03] border border-white/10 text-white hover:text-neon-green hover:border-neon-green/50 transition-all hover:bg-white/[0.06] shadow-lg disabled:cursor-not-allowed disabled:opacity-50 group w-full md:w-auto justify-center"
+            title="Sincronizar Partidos Próximos"
+          >
+            <RefreshCw className={cn("h-5 w-5 text-neon-green", syncing && "animate-spin")} />
+            <span className="text-xs font-black uppercase tracking-widest text-white group-hover:text-neon-green transition-colors">
+              {syncing ? "Sincronizando..." : "Sincronizar Partidos"}
+            </span>
+          </button>
 
-      {/* Selectors Section */}
-      <div className="flex flex-col md:flex-row items-center md:items-end gap-6 md:gap-8 mb-12 bg-white/[0.01] border border-white/5 p-4 sm:p-5 md:p-8 rounded-[24px] sm:rounded-[32px] w-fit max-w-[calc(100vw-32px)]">
-        {/* League Selector */}
-        <div className="relative flex flex-col items-center md:items-start w-full md:w-auto">
-          <div className="flex items-center gap-4 mb-3">
-            <Filter className="h-3 w-3 text-neon-green" />
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20">Filtrar por Competición</span>
-          </div>
-          
-          <div className="flex items-stretch justify-center md:justify-start gap-3 w-full md:w-auto">
-            <div className="relative w-fit">
-              <button
-                onClick={() => setIsLeagueMenuOpen(!isLeagueMenuOpen)}
-                className={cn(
-                  "inline-flex items-center gap-4 px-6 py-4 h-[64px] md:h-[72px] rounded-2xl border transition-all duration-300",
-                  isLeagueMenuOpen 
-                    ? "bg-white/[0.05] border-neon-green/50 shadow-[0_10px_40px_-10px_rgba(0,255,135,0.2)]" 
-                    : "bg-white/[0.02] border-white/10 hover:border-white/20 hover:bg-white/[0.04]"
-                )}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 bg-white rounded-lg p-1 flex items-center justify-center shrink-0 shadow-lg">
-                    <img src={MASTER_LEAGUES[activeLeague] || "https://p-cdn.api-sports.io/football/leagues/generic.png"} alt="" className="h-full w-full object-contain" />
-                  </div>
-                  <div className="flex flex-col items-start min-w-0">
-                    <span className="text-xs font-black uppercase tracking-widest text-white leading-tight truncate w-full max-w-[120px] sm:max-w-none">{activeLeague}</span>
-                    <span className="text-[9px] font-bold text-neon-green/60 whitespace-nowrap">{allData[activeLeague]?.length || 0} eventos programados</span>
-                  </div>
-                </div>
-                <ChevronDown className={cn("h-4 w-4 text-white/20 transition-transform duration-300 shrink-0", isLeagueMenuOpen && "rotate-180 text-neon-green")} />
-              </button>
-
-              {/* Dropdown Menu */}
-              {isLeagueMenuOpen && (
-                <>
-                  <div className="fixed inset-0 z-40" onClick={() => setIsLeagueMenuOpen(false)} />
-                  <div className="absolute top-full left-0 min-w-full mt-2 z-50 bg-[#0F0F0F] border border-white/10 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                    <div className="max-h-[400px] overflow-y-auto no-scrollbar py-2">
-                      {LEAGUES.map((league) => {
-                        const logo = MASTER_LEAGUES[league];
-                        const count = allData[league]?.length || 0;
-                        const isActive = activeLeague === league;
-
-                        return (
-                          <button
-                            key={league}
-                            onClick={() => {
-                              setActiveLeague(league);
-                              setIsLeagueMenuOpen(false);
-                            }}
-                            className={cn(
-                              "w-full flex items-center gap-3 px-4 py-3 hover:bg-white/[0.03] transition-colors group",
-                              isActive && "bg-neon-green/[0.05]"
-                            )}
-                          >
-                            <div className="h-8 w-8 bg-white rounded-md p-1 flex items-center justify-center shrink-0">
-                              <img src={logo || "https://p-cdn.api-sports.io/football/leagues/generic.png"} alt="" className="h-full w-full object-contain" />
-                            </div>
-                            <span className={cn(
-                              "text-[11px] font-black uppercase tracking-widest transition-colors",
-                              isActive ? "text-neon-green" : "text-white/60 group-hover:text-white"
-                            )}>
-                              {league}
-                            </span>
-                            <div className="ml-auto flex items-center gap-2">
-                              <span className="text-[9px] font-bold text-white/20">{count}</span>
-                              {isActive && <div className="w-1.5 h-1.5 rounded-full bg-neon-green shadow-[0_0_10px_rgba(0,255,135,0.8)]" />}
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </>
-              )}
+          {/* Last Sync Indicator */}
+          {lastSyncTime && (
+            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-neon-green/10 border border-neon-green/30 text-neon-green animate-in fade-in slide-in-from-top-2 duration-300 shadow-[0_0_20px_rgba(0,255,135,0.15)]">
+              <CheckCircle2 className="h-4 w-4 shrink-0" />
+              <span className="text-[10px] font-black uppercase tracking-wider">
+                Sincronizado: {lastSyncTime}
+              </span>
             </div>
-            
-            <button 
-              onClick={runSync}
-              disabled={syncing}
-              className="p-3.5 md:p-4 rounded-2xl bg-white/[0.03] border border-white/10 text-white/40 hover:text-neon-green hover:border-neon-green/30 transition-all hover:bg-white/[0.05] h-[64px] md:h-[72px] disabled:cursor-not-allowed disabled:opacity-50 flex-shrink-0"
-              title="Sincronizar Partidos Próximos"
-            >
-              <RefreshCw className={cn("h-5 w-5", syncing && "animate-spin text-neon-green")} />
-            </button>
-          </div>
+          )}
         </div>
       </div>
 
-
-      {/* Matches Content */}
-      <div className="min-h-[400px] w-full max-w-[calc(100vw-32px)] sm:max-w-none">
+      {/* Matches Content - Accordion Layout */}
+      <div className="w-full space-y-6 max-w-[calc(100vw-32px)] sm:max-w-none">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-32 border border-white/5 rounded-3xl bg-white/[0.02]">
             <div className="relative">
@@ -215,119 +247,148 @@ export default function AdminMatchesPage() {
             </div>
             <span className="mt-6 text-[10px] font-black uppercase tracking-[0.5em] text-white/20">Procesando datos...</span>
           </div>
-        ) : matches.length === 0 ? (
+        ) : sortedLeagues.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-32 border border-white/5 rounded-3xl bg-white/[0.02]">
             <Calendar className="h-16 w-16 text-white/5 mb-6" />
-            <p className="text-sm font-black uppercase tracking-widest text-white/20 italic">No hay partidos registrados</p>
-            <button onClick={runSync} className="mt-8 text-neon-green text-[10px] font-black uppercase tracking-widest hover:underline">Iniciar primer scrapeo</button>
+            <p className="text-sm font-black uppercase tracking-widest text-white/20 italic">No hay ligas registradas</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-3">
-            {matches.map((match, idx) => {
-              const homeLogo = getTeamLogo(match.home);
-              const awayLogo = getTeamLogo(match.away);
+          sortedLeagues.map((league) => {
+            const rawMatches = allData[league] || [];
+            const leagueMatches = rawMatches.filter(m => {
+              let mDate = m.date;
+              if (m.time?.includes(' ')) mDate = m.time.split(' ')[0];
+              return !isPastMatch(mDate);
+            });
 
-              // Helper: styled initials avatar
-              const TeamAvatar = ({ name, logo }: { name: string; logo: string | null }) => {
-                const initials = name
-                  ? name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
-                  : '?';
-                return logo ? (
-                  <img
-                    src={logo}
-                    alt={name}
-                    className="h-full w-full object-contain"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                      e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                    }}
-                  />
-                ) : null;
-                // Always render initials as hidden fallback
-              };
+            const isExpanded = !!expandedLeagues[league];
+            const logo = MASTER_LEAGUES[league];
 
-              const TeamLogo = ({ name, logo, size }: { name: string; logo: string | null; size: 'sm' | 'md' }) => {
-                const initials = name
-                  ? name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase()
-                  : '?';
-                const sizeClass = size === 'sm' ? 'h-9 w-9 md:h-11 md:w-11' : 'h-11 w-11';
-                return (
-                  <div className={`${sizeClass} rounded-lg md:rounded-xl shrink-0 shadow-lg group-hover:scale-110 transition-transform overflow-hidden relative`}>
-                    {logo ? (
-                      <div className="h-full w-full bg-white p-1.5 md:p-2 flex items-center justify-center">
-                        <img
-                          src={logo}
-                          alt={name}
-                          className="h-full w-full object-contain"
-                          onError={(e) => {
-                            // Show initials fallback on error
-                            const parent = e.currentTarget.parentElement;
-                            if (parent) {
-                              parent.innerHTML = `<div class="h-full w-full bg-white/10 flex items-center justify-center text-neon-green font-black text-[11px] tracking-wider">${initials}</div>`;
-                            }
-                          }}
-                        />
+            return (
+              <div 
+                key={league} 
+                className="border border-white/10 rounded-xl overflow-hidden bg-[#070D14]/60 shadow-[0_10px_30px_rgba(0,0,0,0.3)] transition-all duration-300"
+              >
+                {/* League Header / Accordion Bar */}
+                <div 
+                  onClick={() => toggleLeague(league)}
+                  className="flex items-center justify-between bg-[#0B1727] hover:bg-[#112238] border-b border-white/10 px-4 sm:px-6 py-3.5 cursor-pointer transition-all duration-200 select-none group"
+                >
+                  <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                    <Star 
+                      className={cn(
+                        "h-4 w-4 transition-colors shrink-0 cursor-pointer",
+                        starredLeagues[league] 
+                          ? "text-yellow-400 fill-yellow-400 hover:text-yellow-300" 
+                          : "text-white/40 hover:text-yellow-400"
+                      )} 
+                      onClick={(e) => toggleStarLeague(league, e)} 
+                    />
+                    <div className="h-6 w-6 sm:h-7 sm:w-7 bg-white rounded-md p-1 flex items-center justify-center shrink-0 shadow-md">
+                      <img src={logo || "https://p-cdn.api-sports.io/football/leagues/generic.png"} alt="" className="h-full w-full object-contain" />
+                    </div>
+                    <span className="text-xs sm:text-sm font-black text-white uppercase tracking-wider truncate group-hover:text-neon-green transition-colors">
+                      {league}
+                    </span>
+                    <span className="text-[10px] font-bold text-neon-green/80 bg-neon-green/10 px-2 py-0.5 rounded-full border border-neon-green/20 ml-1 shrink-0">
+                      {leagueMatches.length}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-4 shrink-0 ml-4">
+                    <ChevronDown className={cn("h-4 w-4 text-white/40 group-hover:text-white transition-transform duration-300", isExpanded && "rotate-180 text-neon-green")} />
+                  </div>
+                </div>
+
+                {/* Expanded Matches List */}
+                {isExpanded && (
+                  <div className="divide-y divide-white/5 bg-[#070D14]">
+                    {leagueMatches.length === 0 ? (
+                      <div className="px-6 py-8 text-center text-xs font-bold text-white/30 italic">
+                        No hay partidos programados para esta competición.
                       </div>
                     ) : (
-                      <div className="h-full w-full bg-white/10 border border-white/10 flex items-center justify-center text-neon-green font-black text-[11px] tracking-wider">
-                        {initials}
-                      </div>
+                      leagueMatches.map((match, idx) => {
+                        const homeLogo = getTeamLogo(match.home);
+                        const awayLogo = getTeamLogo(match.away);
+                        
+                        let matchDate = match.date;
+                        let matchTime = match.time;
+                        if (match.time.includes(' ')) {
+                          const parts = match.time.split(' ');
+                          matchDate = parts[0];
+                          matchTime = parts[1];
+                        }
+
+                        return (
+                          <Link key={match.id + idx} href={`/matches/${match.id}`} className="transition-colors group/row block">
+                            {/* Main Match Row */}
+                            <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 hover:bg-white/[0.03] transition-colors cursor-pointer select-none">
+                              <div className="flex items-center gap-4 sm:gap-6 min-w-0 flex-1">
+                                <Star className="h-4 w-4 text-white/20 hover:text-yellow-400 cursor-pointer shrink-0 transition-colors" onClick={(e) => e.stopPropagation()} />
+                                
+                                {/* Date & Time */}
+                                <div className="flex items-center gap-2 shrink-0 border-r border-white/5 pr-4 sm:pr-6 mr-2 sm:mr-4">
+                                  <span className="text-xs sm:text-sm font-black text-neon-green uppercase tracking-wider">
+                                    {matchDate}
+                                  </span>
+                                  <span className="text-xs sm:text-sm font-bold text-white/80 tabular-nums">
+                                    {matchTime}
+                                  </span>
+                                </div>
+
+                                {/* Teams Stack */}
+                                <div className="flex flex-col gap-2 min-w-0 flex-1 py-1">
+                                  {/* Home */}
+                                  <div className="flex items-center gap-3">
+                                    <div className="h-4 w-4 sm:h-5 sm:w-5 rounded p-0.5 bg-white flex items-center justify-center shrink-0 shadow">
+                                      {homeLogo ? (
+                                        <img src={homeLogo} alt="" className="h-full w-full object-contain" onError={(e)=>{e.currentTarget.style.display='none'}} />
+                                      ) : (
+                                        <span className="text-[8px] font-black text-deep-black">{match.home?.[0]}</span>
+                                      )}
+                                    </div>
+                                    <span className="text-xs sm:text-sm font-bold text-white group-hover/row:text-neon-green transition-colors truncate">
+                                      {normalizeTeamName(match.home)}
+                                    </span>
+                                  </div>
+
+                                  {/* Away */}
+                                  <div className="flex items-center gap-3">
+                                    <div className="h-4 w-4 sm:h-5 sm:w-5 rounded p-0.5 bg-white flex items-center justify-center shrink-0 shadow">
+                                      {awayLogo ? (
+                                        <img src={awayLogo} alt="" className="h-full w-full object-contain" onError={(e)=>{e.currentTarget.style.display='none'}} />
+                                      ) : (
+                                        <span className="text-[8px] font-black text-deep-black">{match.away?.[0]}</span>
+                                      )}
+                                    </div>
+                                    <span className="text-xs sm:text-sm font-bold text-white/80 group-hover/row:text-neon-green transition-colors truncate">
+                                      {normalizeTeamName(match.away)}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Right Side Action Indicator */}
+                              <div className="flex items-center gap-2 sm:gap-3 shrink-0 ml-4">
+                                <div className="h-8 w-8 rounded-full bg-white/5 flex items-center justify-center group-hover/row:bg-white/10 transition-colors">
+                                  <ExternalLink className="h-4 w-4 text-white/40 group-hover/row:text-neon-green transition-colors" />
+                                </div>
+                              </div>
+                            </div>
+                          </Link>
+                        );
+                      })
                     )}
                   </div>
-                );
-              };
-              
-              return (
-                <div
-                  key={match.id + idx}
-                  className="group relative flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6 bg-white/[0.02] border border-white/5 hover:border-neon-green/20 rounded-2xl px-5 md:px-8 py-4 md:py-6 transition-all duration-300 hover:bg-white/[0.04]"
-                >
-                  <div className="flex flex-row items-center gap-4 md:gap-8 flex-1">
-                    {/* Time Info */}
-                    <div className="flex flex-col items-center justify-center min-w-[52px] md:min-w-[70px] border-r border-white/5 pr-4 md:pr-8 py-1">
-                      <span className="text-[9px] md:text-[10px] font-black text-neon-green mb-0.5 md:mb-1 tabular-nums">{match.date}</span>
-                      <span className="text-base md:text-xl font-black text-white tabular-nums tracking-tighter">{match.time}</span>
-                    </div>
-
-                    {/* Teams Info */}
-                    <div className="flex-1 grid grid-cols-[1fr_auto_1fr] items-center gap-2 md:gap-8">
-                      {/* Home */}
-                      <div className="flex items-center justify-end gap-2 md:gap-5">
-                        <span className="text-[10px] md:text-xs font-black uppercase tracking-tight text-white text-right leading-tight line-clamp-2 group-hover:text-neon-green transition-colors">
-                          {normalizeTeamName(match.home)}
-                        </span>
-                        <TeamLogo name={normalizeTeamName(match.home)} logo={homeLogo} size="sm" />
-                      </div>
-
-                      {/* VS */}
-                      <div className="flex items-center justify-center">
-                        <div className="w-6 h-6 md:w-8 md:h-8 rounded-full border border-white/5 bg-deep-black flex items-center justify-center shrink-0">
-                          <span className="text-[7px] md:text-[8px] font-black text-white/20 italic">VS</span>
-                        </div>
-                      </div>
-
-                      {/* Away */}
-                      <div className="flex items-center justify-start gap-2 md:gap-5">
-                        <TeamLogo name={normalizeTeamName(match.away)} logo={awayLogo} size="sm" />
-                        <span className="text-[10px] md:text-xs font-black uppercase tracking-tight text-white leading-tight line-clamp-2 group-hover:text-neon-green transition-colors">
-                          {normalizeTeamName(match.away)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Action row */}
-                  <div className="flex items-center justify-end gap-2">
-                    <span className="text-[8px] font-mono text-white/20 mr-2 hidden md:block">ID: {match.id}</span>
-                    <ChevronRight className="text-white/10 group-hover:text-neon-green transition-colors" size={16} />
-                  </div>
-
-                </div>
-              );
-            })}
-          </div>
+                )}
+              </div>
+            );
+          })
         )}
       </div>
     </div>
   );
 }
+
+

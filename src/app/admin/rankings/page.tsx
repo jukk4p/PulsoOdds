@@ -9,10 +9,9 @@ import {
   Pencil, 
   AlertCircle, 
   CheckCircle2, 
-  LayoutGrid, 
-  Filter, 
   ChevronDown,
-  Loader2
+  Loader2,
+  Star
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { LogoAutocomplete } from '@/components/admin/LogoAutocomplete';
@@ -26,14 +25,20 @@ const LEAGUES = [
 ];
 
 export default function AdminRankingsPage() {
-  const [activeLeague, setActiveLeague] = useState(LEAGUES[0]);
-  const [standingType, setStandingType] = useState('General');
-  const [isLeagueMenuOpen, setIsLeagueMenuOpen] = useState(false);
-  const [teams, setTeams] = useState<any[]>([]);
+  const [allStandings, setAllStandings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   
+  // Accordion state
+  const [expandedLeagues, setExpandedLeagues] = useState<Record<string, boolean>>({
+    "Spain - LaLiga": true,
+    "England - Premier League": true,
+  });
+
+  // Per-league standing type state (General, Local, Visitante)
+  const [leagueTypes, setLeagueTypes] = useState<Record<string, string>>({});
+
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTeam, setEditingTeam] = useState<any>(null);
@@ -42,7 +47,11 @@ export default function AdminRankingsPage() {
 
   useEffect(() => {
     fetchStandings();
-  }, [activeLeague, standingType]);
+  }, []);
+
+  const toggleLeague = (league: string) => {
+    setExpandedLeagues(prev => ({ ...prev, [league]: !prev[league] }));
+  };
 
   async function runFullSync() {
     setSyncing(true);
@@ -77,14 +86,12 @@ export default function AdminRankingsPage() {
     const { data, error } = await supabase
       .from('standings')
       .select('*')
-      .eq('league', activeLeague)
-      .eq('type', standingType)
       .order('pos', { ascending: true });
 
     if (error) {
       console.error('Error fetching standings:', error);
     } else {
-      setTeams(data || []);
+      setAllStandings(data || []);
     }
     setLoading(false);
   }
@@ -145,9 +152,8 @@ export default function AdminRankingsPage() {
     setSaving(null);
   };
 
-
   return (
-    <div className="space-y-8 animate-in fade-in duration-500 relative w-full flex flex-col items-center md:items-stretch">
+    <div className="space-y-8 animate-in fade-in duration-500 relative w-full flex flex-col items-center md:items-stretch pb-20">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row items-center md:items-center justify-between gap-4">
         <div className="flex flex-col items-center md:items-start w-full">
@@ -156,125 +162,29 @@ export default function AdminRankingsPage() {
             <span className="truncate">GESTIÓN DE CLASIFICACIONES</span>
           </h1>
           <p className="text-white/40 text-[10px] sm:text-xs uppercase font-bold tracking-widest mt-1 text-center md:text-left">
-            Edición manual de tablas de posiciones
+            Edición manual y sincronización de tablas de posiciones
           </p>
         </div>
-        
       </div>
 
-      {/* Selectors Section */}
-      <div className="flex flex-col md:flex-row items-center md:items-end gap-6 md:gap-8 mb-12 bg-white/[0.01] border border-white/5 p-4 sm:p-5 md:p-8 rounded-[24px] sm:rounded-[32px] w-fit max-w-[calc(100vw-32px)]">
-        {/* League Selector */}
-        <div className="relative flex flex-col items-center md:items-start">
-          <div className="flex items-center gap-4 mb-3">
-            <Filter className="h-3 w-3 text-neon-green" />
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20">Filtrar por Competición</span>
-          </div>
-          
-          <div className="relative w-fit">
-            <button
-              onClick={() => setIsLeagueMenuOpen(!isLeagueMenuOpen)}
-              className={cn(
-                "inline-flex items-center gap-4 px-6 py-4 rounded-2xl border transition-all duration-300",
-                isLeagueMenuOpen 
-                  ? "bg-white/[0.05] border-neon-green/50 shadow-[0_10px_40px_-10px_rgba(0,255,135,0.2)]" 
-                  : "bg-white/[0.02] border-white/10 hover:border-white/20 hover:bg-white/[0.04]"
-              )}
-            >
-              <div className="flex items-center gap-3">
-                <div className="h-8 w-8 bg-white rounded-lg p-1 flex items-center justify-center shrink-0 shadow-lg border border-white/5 overflow-hidden">
-                  {getLeagueLogo(activeLeague)
-                    ? <img src={getLeagueLogo(activeLeague)!} alt="" className="h-full w-full object-contain" />
-                    : <span className="text-[9px] font-black text-neon-green">{activeLeague.split('-').pop()?.trim().slice(0,3).toUpperCase()}</span>
-                  }
-                </div>
-                <div className="flex flex-col items-start min-w-0">
-                  <span className="text-xs font-black uppercase tracking-widest text-white leading-tight truncate w-full max-w-[120px] sm:max-w-none">{activeLeague}</span>
-                  <span className="text-[9px] font-bold text-neon-green/60 whitespace-nowrap">Actualizado recientemente</span>
-                </div>
-              </div>
-              <ChevronDown className={cn("h-4 w-4 text-white/20 transition-transform duration-300 shrink-0", isLeagueMenuOpen && "rotate-180 text-neon-green")} />
-            </button>
-
-            {/* Dropdown Menu */}
-            {isLeagueMenuOpen && (
-              <>
-                <div className="fixed inset-0 z-40" onClick={() => setIsLeagueMenuOpen(false)} />
-                <div className="absolute top-full left-0 min-w-full mt-2 z-50 bg-[#0F0F0F] border border-white/10 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                  <div className="max-h-[400px] overflow-y-auto no-scrollbar py-2">
-                    {LEAGUES.map((league) => {
-                      const logo = MASTER_LEAGUES[league];
-                      const isActive = activeLeague === league;
-                      
-                      return (
-                        <button
-                          key={league}
-                          onClick={() => {
-                            setActiveLeague(league);
-                            setIsLeagueMenuOpen(false);
-                          }}
-                          className={cn(
-                            "w-full flex items-center gap-4 px-6 py-4 transition-all hover:bg-white/5 group",
-                            isActive && "bg-neon-green/5"
-                          )}
-                        >
-                          <div className="h-8 w-8 bg-white rounded-md p-1 flex items-center justify-center shrink-0 opacity-80 group-hover:opacity-100 transition-opacity overflow-hidden">
-                            {getLeagueLogo(league)
-                              ? <img src={getLeagueLogo(league)!} alt="" className="h-full w-full object-contain" />
-                              : <span className="text-[8px] font-black text-neon-green">{league.split('-').pop()?.trim().slice(0,3).toUpperCase()}</span>
-                            }
-                          </div>
-                          <span className={cn(
-                            "text-[11px] font-black uppercase tracking-widest transition-colors",
-                            isActive ? "text-neon-green" : "text-white/60 group-hover:text-white"
-                          )}>
-                            {league}
-                          </span>
-                          {isActive && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-neon-green shadow-[0_0_10px_rgba(0,255,135,0.8)]" />}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
+      {/* Top Sync Section */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mb-12 bg-white/[0.01] border border-white/5 p-6 sm:p-8 rounded-[24px] sm:rounded-[32px] w-full shadow-2xl backdrop-blur-sm">
+        <div>
+          <h2 className="text-base sm:text-lg font-black text-white uppercase tracking-wider">Sincronización Automática</h2>
+          <p className="text-white/40 text-[10px] sm:text-xs uppercase font-bold tracking-widest mt-1">
+            Extraer y actualizar datos en tiempo real desde Flashscore
+          </p>
         </div>
 
-        {/* Type Selector & Sync */}
-        <div className="flex flex-col items-center md:items-start gap-3 w-full">
-          <div className="flex items-center gap-4">
-            <Filter className="h-3 w-3 text-neon-green" />
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20">Tipo de Clasificación</span>
-          </div>
-          <div className="flex items-stretch justify-center md:justify-start gap-2 w-full md:w-auto">
-            <div className="flex p-1 bg-white/[0.02] border border-white/5 rounded-2xl w-fit">
-              {['General', 'Local', 'Visitante'].map((type) => (
-                <button
-                  key={type}
-                  onClick={() => setStandingType(type)}
-                  className={cn(
-                    "px-2.5 sm:px-4 md:px-6 py-2.5 sm:py-3 rounded-xl text-[8px] sm:text-[9px] md:text-[10px] font-black uppercase tracking-tighter sm:tracking-widest transition-all duration-300",
-                    standingType === type 
-                      ? "bg-neon-green text-deep-black shadow-lg" 
-                      : "text-white/40 hover:text-white/70"
-                  )}
-                >
-                  {type}
-                </button>
-              ))}
-            </div>
-
-            <button 
-              onClick={runFullSync}
-              disabled={syncing}
-              className="px-4 rounded-2xl bg-white/[0.03] border border-white/10 text-white/40 hover:text-neon-green hover:border-neon-green/30 transition-all hover:bg-white/[0.05] h-full min-h-[46px] md:min-h-[50px] disabled:cursor-not-allowed disabled:opacity-50 flex-shrink-0 flex items-center justify-center"
-              title="Sincronizar Clasificaciones"
-            >
-              <RefreshCw className={cn("h-4 w-4", syncing && "animate-spin text-neon-green")} />
-            </button>
-          </div>
-        </div>
+        <button 
+          onClick={runFullSync}
+          disabled={syncing}
+          className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-neon-green text-deep-black font-black text-xs uppercase tracking-widest shadow-[0_0_30px_rgba(0,255,135,0.2)] hover:shadow-[0_0_50px_rgba(0,255,135,0.4)] transition-all hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center gap-3"
+          title="Sincronizar Clasificaciones"
+        >
+          <RefreshCw className={cn("h-4 w-4", syncing && "animate-spin")} />
+          {syncing ? "SINCRONIZANDO..." : "SINCRONIZAR CLASIFICACIONES"}
+        </button>
       </div>
 
       {/* Status Message */}
@@ -288,144 +198,208 @@ export default function AdminRankingsPage() {
         </div>
       )}
 
-      {/* Standings Table */}
-      <div className="bg-white/[0.02] border border-white/5 rounded-3xl overflow-hidden backdrop-blur-sm shadow-2xl w-full max-w-[calc(100vw-32px)] sm:max-w-none">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse border-spacing-0">
-            <thead>
-              <tr className="border-b border-white/5 bg-white/[0.01]">
-                <th className="px-2 md:px-6 py-6 text-[10px] font-black text-white/20 uppercase tracking-[0.2em] text-center w-10 md:w-16">#</th>
-                <th className="px-2 md:px-6 py-6 text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">Equipo</th>
-                <th className="px-1 md:px-4 py-6 text-[10px] font-black text-white/20 uppercase tracking-[0.2em] text-center hidden sm:table-cell">PJ</th>
-                <th className="px-1 md:px-4 py-6 text-[10px] font-black text-white/20 uppercase tracking-[0.2em] text-center hidden md:table-cell">G</th>
-                <th className="px-1 md:px-4 py-6 text-[10px] font-black text-white/20 uppercase tracking-[0.2em] text-center hidden md:table-cell">E</th>
-                <th className="px-1 md:px-4 py-6 text-[10px] font-black text-white/20 uppercase tracking-[0.2em] text-center hidden md:table-cell">P</th>
-                <th className="px-1 md:px-4 py-6 text-[10px] font-black text-white/20 uppercase tracking-[0.2em] text-center hidden sm:table-cell">Goles</th>
-                <th className="px-1 md:px-4 py-6 text-[10px] font-black text-white/20 uppercase tracking-[0.2em] text-center hidden lg:table-cell">DG</th>
-                <th className="px-2 md:px-4 py-6 text-[10px] font-black text-neon-green uppercase tracking-[0.2em] text-center bg-neon-green/5">PTS</th>
-                <th className="px-4 py-6 text-[10px] font-black text-white/20 uppercase tracking-[0.2em] text-center hidden md:table-cell">Forma</th>
-                <th className="px-2 md:px-6 py-6 text-[10px] font-black text-white/20 uppercase tracking-[0.2em] text-right">Acción</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/[0.03]">
-              {loading ? (
-                Array.from({ length: 10 }).map((_, i) => (
-                  <tr key={i} className="animate-pulse">
-                    <td colSpan={11} className="px-6 py-10 h-20 bg-white/[0.01]"></td>
-                  </tr>
-                ))
-              ) : teams.length === 0 ? (
-                <tr>
-                  <td colSpan={11} className="px-6 py-32 text-center text-white/10 font-black uppercase tracking-[0.3em]">
-                    No hay datos disponibles para {activeLeague} ({standingType})
-                  </td>
-                </tr>
-              ) : (
-                teams.map((team) => (
-                  <tr key={team.id} className="group hover:bg-neon-green/[0.02] transition-colors">
-                    <td className="px-2 md:px-6 py-6 text-center">
-                      <div className={cn(
-                        "inline-flex items-center justify-center h-7 w-7 md:h-8 md:w-8 rounded-lg text-[10px] md:text-xs font-black border",
-                        team.zone === "champions" ? "bg-neon-green text-deep-black border-neon-green shadow-[0_0_15px_rgba(200,255,0,0.3)]" : 
-                        team.zone === "europa" ? "bg-white/5 text-neon-green border-neon-green/20" :
-                        team.zone === "relegation" ? "bg-red-500/10 text-red-500 border-red-500/20" :
-                        "bg-white/5 text-white/40 border-white/10"
-                      )}>
-                        {team.pos}
-                      </div>
-                    </td>
-                    <td className="px-2 md:px-6 py-6">
-                      <div className="flex items-center gap-2 md:gap-4">
-                        <div className="h-8 w-8 md:h-10 md:w-10 bg-white rounded-lg p-1 shadow-sm flex items-center justify-center shrink-0 border border-white/10 group-hover:scale-110 transition-transform overflow-hidden">
-                          {team.logo_team || team.logo_url ? (
-                            <img 
-                              src={team.logo_team || team.logo_url} 
-                              alt={team.team} 
-                              className="h-full w-full object-contain"
-                              onError={(e) => {
-                                const initials = (team.public_name || team.team || '?')
-                                  .split(' ').slice(0, 2).map((w: string) => w[0]).join('').toUpperCase();
-                                const parent = e.currentTarget.parentElement;
-                                if (parent) {
-                                  parent.style.background = 'rgba(255,255,255,0.05)';
-                                  parent.innerHTML = `<span style="font-size:10px;font-weight:900;color:#C8FF00;letter-spacing:0.1em">${initials}</span>`;
-                                }
-                              }}
-                            />
-                          ) : (
-                            <span className="text-[10px] font-black text-neon-green">
-                              {(team.public_name || team.team || '?').split(' ').slice(0,2).map((w: string) => w[0]).join('').toUpperCase()}
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex flex-col min-w-0">
-                          <span className="text-white font-black text-xs md:text-sm uppercase tracking-tight truncate">{team.public_name || team.team}</span>
-                          <span className="text-white/20 text-[8px] md:text-[9px] font-bold uppercase tracking-widest truncate hidden sm:block">{team.team}</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-2 md:px-4 py-6 text-center hidden sm:table-cell">
-                      <span className="text-white font-mono font-bold text-xs md:text-sm">{team.pj}</span>
-                    </td>
-                    <td className="px-2 md:px-4 py-6 text-center hidden md:table-cell">
-                      <span className="text-white/40 font-mono text-xs md:text-sm">{team.pg || team.g || 0}</span>
-                    </td>
-                    <td className="px-2 md:px-4 py-6 text-center hidden md:table-cell">
-                      <span className="text-white/40 font-mono text-xs md:text-sm">{team.pe || team.e || 0}</span>
-                    </td>
-                    <td className="px-2 md:px-4 py-6 text-center hidden md:table-cell">
-                      <span className="text-white/40 font-mono text-xs md:text-sm">{team.pp || team.p || 0}</span>
-                    </td>
-                    <td className="px-2 md:px-4 py-6 text-center hidden sm:table-cell">
-                      <span className="text-white/60 font-mono text-xs md:text-sm">{team.goals}</span>
-                    </td>
-                    <td className="px-2 md:px-4 py-6 text-center hidden lg:table-cell">
-                      <span className="text-white/40 font-mono text-xs">
-                        {(() => {
-                          const [gf, gc] = (team.goals || "0:0").split(':').map(Number);
-                          const diff = gf - gc;
-                          return isNaN(diff) ? "0" : (diff > 0 ? `+${diff}` : diff);
-                        })()}
-                      </span>
-                    </td>
-                    <td className="px-2 md:px-4 py-6 text-center bg-neon-green/[0.01]">
-                      <span className="text-neon-green font-black text-lg md:text-2xl italic tracking-tighter shadow-[0_0_10px_rgba(0,255,135,0.1)]">{team.pts}</span>
-                    </td>
-                    <td className="px-6 py-6 hidden md:table-cell">
-                      <div className="flex items-center justify-center gap-1.5">
-                        {(team.form || "").split("").slice(-5).map((char: string, i: number) => (
-                          <div 
-                            key={i} 
-                            className={cn(
-                              "w-6 h-6 md:w-7 md:h-7 rounded-md flex items-center justify-center text-[9px] md:text-[10px] font-black shadow-lg",
-                              char === "W" || char === "G" ? "bg-neon-green text-deep-black" :
-                              char === "D" || char === "E" ? "bg-white/10 text-white/60 border border-white/5" :
-                              char === "L" || char === "P" ? "bg-red-500 text-white" :
-                              "bg-white/5 text-white/20"
-                            )}
-                          >
-                            {char === 'W' ? 'G' : char === 'D' ? 'E' : char === 'L' ? 'P' : char}
-                          </div>
-                        ))}
-                      </div>
-                    </td>
-                    <td className="px-2 md:px-6 py-6 text-right">
-                      <div className="flex items-center justify-end gap-1.5 md:gap-2">
-                        <button 
-                          onClick={() => openEditModal(team)}
-                          title="Editar equipo"
-                          className="h-8 w-8 md:h-10 md:w-10 flex items-center justify-center rounded-xl bg-white/5 text-white/40 hover:bg-white/10 hover:text-white transition-all border border-white/5"
-                        >
-                          <Pencil className="h-3.5 w-3.5 md:h-4 md:w-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
+      {/* Standings Content - Accordion Layout */}
+      <div className="w-full space-y-6">
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-32 border border-white/5 rounded-3xl bg-white/[0.02]">
+            <Loader2 className="h-10 w-10 text-neon-green animate-spin mb-4" />
+            <span className="text-[10px] font-black uppercase tracking-[0.5em] text-white/20">Cargando clasificaciones...</span>
+          </div>
+        ) : LEAGUES.map((league) => {
+          const currentType = leagueTypes[league] || 'General';
+          const leagueStandings = allStandings.filter(t => t.league === league && t.type === currentType);
+          const isExpanded = !!expandedLeagues[league];
+          const logo = getLeagueLogo(league);
+
+          return (
+            <div 
+              key={league} 
+              className="border border-white/10 rounded-xl overflow-hidden bg-[#070D14]/60 shadow-[0_10px_30px_rgba(0,0,0,0.3)] transition-all duration-300"
+            >
+              {/* League Header / Accordion Bar */}
+              <div 
+                onClick={() => toggleLeague(league)}
+                className="flex items-center justify-between bg-[#0B1727] hover:bg-[#112238] border-b border-white/10 px-4 sm:px-6 py-3.5 cursor-pointer transition-all duration-200 select-none group"
+              >
+                <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                  <Star className="h-4 w-4 text-white/40 hover:text-yellow-400 transition-colors shrink-0 cursor-pointer" onClick={(e) => { e.stopPropagation(); }} />
+                  <div className="h-6 w-6 sm:h-7 sm:w-7 bg-white rounded-md p-1 flex items-center justify-center shrink-0 shadow-md overflow-hidden">
+                    {logo ? (
+                      <img src={logo} alt="" className="h-full w-full object-contain" />
+                    ) : (
+                      <span className="text-[8px] font-black text-neon-green">{league.split('-').pop()?.trim().slice(0,3).toUpperCase()}</span>
+                    )}
+                  </div>
+                  <span className="text-xs sm:text-sm font-black text-white uppercase tracking-wider truncate group-hover:text-neon-green transition-colors">
+                    {league}
+                  </span>
+                  <span className="text-[10px] font-bold text-neon-green/80 bg-neon-green/10 px-2 py-0.5 rounded-full border border-neon-green/20 ml-1 shrink-0">
+                    {leagueStandings.length} {league === "Europe - Euro" || league === "World - World Cup" ? "selecciones" : "equipos"}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-4 shrink-0 ml-4">
+                  <ChevronDown className={cn("h-4 w-4 text-white/40 group-hover:text-white transition-transform duration-300", isExpanded && "rotate-180 text-neon-green")} />
+                </div>
+              </div>
+
+              {/* Expanded Standings Table */}
+              {isExpanded && (
+                <div className="bg-[#070D14] divide-y divide-white/5">
+                  {/* Selector de Modalidad estilo Flashscore por debajo del nombre de la liga */}
+                  <div className="bg-[#070D14] px-4 sm:px-6 py-1.5 border-b border-white/10 flex items-center gap-1 sm:gap-2 overflow-x-auto scrollbar-none select-none">
+                    {(['General', 'Local', 'Visitante'] as const).map((type) => (
+                      <button
+                        key={type}
+                        onClick={(e) => { 
+                          e.stopPropagation(); 
+                          setLeagueTypes(prev => ({ ...prev, [league]: type })); 
+                        }}
+                        className={cn(
+                          "px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider transition-all duration-200 whitespace-nowrap",
+                          currentType === type 
+                            ? "bg-neon-green text-deep-black shadow-[0_0_10px_rgba(0,255,135,0.2)] font-black" 
+                            : "text-white/40 hover:text-white hover:bg-white/5"
+                        )}
+                      >
+                        {type}
+                      </button>
+                    ))}
+                  </div>
+
+                  {leagueStandings.length === 0 ? (
+                    <div className="px-6 py-12 text-center text-xs font-bold text-white/30 italic">
+                      No hay datos de clasificación disponibles para esta competición ({currentType}).
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto no-scrollbar">
+                      <table className="w-full text-left border-collapse border-spacing-0">
+                        <thead>
+                          <tr className="border-b border-white/5 bg-white/[0.01]">
+                            <th className="px-2 md:px-6 py-4 text-[10px] font-black text-white/20 uppercase tracking-[0.2em] text-center w-10 md:w-16">#</th>
+                            <th className="px-2 md:px-6 py-4 text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">Equipo</th>
+                            <th className="px-1 md:px-4 py-4 text-[10px] font-black text-white/20 uppercase tracking-[0.2em] text-center hidden sm:table-cell">PJ</th>
+                            <th className="px-1 md:px-4 py-4 text-[10px] font-black text-white/20 uppercase tracking-[0.2em] text-center hidden md:table-cell">G</th>
+                            <th className="px-1 md:px-4 py-4 text-[10px] font-black text-white/20 uppercase tracking-[0.2em] text-center hidden md:table-cell">E</th>
+                            <th className="px-1 md:px-4 py-4 text-[10px] font-black text-white/20 uppercase tracking-[0.2em] text-center hidden md:table-cell">P</th>
+                            <th className="px-1 md:px-4 py-4 text-[10px] font-black text-white/20 uppercase tracking-[0.2em] text-center hidden sm:table-cell">Goles</th>
+                            <th className="px-1 md:px-4 py-4 text-[10px] font-black text-white/20 uppercase tracking-[0.2em] text-center hidden lg:table-cell">DG</th>
+                            <th className="px-2 md:px-4 py-4 text-[10px] font-black text-neon-green uppercase tracking-[0.2em] text-center bg-neon-green/5">PTS</th>
+                            <th className="px-4 py-4 text-[10px] font-black text-white/20 uppercase tracking-[0.2em] text-center hidden md:table-cell">Forma</th>
+                            <th className="px-2 md:px-6 py-4 text-[10px] font-black text-white/20 uppercase tracking-[0.2em] text-right">Acción</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/[0.03]">
+                          {leagueStandings.map((team) => (
+                            <tr key={team.id} className="group hover:bg-neon-green/[0.02] transition-colors">
+                              <td className="px-2 md:px-6 py-4 text-center">
+                                <div className={cn(
+                                  "inline-flex items-center justify-center h-7 w-7 md:h-8 md:w-8 rounded-lg text-[10px] md:text-xs font-black border",
+                                  team.zone === "champions" ? "bg-neon-green text-deep-black border-neon-green shadow-[0_0_15px_rgba(200,255,0,0.3)]" : 
+                                  team.zone === "europa" ? "bg-white/5 text-neon-green border-neon-green/20" :
+                                  team.zone === "relegation" ? "bg-red-500/10 text-red-500 border-red-500/20" :
+                                  "bg-white/5 text-white/40 border-white/10"
+                                )}>
+                                  {team.pos}
+                                </div>
+                              </td>
+                              <td className="px-2 md:px-6 py-4">
+                                <div className="flex items-center gap-2 md:gap-4">
+                                  <div className="h-8 w-8 md:h-10 md:w-10 bg-white rounded-lg p-1 shadow-sm flex items-center justify-center shrink-0 border border-white/10 group-hover:scale-110 transition-transform overflow-hidden">
+                                    {team.logo_team || team.logo_url ? (
+                                      <img 
+                                        src={team.logo_team || team.logo_url} 
+                                        alt={team.team} 
+                                        className="h-full w-full object-contain"
+                                        onError={(e) => {
+                                          const initials = (team.public_name || team.team || '?')
+                                            .split(' ').slice(0, 2).map((w: string) => w[0]).join('').toUpperCase();
+                                          const parent = e.currentTarget.parentElement;
+                                          if (parent) {
+                                            parent.style.background = 'rgba(255,255,255,0.05)';
+                                            parent.innerHTML = `<span style="font-size:10px;font-weight:900;color:#C8FF00;letter-spacing:0.1em">${initials}</span>`;
+                                          }
+                                        }}
+                                      />
+                                    ) : (
+                                      <span className="text-[10px] font-black text-neon-green">
+                                        {(team.public_name || team.team || '?').split(' ').slice(0,2).map((w: string) => w[0]).join('').toUpperCase()}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="flex flex-col min-w-0">
+                                    <span className="text-white font-black text-xs md:text-sm uppercase tracking-tight truncate">{team.public_name || team.team}</span>
+                                    <span className="text-white/20 text-[8px] md:text-[9px] font-bold uppercase tracking-widest truncate hidden sm:block">{team.team}</span>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="px-2 md:px-4 py-4 text-center hidden sm:table-cell">
+                                <span className="text-white font-mono font-bold text-xs md:text-sm">{team.pj}</span>
+                              </td>
+                              <td className="px-2 md:px-4 py-4 text-center hidden md:table-cell">
+                                <span className="text-white/40 font-mono text-xs md:text-sm">{team.pg || team.g || 0}</span>
+                              </td>
+                              <td className="px-2 md:px-4 py-4 text-center hidden md:table-cell">
+                                <span className="text-white/40 font-mono text-xs md:text-sm">{team.pe || team.e || 0}</span>
+                              </td>
+                              <td className="px-2 md:px-4 py-4 text-center hidden md:table-cell">
+                                <span className="text-white/40 font-mono text-xs md:text-sm">{team.pp || team.p || 0}</span>
+                              </td>
+                              <td className="px-2 md:px-4 py-4 text-center hidden sm:table-cell">
+                                <span className="text-white/60 font-mono text-xs md:text-sm">{team.goals}</span>
+                              </td>
+                              <td className="px-2 md:px-4 py-4 text-center hidden lg:table-cell">
+                                <span className="text-white/40 font-mono text-xs">
+                                  {(() => {
+                                    const [gf, gc] = (team.goals || "0:0").split(':').map(Number);
+                                    const diff = gf - gc;
+                                    return isNaN(diff) ? "0" : (diff > 0 ? `+${diff}` : diff);
+                                  })()}
+                                </span>
+                              </td>
+                              <td className="px-2 md:px-4 py-4 text-center bg-neon-green/[0.01]">
+                                <span className="text-neon-green font-black text-lg md:text-2xl italic tracking-tighter shadow-[0_0_10px_rgba(0,255,135,0.1)]">{team.pts}</span>
+                              </td>
+                              <td className="px-6 py-4 hidden md:table-cell">
+                                <div className="flex items-center justify-center gap-1.5">
+                                  {(team.form || "").split("").slice(-5).map((char: string, i: number) => (
+                                    <div 
+                                      key={i} 
+                                      className={cn(
+                                        "w-6 h-6 md:w-7 md:h-7 rounded-md flex items-center justify-center text-[9px] md:text-[10px] font-black shadow-lg",
+                                        char === "W" || char === "G" ? "bg-neon-green text-deep-black" :
+                                        char === "D" || char === "E" ? "bg-white/10 text-white/60 border border-white/5" :
+                                        char === "L" || char === "P" ? "bg-red-500 text-white" :
+                                        "bg-white/5 text-white/20"
+                                      )}
+                                    >
+                                      {char === 'W' ? 'G' : char === 'D' ? 'E' : char === 'L' ? 'P' : char}
+                                    </div>
+                                  ))}
+                                </div>
+                              </td>
+                              <td className="px-2 md:px-6 py-4 text-right">
+                                <div className="flex items-center justify-end gap-1.5 md:gap-2">
+                                  <button 
+                                    onClick={() => openEditModal(team)}
+                                    title="Editar equipo"
+                                    className="h-8 w-8 md:h-10 md:w-10 flex items-center justify-center rounded-xl bg-white/5 text-white/40 hover:bg-white/10 hover:text-white transition-all border border-white/5"
+                                  >
+                                    <Pencil className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
               )}
-            </tbody>
-          </table>
-        </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* MODAL EDIT FORM */}

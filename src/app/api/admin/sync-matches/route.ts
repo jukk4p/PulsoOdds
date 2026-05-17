@@ -45,11 +45,15 @@ export async function POST(request: Request) {
     let errorOutput = '';
 
     child.stdout.on('data', (data: Buffer | string) => {
-      output += data.toString();
+      const str = data.toString();
+      output += str;
+      console.log(str.trim());
     });
 
     child.stderr.on('data', (data: Buffer | string) => {
-      errorOutput += data.toString();
+      const str = data.toString();
+      errorOutput += str;
+      console.error(str.trim());
     });
 
     return new Promise<Response>((resolve) => {

@@ -6,9 +6,21 @@ import { MASTER_LEAGUES, MASTER_TEAMS } from './masterDictionaries';
  */
 export const TEAM_LOGOS: Record<string, string> = MASTER_TEAMS;
 
+let lowercaseTeamLogosCache: Record<string, string> | null = null;
+
+function getLowercaseCache() {
+  if (!lowercaseTeamLogosCache) {
+    lowercaseTeamLogosCache = {};
+    for (const [key, value] of Object.entries(TEAM_LOGOS)) {
+      lowercaseTeamLogosCache[key.toLowerCase()] = value;
+    }
+  }
+  return lowercaseTeamLogosCache;
+}
+
 /**
  * Returns the Flashscore logo URL for a given team name.
- * Normalizes input to match the dictionary keys.
+ * Normalizes input to match the dictionary keys with O(1) lookup.
  */
 export function getTeamLogo(teamName: string): string | null {
   if (!teamName) return null;
@@ -16,13 +28,12 @@ export function getTeamLogo(teamName: string): string | null {
   // Try exact match
   if (TEAM_LOGOS[teamName]) return TEAM_LOGOS[teamName];
   
-  // Try normalized match (case insensitive, trim)
-  const normalized = teamName.trim();
-  const found = Object.keys(TEAM_LOGOS).find(
-    key => key.toLowerCase() === normalized.toLowerCase()
-  );
+  // Try normalized O(1) match
+  const normalized = teamName.trim().toLowerCase();
+  const cache = getLowercaseCache();
+  if (cache[normalized]) return cache[normalized];
   
-  return found ? TEAM_LOGOS[found] : null;
+  return null;
 }
 
 /**

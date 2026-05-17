@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { cn, translateBettingTerm } from "@/lib/utils";
-import { Circle, ChevronDown, ChevronUp, Trophy, Zap, Activity, Clock, CheckCircle2, XCircle, MinusCircle } from "lucide-react";
+import { Zap, Clock, CheckCircle2, XCircle, MinusCircle } from "lucide-react";
 
 interface PickCardProps {
   pick: {

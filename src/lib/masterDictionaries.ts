@@ -461,6 +461,7 @@ export const MASTER_LEAGUES: Record<string, string> = {
   "Serie B": "https://static.flashscore.com/res/image/data/4U93rbmd-rTQVhPCF.png",
   "Ligue 2": "https://static.flashscore.com/res/image/data/IHwVm9ld-G2ORd69c.png",
   "Serie A / Brasil": "https://static.flashscore.com/res/image/data/6o8mQjjd-xlq6J1Ve.png",
+  "Serie A Betano / Brasil": "https://static.flashscore.com/res/image/data/6o8mQjjd-xlq6J1Ve.png",
   "MLS": "https://static.flashscore.com/res/image/data/CAewoRXI-IaphYoEb.png",
   "Liga Portugal": "https://static.flashscore.com/res/image/data/d8CmTLfU-v340n9hA.png",
   "Eurocopa": "https://static.flashscore.com/res/image/data/EcI2WQVI-lK8GVqO2.png",

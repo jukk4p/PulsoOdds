@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useEffect, useState, useMemo } from "react";
-import { cn, normalizeTeamName, formatDateSpain } from "@/lib/utils";
-import { Clock, Calendar, Loader2, ChevronRight } from "lucide-react";
+import Link from "next/link";
+import { cn, normalizeTeamName } from "@/lib/utils";
+import { Clock, Calendar, RefreshCw, ChevronDown, Star, ExternalLink } from "lucide-react";
 import { getTeamLogo } from "@/lib/logos";
 import { MASTER_LEAGUES } from "@/lib/masterDictionaries";
-import Image from "next/image";
 
 const LEAGUES = [
   "LaLiga EA Sports",
@@ -31,228 +31,293 @@ type Match = {
   time: string;
   home: string;
   away: string;
+  forecast?: {
+    expectedGoals?: { home: string; away: string };
+    probableResults?: string;
+    teamInsights?: string[];
+  };
+  injuries?: { player: string; reason: string }[];
+  doubtful?: { player: string; reason: string }[];
+  tvChannels?: string[];
+  recentForm?: {
+    home?: { date: string; match: string; result: string }[];
+    away?: { date: string; match: string; result: string }[];
+  };
+  h2h?: { date: string; match: string; result?: string }[];
 };
 
-function parseDate(time: string): string {
-  // time example: "02.05. 21:00" or "03.05. 14:00"
-  const parts = time.split(" ");
-  return parts[0] || ""; // "02.05."
-}
-
-function formatDateLabel(raw: string): string {
-  if (!raw) return "Sin fecha";
+const isPastMatch = (dateStr: string) => {
+  if (!dateStr) return false;
+  const clean = dateStr.replace(/[^\d.]/g, '');
+  const parts = clean.split('.').filter(Boolean).map(Number);
+  if (parts.length < 2) return false;
+  const matchDay = parts[0];
+  const matchMonth = parts[1];
   
-  // raw comes as "02.05." from parseDate
-  const parts = raw.split(".").filter(Boolean);
-  if (parts.length < 2) return raw;
-
-  const day = parseInt(parts[0], 10);
-  const month = parseInt(parts[1], 10);
-  const year = new Date().getFullYear();
+  const now = new Date();
+  const currentDay = now.getDate();
+  const currentMonth = now.getMonth() + 1;
   
-  // Create a proper date object (midday to avoid timezone shifts)
-  const date = new Date(year, month - 1, day, 12, 0, 0);
-  
-  const d = new Date();
-  const today = `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}.`;
-  const tomorrow = new Date(d); 
-  tomorrow.setDate(d.getDate() + 1);
-  const tomorrowStr = `${String(tomorrow.getDate()).padStart(2, "0")}.${String(tomorrow.getMonth() + 1).padStart(2, "0")}.`;
-
-  if (raw === today) return "Hoy";
-  if (raw === tomorrowStr) return "Mañana";
-
-  // Using the shared utility for consistency: "sábado, 09 de mayo"
-  return formatDateSpain(date);
-}
+  if (matchMonth < currentMonth) return true;
+  if (matchMonth === currentMonth && matchDay < currentDay) return true;
+  return false;
+};
 
 export default function MatchesPage() {
-  const [activeLeague, setActiveLeague] = useState(LEAGUES[0]);
   const [allData, setAllData] = useState<Record<string, Match[]>>({});
   const [loading, setLoading] = useState(true);
 
-  // Load once
+  const [expandedLeagues, setExpandedLeagues] = useState<Record<string, boolean>>({
+    "LaLiga EA Sports": true,
+    "Premier League": true,
+  });
+
+  const toggleLeague = (league: string) => {
+    setExpandedLeagues(prev => ({ ...prev, [league]: !prev[league] }));
+  };
+
+  const [starredLeagues, setStarredLeagues] = useState<Record<string, boolean>>({});
+
   useEffect(() => {
-    fetch("/upcoming_matches_detailed.json")
-      .then((r) => r.json())
-      .then(setAllData)
-      .catch(() => setAllData({}))
-      .finally(() => setLoading(false));
+    try {
+      const saved = localStorage.getItem("starredLeagues");
+      if (saved) setStarredLeagues(JSON.parse(saved));
+    } catch (e) {}
   }, []);
 
-  const matches = useMemo(() => allData[activeLeague] || [], [allData, activeLeague]);
-
-  // Group by date
-  const grouped = useMemo(() => {
-    const map: Record<string, Match[]> = {};
-    for (const m of matches) {
-      const key = parseDate(m.time);
-      if (!map[key]) map[key] = [];
-      map[key].push(m);
-    }
-    return map;
-  }, [matches]);
-
-  const dateKeys = useMemo(() => {
-    return Object.keys(grouped).sort((a, b) => {
-      const partsA = a.split('.').filter(Boolean);
-      const partsB = b.split('.').filter(Boolean);
-      if (partsA.length < 2 || partsB.length < 2) return 0;
-      
-      const dayA = parseInt(partsA[0], 10);
-      const monthA = parseInt(partsA[1], 10);
-      const dayB = parseInt(partsB[0], 10);
-      const monthB = parseInt(partsB[1], 10);
-      
-      if (monthA !== monthB) return monthA - monthB;
-      return dayA - dayB;
+  const toggleStarLeague = (league: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setStarredLeagues(prev => {
+      const next = { ...prev, [league]: !prev[league] };
+      try {
+        localStorage.setItem("starredLeagues", JSON.stringify(next));
+      } catch (err) {}
+      return next;
     });
-  }, [grouped]);
+  };
+
+  const sortedLeagues = useMemo(() => {
+    return [...LEAGUES].sort((a, b) => {
+      const aStarred = !!starredLeagues[a];
+      const bStarred = !!starredLeagues[b];
+      if (aStarred && !bStarred) return -1;
+      if (!aStarred && bStarred) return 1;
+      return LEAGUES.indexOf(a) - LEAGUES.indexOf(b);
+    });
+  }, [starredLeagues]);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const r = await fetch("/api/admin/matches?t=" + Date.now());
+      const data = await r.json();
+      setAllData(data);
+    } catch (err) {
+      console.error("Error loading matches from api, trying fallback:", err);
+      try {
+        const fallback = await fetch("/upcoming_matches_detailed.json");
+        const fbData = await fallback.json();
+        setAllData(fbData);
+      } catch (fbErr) {
+        setAllData({});
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const totalMatchesCount = useMemo(() => {
+    return Object.values(allData).reduce((sum, matches) => {
+      const future = (matches || []).filter(m => {
+        let mDate = m.date;
+        if (m.time?.includes(' ')) mDate = m.time.split(' ')[0];
+        return !isPastMatch(mDate);
+      });
+      return sum + future.length;
+    }, 0);
+  }, [allData]);
+
+  const renderResultBadge = (res: string) => {
+    if (!res) return null;
+    const clean = res.toUpperCase().trim();
+    if (clean === "G") return <span className="bg-neon-green/20 text-neon-green border border-neon-green/30 text-[10px] font-black px-1.5 py-0.5 rounded">G</span>;
+    if (clean === "E") return <span className="bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 text-[10px] font-black px-1.5 py-0.5 rounded">E</span>;
+    if (clean === "P") return <span className="bg-red-500/20 text-red-400 border border-red-500/30 text-[10px] font-black px-1.5 py-0.5 rounded">P</span>;
+    return <span className="bg-white/10 text-white/60 border border-white/20 text-[10px] font-black px-1.5 py-0.5 rounded">{clean}</span>;
+  };
 
   return (
-    <div className="min-h-screen bg-deep-black pt-28 pb-20 px-4 md:px-6">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-deep-black pt-28 pb-20 px-4 md:px-6" style={{ zoom: 0.75 } as any}>
+      <div className="max-w-4xl mx-auto space-y-8">
 
-        {/* Header */}
+        {/* Header Section */}
         <header className="flex flex-col items-center text-center mb-14">
           <div className="flex items-center gap-3 mb-5">
             <div className="h-1.5 w-12 bg-accent" />
             <span className="text-xs font-black uppercase tracking-[0.4em] text-text-muted">Calendario</span>
             <div className="h-1.5 w-12 bg-accent" />
           </div>
-          <h1 className="text-3xl md:text-5xl font-display font-black text-text-primary uppercase tracking-tighter leading-[0.85]">
+          <h1 className="text-3xl md:text-5xl font-display font-black text-text-primary uppercase tracking-tighter leading-[0.85] mb-4">
             Próximos{" "}
             <span className="text-accent text-glow">Partidos</span>
           </h1>
+          <p className="text-text-muted text-xs font-medium max-w-lg mx-auto">
+            Despliega cada competición para ver los encuentros programados y cuotas automáticas. ({totalMatchesCount} eventos totales)
+          </p>
         </header>
 
-        {/* League Tabs */}
-        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-4 mb-10">
-          {LEAGUES.map((league) => {
-            const logo = MASTER_LEAGUES[league];
-            const isActive = activeLeague === league;
-            return (
-              <button
-                key={league}
-                onClick={() => setActiveLeague(league)}
-                className={cn(
-                  "group flex items-center gap-2.5 px-4 py-3 rounded-lg border transition-all duration-300 shrink-0",
-                  isActive
-                    ? "border-accent/40 bg-bg-surface shadow-[0_6px_20px_-6px_rgba(200,255,0,0.15)]"
-                    : "border-border-base bg-bg-surface/40 hover:border-accent/20 hover:bg-bg-surface/80"
-                )}
-              >
-                {logo && (
-                  <div className="h-5 w-5 shrink-0 bg-white rounded-sm flex items-center justify-center p-0.5">
-                    <img src={logo} alt="" className="h-full w-full object-contain" referrerPolicy="no-referrer" />
-                  </div>
-                )}
-                <span className={cn(
-                  "text-xs font-black uppercase tracking-[0.15em] whitespace-nowrap transition-colors",
-                  isActive ? "text-text-primary" : "text-text-muted group-hover:text-text-secondary"
-                )}>
-                  {league}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Content */}
-        <div className="min-h-[400px]">
+        {/* Matches Content - Accordion Layout */}
+        <div className="w-full space-y-6">
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-24">
-              <Loader2 className="h-8 w-8 text-accent animate-spin mb-4" />
-              <span className="text-xs font-black uppercase tracking-[0.4em] text-text-muted">Cargando...</span>
+            <div className="flex flex-col items-center justify-center py-32 border border-white/5 rounded-3xl bg-white/[0.02]">
+              <div className="relative">
+                <RefreshCw className="h-10 w-10 text-neon-green animate-spin" />
+                <div className="absolute inset-0 blur-xl bg-neon-green/20 animate-pulse" />
+              </div>
+              <span className="mt-6 text-[10px] font-black uppercase tracking-[0.5em] text-white/20">Procesando datos...</span>
             </div>
-          ) : matches.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-24 border border-border-base rounded-xl bg-bg-surface/30">
-              <Calendar className="h-12 w-12 text-text-muted/10 mb-3" />
-              <p className="text-sm font-black uppercase text-text-muted italic">Sin partidos programados</p>
+          ) : sortedLeagues.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-32 border border-white/5 rounded-3xl bg-white/[0.02]">
+              <Calendar className="h-16 w-16 text-white/5 mb-6" />
+              <p className="text-sm font-black uppercase tracking-widest text-white/20 italic">No hay ligas registradas</p>
             </div>
           ) : (
-            <div className="space-y-8">
-              {dateKeys.map((dateKey) => (
-                <section key={dateKey}>
-                  {/* Date separator */}
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="flex items-center gap-2">
-                      <Calendar size={12} className="text-accent" />
-                      <span className="text-xs font-black uppercase tracking-[0.3em] text-accent">
-                        {formatDateLabel(dateKey)}
+            sortedLeagues.map((league) => {
+              const rawMatches = allData[league] || [];
+              const leagueMatches = rawMatches.filter(m => {
+                let mDate = m.date;
+                if (m.time?.includes(' ')) mDate = m.time.split(' ')[0];
+                return !isPastMatch(mDate);
+              });
+
+              const isExpanded = !!expandedLeagues[league];
+              const logo = MASTER_LEAGUES[league];
+
+              return (
+                <div 
+                  key={league} 
+                  className="border border-white/10 rounded-xl overflow-hidden bg-[#070D14]/60 shadow-[0_10px_30px_rgba(0,0,0,0.3)] transition-all duration-300"
+                >
+                  {/* League Header / Accordion Bar */}
+                  <div 
+                    onClick={() => toggleLeague(league)}
+                    className="flex items-center justify-between bg-[#0B1727] hover:bg-[#112238] border-b border-white/10 px-4 sm:px-6 py-3.5 cursor-pointer transition-all duration-200 select-none group"
+                  >
+                    <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                      <Star 
+                        className={cn(
+                          "h-4 w-4 transition-colors shrink-0 cursor-pointer",
+                          starredLeagues[league] 
+                            ? "text-yellow-400 fill-yellow-400 hover:text-yellow-300" 
+                            : "text-white/40 hover:text-yellow-400"
+                        )} 
+                        onClick={(e) => toggleStarLeague(league, e)} 
+                      />
+                      <div className="h-6 w-6 sm:h-7 sm:w-7 bg-white rounded-md p-1 flex items-center justify-center shrink-0 shadow-md">
+                        <img src={logo || "https://p-cdn.api-sports.io/football/leagues/generic.png"} alt="" className="h-full w-full object-contain" />
+                      </div>
+                      <span className="text-xs sm:text-sm font-black text-white uppercase tracking-wider truncate group-hover:text-neon-green transition-colors">
+                        {league}
+                      </span>
+                      <span className="text-[10px] font-bold text-neon-green/80 bg-neon-green/10 px-2 py-0.5 rounded-full border border-neon-green/20 ml-1 shrink-0">
+                        {leagueMatches.length}
                       </span>
                     </div>
-                    <div className="flex-1 h-px bg-white/5" />
-                    <span className="text-[10px] text-text-muted font-mono">{grouped[dateKey].length} partidos</span>
+
+                    <div className="flex items-center gap-4 shrink-0 ml-4">
+                      <ChevronDown className={cn("h-4 w-4 text-white/40 group-hover:text-white transition-transform duration-300", isExpanded && "rotate-180 text-neon-green")} />
+                    </div>
                   </div>
 
-                  {/* Match cards */}
-                  <div className="space-y-2">
-                    {grouped[dateKey].map((match, idx) => {
-                      const homeLogo = getTeamLogo(match.home);
-                      const awayLogo = getTeamLogo(match.away);
-                      const kickoff = match.time.split(" ").pop() || "";
-
-                      return (
-                        <div
-                          key={match.id + idx}
-                          className="group relative flex items-center gap-4 bg-bg-surface border border-border-base hover:border-accent/25 rounded-xl px-5 py-4 transition-all duration-200 hover:shadow-[0_4px_20px_rgba(0,0,0,0.3)]"
-                        >
-                          {/* Time */}
-                          <div className="flex flex-col items-center justify-center w-14 shrink-0 border-r border-white/5 pr-4">
-                            <Clock size={10} className="text-accent mb-1" />
-                            <span className="text-[12px] font-black tabular-nums text-text-primary">{kickoff}</span>
-                          </div>
-
-                          {/* Teams */}
-                          <div className="flex-1 grid grid-cols-[1fr_32px_1fr] items-center gap-3">
-                            {/* Home */}
-                            <div className="flex items-center justify-end gap-3">
-                              <span className="text-xs md:text-sm font-black uppercase tracking-tight text-text-primary text-right leading-tight line-clamp-1">
-                                {normalizeTeamName(match.home)}
-                              </span>
-                              <div className="h-9 w-9 bg-white rounded-md p-1.5 flex items-center justify-center shrink-0 shadow-sm">
-                                {homeLogo
-                                  ? <img src={homeLogo} alt="" className="h-full w-full object-contain" referrerPolicy="no-referrer" />
-                                  : <div className="h-full w-full bg-zinc-200 rounded-sm" />
-                                }
-                              </div>
-                            </div>
-
-                            {/* VS */}
-                            <div className="flex items-center justify-center">
-                              <span className="text-[10px] font-black text-text-muted/40 italic">VS</span>
-                            </div>
-
-                            {/* Away */}
-                            <div className="flex items-center justify-start gap-3">
-                              <div className="h-9 w-9 bg-white rounded-md p-1.5 flex items-center justify-center shrink-0 shadow-sm">
-                                {awayLogo
-                                  ? <img src={awayLogo} alt="" className="h-full w-full object-contain" referrerPolicy="no-referrer" />
-                                  : <div className="h-full w-full bg-zinc-200 rounded-sm" />
-                                }
-                              </div>
-                              <span className="text-xs md:text-sm font-black uppercase tracking-tight text-text-primary leading-tight line-clamp-1">
-                                {normalizeTeamName(match.away)}
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* Arrow */}
-                          <ChevronRight
-                            size={16}
-                            className="shrink-0 text-white/10 group-hover:text-accent transition-colors hidden md:block"
-                          />
-
-                          {/* Hover line */}
-                          <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-accent/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-t-xl" />
+                  {/* Expanded Matches List */}
+                  {isExpanded && (
+                    <div className="divide-y divide-white/5 bg-[#070D14]">
+                      {leagueMatches.length === 0 ? (
+                        <div className="px-6 py-8 text-center text-xs font-bold text-white/30 italic">
+                          No hay partidos programados para esta competición.
                         </div>
-                      );
-                    })}
-                  </div>
-                </section>
-              ))}
-            </div>
+                      ) : (
+                        leagueMatches.map((match, idx) => {
+                          const homeLogo = getTeamLogo(match.home);
+                          const awayLogo = getTeamLogo(match.away);
+                          
+                          let matchDate = match.date;
+                          let matchTime = match.time;
+                          if (match.time.includes(' ')) {
+                            const parts = match.time.split(' ');
+                            matchDate = parts[0];
+                            matchTime = parts[1];
+                          }
+
+                          return (
+                            <Link key={match.id + idx} href={`/matches/${match.id}`} className="transition-colors group/row block">
+                              {/* Main Match Row */}
+                              <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 hover:bg-white/[0.03] transition-colors cursor-pointer select-none">
+                                <div className="flex items-center gap-4 sm:gap-6 min-w-0 flex-1">
+                                  <Star className="h-4 w-4 text-white/20 hover:text-yellow-400 cursor-pointer shrink-0 transition-colors" onClick={(e) => e.stopPropagation()} />
+                                  
+                                  {/* Date & Time */}
+                                  <div className="flex items-center gap-2 shrink-0 border-r border-white/5 pr-4 sm:pr-6 mr-2 sm:mr-4">
+                                    <span className="text-xs sm:text-sm font-black text-neon-green uppercase tracking-wider">
+                                      {matchDate}
+                                    </span>
+                                    <span className="text-xs sm:text-sm font-bold text-white/80 tabular-nums">
+                                      {matchTime}
+                                    </span>
+                                  </div>
+
+                                  {/* Teams Stack */}
+                                  <div className="flex flex-col gap-2 min-w-0 flex-1 py-1">
+                                    {/* Home */}
+                                    <div className="flex items-center gap-3">
+                                      <div className="h-4 w-4 sm:h-5 sm:w-5 rounded p-0.5 bg-white flex items-center justify-center shrink-0 shadow">
+                                        {homeLogo ? (
+                                          <img src={homeLogo} alt="" className="h-full w-full object-contain" onError={(e)=>{e.currentTarget.style.display='none'}} />
+                                        ) : (
+                                          <span className="text-[8px] font-black text-deep-black">{match.home?.[0]}</span>
+                                        )}
+                                      </div>
+                                      <span className="text-xs sm:text-sm font-bold text-white group-hover/row:text-neon-green transition-colors truncate">
+                                        {normalizeTeamName(match.home)}
+                                      </span>
+                                    </div>
+
+                                    {/* Away */}
+                                    <div className="flex items-center gap-3">
+                                      <div className="h-4 w-4 sm:h-5 sm:w-5 rounded p-0.5 bg-white flex items-center justify-center shrink-0 shadow">
+                                        {awayLogo ? (
+                                          <img src={awayLogo} alt="" className="h-full w-full object-contain" onError={(e)=>{e.currentTarget.style.display='none'}} />
+                                        ) : (
+                                          <span className="text-[8px] font-black text-deep-black">{match.away?.[0]}</span>
+                                        )}
+                                      </div>
+                                      <span className="text-xs sm:text-sm font-bold text-white/80 group-hover/row:text-neon-green transition-colors truncate">
+                                        {normalizeTeamName(match.away)}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* Right Side Action Indicator */}
+                                <div className="flex items-center gap-2 sm:gap-3 shrink-0 ml-4">
+                                  <div className="h-8 w-8 rounded-full bg-white/5 flex items-center justify-center group-hover/row:bg-white/10 transition-colors">
+                                    <ExternalLink className="h-4 w-4 text-white/40 group-hover/row:text-neon-green transition-colors" />
+                                  </div>
+                                </div>
+                              </div>
+                            </Link>
+                          );
+                        })
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })
           )}
         </div>
 

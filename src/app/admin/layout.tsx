@@ -28,7 +28,7 @@ export default function AdminLayout({
     };
 
     checkAuth();
-  }, [router]);
+  }, []);
 
   if (authorized === null) {
     return (

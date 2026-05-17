@@ -47,10 +47,10 @@ export function Navbar() {
   return (
     <nav
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-500 px-6",
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-500 px-4 sm:px-6",
         scrolled 
-          ? "py-4 bg-bg-base/80 backdrop-blur-md border-b border-border-base" 
-          : "py-8 bg-transparent"
+          ? "py-3 sm:py-4 bg-bg-base/90 backdrop-blur-md border-b border-border-base shadow-lg" 
+          : "py-5 sm:py-8 bg-transparent"
       )}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
