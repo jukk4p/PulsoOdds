@@ -113,7 +113,7 @@ export default function AdminStatsPage() {
         {/* Main Stats */}
         <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
           <StatCard 
-            label="Profit Total" 
+            label="Beneficio Total" 
             value={`${stats.profit >= 0 ? '+' : ''}${stats.profit.toFixed(2)}`}
             subValue="Unidades"
             icon={<TrendingUp className="h-6 w-6" />}
@@ -171,7 +171,7 @@ export default function AdminStatsPage() {
             <div>
               <div className="flex items-center gap-2">
                 <BarChart3 className="h-4 w-4 text-neon-green" />
-                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white">Evolución de Profit</h3>
+                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white">Evolución de Beneficios</h3>
               </div>
               <p className="text-[10px] text-white/40 font-medium mt-1">Curva acumulada de beneficios por unidades.</p>
             </div>
@@ -194,7 +194,7 @@ export default function AdminStatsPage() {
             {Object.entries(stats.sportData).map(([sport, data]) => (
               <div key={sport} className="space-y-2">
                 <div className="flex justify-between items-end">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-white/60 capitalize">{sport}</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-white/60 capitalize">{sport === 'football' ? 'fútbol' : sport}</span>
                   <span className={cn(
                     "text-xs font-bold",
                     data.profit >= 0 ? "text-neon-green" : "text-red-500"
@@ -209,8 +209,8 @@ export default function AdminStatsPage() {
                   />
                 </div>
                 <div className="flex justify-between text-[8px] font-black uppercase tracking-tighter text-white/20">
-                  <span>{data.won}W - {data.lost}L</span>
-                  <span>Yield: {((data.profit / (data.won + data.lost || 1)) * 10).toFixed(1)}%</span>
+                  <span>{data.won}G - {data.lost}P</span>
+                  <span>Rentabilidad: {((data.profit / (data.won + data.lost || 1)) * 10).toFixed(1)}%</span>
                 </div>
               </div>
             ))}

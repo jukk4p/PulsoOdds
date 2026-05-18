@@ -1,6 +1,7 @@
 const axios = require('axios');
 const { createClient } = require('@supabase/supabase-js');
-require('dotenv').config({ path: '.env.local' });
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env.local') });
 
 // Configuración extraída de .env.local
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;

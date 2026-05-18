@@ -60,7 +60,7 @@ export default function AdminLayout({
               PULSO<span className="text-neon-green">ODDS</span>
             </span>
           </Link>
-          <h2 className="text-xs font-black text-neon-green italic tracking-[0.3em] uppercase">ADMIN PANEL</h2>
+          <h2 className="text-xs font-black text-neon-green italic tracking-[0.3em] uppercase">PANEL DE ADMIN</h2>
         </div>
         <div className="flex-1 py-6">
           <AdminSidebar />

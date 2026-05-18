@@ -765,7 +765,7 @@ export default function AdminPicksPage() {
             
             {/* Buscador */}
             <div className="space-y-3">
-              <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.3em] ml-4">Terminal Search</label>
+              <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.3em] ml-4">Búsqueda</label>
               <div className="relative group">
                 <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20 group-focus-within:text-neon-green transition-all" />
                 <input 

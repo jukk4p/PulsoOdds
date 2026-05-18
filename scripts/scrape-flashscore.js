@@ -164,6 +164,23 @@ async function scrapeLeague(context, league) {
   try {
     await page.goto(url, { waitUntil: 'networkidle', timeout: 45000 });
 
+    // 1. Verificar si estamos en una vista de cuadro/playoffs/descenso y necesitamos ir a la pestaña PRINCIPAL o TEMPORADA REGULAR
+    const principalUrl = await page.evaluate((slug) => {
+      const links = Array.from(document.querySelectorAll('a'));
+      const target = links.find(el => {
+        const text = el.innerText.trim().toUpperCase();
+        const href = el.href || '';
+        return (text === 'PRINCIPAL' || text === 'TEMPORADA REGULAR') && href.includes(slug);
+      });
+      return target ? target.href : null;
+    }, league.slug);
+
+    if (principalUrl) {
+      console.log(`  🔄 Redirigido a cuadro/playoffs. Navegando a pestaña principal: ${principalUrl}`);
+      await page.goto(principalUrl, { waitUntil: 'networkidle', timeout: 45000 });
+      await page.waitForTimeout(2000);
+    }
+
     // Definición de las vistas a capturar
     const views = [
       { id: 'total', label: 'General', selector: 'a[href*="/clasificacion/general/"]' },

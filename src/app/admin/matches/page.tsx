@@ -67,9 +67,7 @@ const isPastMatch = (dateStr: string) => {
 export default function AdminMatchesPage() {
   const [allData, setAllData] = useState<Record<string, Match[]>>({});
   const [loading, setLoading] = useState(true);
-  const [syncing, setSyncing] = useState(false);
   const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null);
-  const [lastSyncTime, setLastSyncTime] = useState<string | null>(null);
   
   const [expandedLeagues, setExpandedLeagues] = useState<Record<string, boolean>>({
     "LaLiga EA Sports": true,
@@ -128,36 +126,6 @@ export default function AdminMatchesPage() {
     fetchData();
   }, []);
 
-  const runSync = async () => {
-    setSyncing(true);
-    setNotification(null);
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const res = await fetch('/api/admin/sync-matches', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session?.access_token}`
-        },
-        body: JSON.stringify({ })
-      });
-      const data = await res.json();
-      if (data.success) {
-        const nowStr = new Date().toLocaleTimeString();
-        setLastSyncTime(nowStr);
-        setNotification({ type: 'success', message: `¡Partidos actualizados con éxito a las ${nowStr}!` });
-        setTimeout(() => setNotification(null), 6000);
-        fetchData();
-      } else {
-        setNotification({ type: 'error', message: data.message || 'Error al sincronizar' });
-      }
-    } catch (err) {
-      setNotification({ type: 'error', message: 'Error de conexión con el servidor' });
-    } finally {
-      setSyncing(false);
-    }
-  };
-
   const totalMatchesCount = useMemo(() => {
     return Object.values(allData).reduce((sum, matches) => {
       const future = (matches || []).filter(m => {
@@ -209,31 +177,6 @@ export default function AdminMatchesPage() {
           <p className="text-white/40 text-[10px] sm:text-xs font-medium max-w-lg text-center md:text-left">
             Despliega cada competición para ver los encuentros programados y cuotas automáticas.
           </p>
-        </div>
-
-        {/* Sync Button & Status */}
-        <div className="flex flex-col items-center md:items-end gap-3 shrink-0 w-full md:w-auto">
-          <button 
-            onClick={runSync}
-            disabled={syncing}
-            className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-white/[0.03] border border-white/10 text-white hover:text-neon-green hover:border-neon-green/50 transition-all hover:bg-white/[0.06] shadow-lg disabled:cursor-not-allowed disabled:opacity-50 group w-full md:w-auto justify-center"
-            title="Sincronizar Partidos Próximos"
-          >
-            <RefreshCw className={cn("h-5 w-5 text-neon-green", syncing && "animate-spin")} />
-            <span className="text-xs font-black uppercase tracking-widest text-white group-hover:text-neon-green transition-colors">
-              {syncing ? "Sincronizando..." : "Sincronizar Partidos"}
-            </span>
-          </button>
-
-          {/* Last Sync Indicator */}
-          {lastSyncTime && (
-            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-neon-green/10 border border-neon-green/30 text-neon-green animate-in fade-in slide-in-from-top-2 duration-300 shadow-[0_0_20px_rgba(0,255,135,0.15)]">
-              <CheckCircle2 className="h-4 w-4 shrink-0" />
-              <span className="text-[10px] font-black uppercase tracking-wider">
-                Sincronizado: {lastSyncTime}
-              </span>
-            </div>
-          )}
         </div>
       </div>
 

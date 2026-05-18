@@ -153,16 +153,21 @@ async function scrapeUpcomingMatches() {
               const findSectionContainer = (titleText, keyword) => {
                 const allElms = Array.from(document.querySelectorAll('div, span, h1, h2, h3'));
                 for (const el of allElms) {
+                  if (el.closest('.tabs, [class*="tabs"], [class*="filterOver"], [class*="navigation"], [class*="menu"], header')) {
+                    continue;
+                  }
                   const txt = el.innerText?.trim().toUpperCase() || "";
-                  const firstLine = txt.split('\n')[0].trim();
-                  if (firstLine === titleText.toUpperCase() || txt.startsWith(titleText.toUpperCase())) {
-                    let curr = el;
+                  if (txt === titleText.toUpperCase()) {
+                    let curr = el.parentElement;
                     while (curr && curr !== document.body) {
+                      if (curr.className && (curr.className.includes('container__detailInner') || curr.className.includes('container__livetable') || curr.className.includes('fullPage') || curr.className.includes('tabContent'))) {
+                        break;
+                      }
                       const pTxt = curr.innerText || "";
                       if (keyword && pTxt.toLowerCase().includes(keyword.toLowerCase())) {
                         return curr;
                       }
-                      if (!keyword && pTxt.length > titleText.length + 25 && pTxt.length < 3000) {
+                      if (!keyword && pTxt.length > titleText.length + 10 && pTxt.length < 3000) {
                         return curr;
                       }
                       curr = curr.parentElement;

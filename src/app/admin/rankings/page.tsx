@@ -43,7 +43,6 @@ export default function AdminRankingsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTeam, setEditingTeam] = useState<any>(null);
   const [fetchingTeam, setFetchingTeam] = useState(false);
-  const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
     fetchStandings();
@@ -52,34 +51,6 @@ export default function AdminRankingsPage() {
   const toggleLeague = (league: string) => {
     setExpandedLeagues(prev => ({ ...prev, [league]: !prev[league] }));
   };
-
-  async function runFullSync() {
-    setSyncing(true);
-    setMessage({ type: 'success', text: 'Iniciando Scraper y Sincronización... Esto puede tardar un par de minutos.' });
-    
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const res = await fetch('/api/admin/sync-all', { 
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${session?.access_token}`
-        }
-      });
-      const data = await res.json();
-      
-      if (data.success) {
-        setMessage({ type: 'success', text: '¡Sincronización Total completada con éxito!' });
-        fetchStandings();
-      } else {
-        setMessage({ type: 'error', text: `Error: ${data.error || 'Error desconocido'}` });
-      }
-    } catch (error) {
-      setMessage({ type: 'error', text: 'Error de conexión al lanzar la sincronización.' });
-    } finally {
-      setSyncing(false);
-      setTimeout(() => setMessage(null), 5000);
-    }
-  }
 
   async function fetchStandings() {
     setLoading(true);
@@ -165,26 +136,6 @@ export default function AdminRankingsPage() {
             Edición manual y sincronización de tablas de posiciones
           </p>
         </div>
-      </div>
-
-      {/* Top Sync Section */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mb-12 bg-white/[0.01] border border-white/5 p-6 sm:p-8 rounded-[24px] sm:rounded-[32px] w-full min-w-0 shadow-2xl backdrop-blur-sm">
-        <div className="min-w-0 w-full sm:w-auto">
-          <h2 className="text-base sm:text-lg font-black text-white uppercase tracking-wider truncate">Sincronización Automática</h2>
-          <p className="text-white/40 text-[10px] sm:text-xs uppercase font-bold tracking-widest mt-1 truncate">
-            Extraer y actualizar datos en tiempo real desde Flashscore
-          </p>
-        </div>
-
-        <button 
-          onClick={runFullSync}
-          disabled={syncing}
-          className="w-full sm:w-auto px-6 sm:px-8 py-4 rounded-2xl bg-neon-green text-deep-black font-black text-xs uppercase tracking-widest shadow-[0_0_30px_rgba(0,255,135,0.2)] hover:shadow-[0_0_50px_rgba(0,255,135,0.4)] transition-all hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center gap-3 shrink-0"
-          title="Sincronizar Clasificaciones"
-        >
-          <RefreshCw className={cn("h-4 w-4 shrink-0", syncing && "animate-spin")} />
-          <span className="truncate">{syncing ? "SINCRONIZANDO..." : "SINCRONIZAR CLASIFICACIONES"}</span>
-        </button>
       </div>
 
       {/* Status Message */}
